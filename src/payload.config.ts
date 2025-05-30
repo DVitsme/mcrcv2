@@ -1,5 +1,8 @@
 // storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { supabase } from './utilities/supabase'
+import { parse } from 'pg-connection-string'
+import type { PoolConfig } from 'pg'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
@@ -19,6 +22,32 @@ import { getServerSideURL } from './utilities/getURL'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+const connectionString = process.env.DATABASE_URL
+if (!connectionString) {
+  throw new Error('DATABASE_URL environment variable is not set!')
+}
+
+const dbConfig = parse(connectionString)
+console.log('Parsed DB Config:', dbConfig) // <<<--- ADD THIS LINE
+
+// Ensure dbConfig.port is a number if it exists and is a string
+const port = dbConfig.port ? parseInt(dbConfig.port, 10) : 5432
+
+// Create pool config with correct typing
+const poolConfig: PoolConfig = {
+  host: dbConfig.host!,
+  port: port,
+  user: dbConfig.user!,
+  password: dbConfig.password!,
+  database: dbConfig.database!,
+  ssl:
+    dbConfig.ssl === 'true' || typeof dbConfig.ssl === 'object' || dbConfig.ssl === true
+      ? { rejectUnauthorized: false }
+      : undefined,
+  // @ts-ignore - family is a valid option but not in the type definition
+  family: 4,
+}
 
 export default buildConfig({
   admin: {
@@ -60,9 +89,7 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URI || '',
-    },
+    pool: poolConfig,
   }),
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
