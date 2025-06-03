@@ -9,8 +9,6 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['https://shadcnblocks.com/'],
-
     remotePatterns: [
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)
@@ -20,6 +18,10 @@ const nextConfig = {
           protocol: url.protocol.replace(':', ''),
         }
       }),
+      {
+        hostname: 'shadcnblocks.com',
+        protocol: 'https',
+      },
     ],
   },
   reactStrictMode: true,

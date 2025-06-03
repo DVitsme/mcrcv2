@@ -1,9 +1,11 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+// import { supabase } from './utilities/supabase'
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
+import { resendAdapter } from '@payloadcms/email-resend'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -37,6 +39,10 @@ if (process.env.NODE_ENV === 'production') {
   console.log('Using DEVELOPMENT database.')
 }
 
+if (!process.env.RESEND_API) {
+  throw new Error('RESEND_API environment variable is not set!')
+}
+
 export default buildConfig({
   admin: {
     components: {
@@ -62,13 +68,15 @@ export default buildConfig({
       ssl: { rejectUnauthorized: false }, // Important for cloud DBs
     },
   }),
+  email: resendAdapter({
+    apiKey: process.env.RESEND_API,
+    defaultFromAddress: 'noreply@mcrc.org',
+    defaultFromName: 'MCRC',
+  }),
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
-  plugins: [
-    ...plugins,
-    // storage-adapter-placeholder
-  ],
+  plugins: [...plugins],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {

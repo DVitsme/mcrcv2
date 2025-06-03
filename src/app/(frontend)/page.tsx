@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 // Temporary mock data - will be replaced with Payload data
 const mockData = {
   hero: {
-    image: '/images/hero.jpg',
+    image: '/images/mediation/hero1.jpeg',
     title: 'Welcome to Our Organization',
     description:
       'Making a difference in our community through dedicated service and volunteer work.',
