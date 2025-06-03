@@ -139,8 +139,8 @@ importers:
         specifier: 22.5.4
         version: 22.5.4
       '@types/pg':
-        specifier: ^8.15.4
-        version: 8.15.4
+        specifier: ~8.10.9
+        version: 8.10.9
       '@types/react':
         specifier: 19.1.0
         version: 19.1.0
@@ -2044,8 +2044,8 @@ packages:
   '@types/pg@8.10.2':
     resolution: {integrity: sha512-MKFs9P6nJ+LAeHLU3V0cODEOgyThJ3OAnmOlsZsxux6sfQs3HRXR5bBn7xG5DjckEFhTAxsXi7k7cd0pCMxpJw==}
 
-  '@types/pg@8.15.4':
-    resolution: {integrity: sha512-I6UNVBAoYbvuWkkU3oosC8yxqH21f4/Jc4DK71JLG3dT2mdlGe1z+ep/LQGXaKaOgcvUrsQoPRqfgtMcvZiJhg==}
+  '@types/pg@8.10.9':
+    resolution: {integrity: sha512-UksbANNE/f8w0wOMxVKKIrLCbEMV+oM1uKejmwXr39olg4xqcfBDbXxObJAt6XxHbDa4XTKOlUEcEltXDX+XLQ==}
 
   '@types/phoenix@1.6.6':
     resolution: {integrity: sha512-PIzZZlEppgrpoT2QgbnDU+MMzuR6BbCjllj0bM70lWoejMeNJAxCchxnv7J3XFkI8MpygtRpzXrIlmWUBclP5A==}
@@ -7282,11 +7282,11 @@ snapshots:
       pg-protocol: 1.10.0
       pg-types: 4.0.2
 
-  '@types/pg@8.15.4':
+  '@types/pg@8.10.9':
     dependencies:
       '@types/node': 22.5.4
       pg-protocol: 1.10.0
-      pg-types: 2.2.0
+      pg-types: 4.0.2
 
   '@types/phoenix@1.6.6': {}
 
