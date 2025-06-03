@@ -1,15 +1,7 @@
-// storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
-// import { supabase } from './utilities/supabase'
-
-// Add these imports back:
-import { parse } from 'pg-connection-string'
-import type { PoolConfig } from 'pg' // pg is a peer/sub-dependency of @payloadcms/db-postgres
 
 import sharp from 'sharp' // sharp-import
 import path from 'path'
-// If PayloadRequest was from 'payload/config', keep as is. If it causes type errors,
-// it's often from 'payload/types': import type { PayloadRequest } from 'payload/types';
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
@@ -27,39 +19,22 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-const connectionString = process.env.DATABASE_URL
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is not set!')
-}
+let connectionString: string | undefined
 
-// Re-introduce parsing and manual poolConfig construction
-const dbConfig = parse(connectionString)
-const port = dbConfig.port ? parseInt(dbConfig.port, 10) : 5432 // Default to 5432 if not present
-
-let sslConfig: PoolConfig['ssl'] = undefined
-if (
-  dbConfig.ssl === 'true' ||
-  dbConfig.ssl === true ||
-  typeof dbConfig.ssl === 'object' ||
-  dbConfig.ssl === 'require' ||
-  dbConfig.ssl === 'allow' ||
-  dbConfig.ssl === 'prefer'
-) {
-  sslConfig = { rejectUnauthorized: false } // For Supabase/cloud DBs
-} else if (dbConfig.ssl === 'no-verify') {
-  // Common way to specify rejectUnauthorized: false in connection strings
-  sslConfig = { rejectUnauthorized: false }
-}
-
-const poolConfig: PoolConfig = {
-  host: dbConfig.host!,
-  port: port,
-  user: dbConfig.user!,
-  password: dbConfig.password!,
-  database: dbConfig.database!,
-  ssl: sslConfig,
-  // @ts-ignore - The 'family' property is a valid Node.js net.connect option passed through by pg
-  family: 4, // Attempt to force IPv4
+if (process.env.NODE_ENV === 'production') {
+  connectionString = process.env.DATABASE_PROD_URL
+  if (!connectionString) {
+    throw new Error('DATABASE_PROD_URL environment variable is not set for production environment!')
+  }
+  console.log('Using PRODUCTION database.')
+} else {
+  connectionString = process.env.DATABASE_DEV_URL
+  if (!connectionString) {
+    throw new Error(
+      'DATABASE_DEV_URL environment variable is not set for development/preview environment!',
+    )
+  }
+  console.log('Using DEVELOPMENT database.')
 }
 
 export default buildConfig({
@@ -82,7 +57,10 @@ export default buildConfig({
   },
   editor: defaultLexical,
   db: postgresAdapter({
-    pool: poolConfig, // Use the manually constructed poolConfig
+    pool: {
+      connectionString,
+      ssl: { rejectUnauthorized: false }, // Important for cloud DBs
+    },
   }),
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
