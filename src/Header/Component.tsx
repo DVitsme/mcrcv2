@@ -1134,7 +1134,7 @@ const Header = () => {
     'solutions' | 'products' | 'global' | 'customers' | 'partners' | 'resources' | null
   >(null)
   return (
-    <section className="inset-x-0 top-0 z-20 bg-background-secondary">
+    <section className="my-4 rounded-xl border inset-x-0 top-0 z-20">
       <div className="container">
         <NavigationMenu className="min-w-full">
           <div className="flex w-full justify-between gap-2 py-4">
@@ -1152,7 +1152,7 @@ const Header = () => {
               <NavigationMenuList className="hidden lg:flex">
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
-                    Solutions
+                    About
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
                     <SolutionsMenu />
@@ -1160,7 +1160,7 @@ const Header = () => {
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
-                    Products
+                    Services
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
                     <ProductsMenu />
@@ -1168,7 +1168,7 @@ const Header = () => {
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
-                    Company
+                    Resources
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
                     <GlobalGuidanceMenu />
@@ -1176,7 +1176,7 @@ const Header = () => {
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
-                    Customers
+                    Events
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
                     <CustomersMenu />
@@ -1184,7 +1184,7 @@ const Header = () => {
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
-                    Partners
+                    Contact
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
                     <PartnersMenu />
@@ -1192,7 +1192,7 @@ const Header = () => {
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
-                    Resources
+                    Get Started
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
                     <ResourcesMenu />
@@ -1201,7 +1201,7 @@ const Header = () => {
               </NavigationMenuList>
             </div>
             <div className="flex items-center gap-2">
-              <Button className="hidden md:block">Get Started</Button>
+              <Button className="hidden bg-primary text-accent md:block">Get Started</Button>
               <Button
                 variant="ghost"
                 size="icon"
