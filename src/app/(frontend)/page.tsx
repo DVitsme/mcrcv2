@@ -81,6 +81,19 @@ export default function Home() {
     <main className="min-h-screen">
       <Hero />
       <TypeWriter />
+      <section className="mx-4">
+        <div className="relative mx-auto mt-24 aspect-video w-full max-w-6xl overflow-hidden rounded-2xl shadow-lg">
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src="https://www.youtube.com/embed/6ZggpBuuWHg?si=_D2R17FUmDaNkdp4"
+            title="Organization introduction video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      </section>
       <Services />
 
       <AboutSnippet text={mockData.about.text} image={mockData.about.image} />

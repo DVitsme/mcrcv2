@@ -1134,7 +1134,7 @@ const Header = () => {
     'solutions' | 'products' | 'global' | 'customers' | 'partners' | 'resources' | null
   >(null)
   return (
-    <section className="my-4 rounded-xl border inset-x-0 top-0 z-20">
+    <section className="my-4 mx-4 rounded-xl border inset-x-0 top-0 z-20">
       <div className="container">
         <NavigationMenu className="min-w-full">
           <div className="flex w-full justify-between gap-2 py-4">

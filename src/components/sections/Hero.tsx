@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 const Hero = () => {
   return (
     <Fragment>
-      <section className="dark font-dm_sans relative h-svh max-h-[80vh] min-h-[600px] w-full overflow-hidden rounded-2xl">
+      <section className="mx-4 dark font-dm_sans relative h-svh max-h-[80vh] min-h-[600px] overflow-hidden rounded-2xl">
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
           <video

@@ -77,6 +77,14 @@ const config = {
           DEFAULT: 'var(--yellow)',
           foreground: 'var(--yellow-foreground)',
         },
+        purple: {
+          DEFAULT: 'var(--purple)',
+          foreground: 'var(--purple-foreground)',
+        },
+        blue: {
+          DEFAULT: 'var(--blue)',
+          foreground: 'var(--blue-foreground)',
+        },
         destructive: {
           DEFAULT: 'var(--destructive)',
           foreground: 'var(--destructive-foreground)',
