@@ -6,6 +6,7 @@ import { CallToAction } from '@/components/sections/CallToAction'
 import { FeatureSection } from '@/components/sections/FeatureSection'
 import { Stats } from '@/components/sections/Stats'
 import { Volunteer } from '@/components/sections/Volunteer'
+import { TypeWriter } from '@/components/ui/TypeWriter'
 
 export const metadata: Metadata = {
   title: 'Home | Your Organization Name',
@@ -16,7 +17,18 @@ export const metadata: Metadata = {
 // Temporary mock data - will be replaced with Payload data
 const mockData = {
   hero: {
-    image: '/images/mediation/hero1.jpeg',
+    video: '/videos/mediation/mediationvideo.mp4',
+    topRightTitle: 'Welcome to Our Organization',
+    topRightList: [
+      'Making a difference in our community through dedicated service and volunteer work.',
+      'We are dedicated to making a difference in our community.',
+      'We are dedicated to making a difference in our community.',
+      'We are dedicated to making a difference in our community.',
+      'We are dedicated to making a difference in our community.',
+      'We are dedicated to making a difference in our community.',
+      'We are dedicated to making a difference in our community.',
+      'We are dedicated to making a difference in our community.',
+    ],
     title: 'Welcome to Our Organization',
     description:
       'Making a difference in our community through dedicated service and volunteer work.',
@@ -40,7 +52,7 @@ const mockData = {
   ],
   about: {
     text: 'Our organization has been serving the community for over 20 years, making a lasting impact through various initiatives and programs.',
-    image: '/images/about.jpg',
+    image: '/images/mediation/coupleoncouch.jpeg',
   },
   cta: {
     backgroundImage: '/images/cta-bg.jpg',
@@ -67,13 +79,9 @@ const mockData = {
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <Hero
-        image={mockData.hero.image}
-        title={mockData.hero.title}
-        description={mockData.hero.description}
-      />
-
-      <Services services={mockData.services} />
+      <Hero />
+      <TypeWriter />
+      <Services />
 
       <AboutSnippet text={mockData.about.text} image={mockData.about.image} />
 

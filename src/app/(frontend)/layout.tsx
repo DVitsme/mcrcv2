@@ -15,6 +15,7 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+import { TopBar } from '@/Header/TopBar'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
@@ -26,14 +27,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
         <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
       </head>
-      <body>
+      <body className="mx-4">
         <Providers>
           <AdminBar
             adminBarProps={{
               preview: isEnabled,
             }}
           />
-
+          <TopBar />
           <Header />
           {children}
           <Footer />
