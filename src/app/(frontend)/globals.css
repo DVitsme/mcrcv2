@@ -14,14 +14,19 @@
     --primary-foreground: rgb(255, 255, 255);
     --secondary: rgb(255, 223, 181);
     --secondary-foreground: rgb(88, 45, 29);
-    --tertiary: rgba(181, 233, 179, 1);
-    --tertiary-foreground: rgba(238, 203, 199, 1);
+    --tertiary: rgb(242, 237, 227);
+    --tertiary-foreground: rgba(45, 21, 13, 0.75);
+
     --yellow: rgba(255, 249, 100, 1);
     --yellow-foreground: rgba(192, 210, 61, 1);
     --purple: rgba(145, 66, 201, 1);
     --purple-foreground: rgba(192, 210, 61, 1);
-    --blue: rgba(66, 86, 201, 1);
+    --blue: rgba(0, 22, 54, 1);
     --blue-foreground: rgba(192, 210, 61, 1);
+    --burgundy: rgba(45, 21, 13, 1);
+    --burgundy-foreground: rgba(192, 210, 61, 1);
+    --darkgreen: rgba(40, 62, 0, 1);
+    --darkgreen-foreground: rgba(238, 203, 199, 1);
 
     --muted: rgb(239, 239, 239);
     --muted-foreground: rgb(100, 100, 100);

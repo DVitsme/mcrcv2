@@ -85,6 +85,14 @@ const config = {
           DEFAULT: 'var(--blue)',
           foreground: 'var(--blue-foreground)',
         },
+        burgundy: {
+          DEFAULT: 'var(--burgundy)',
+          foreground: 'var(--burgundy-foreground)',
+        },
+        darkgreen: {
+          DEFAULT: 'var(--darkgreen)',
+          foreground: 'var(--darkgreen-foreground)',
+        },
         destructive: {
           DEFAULT: 'var(--destructive)',
           foreground: 'var(--destructive-foreground)',
@@ -138,45 +146,39 @@ const config = {
           to: { height: '0' },
         },
       },
-      typography: () => ({
+      typography: {
         DEFAULT: {
-          css: [
-            {
-              '--tw-prose-body': 'var(--text)',
-              '--tw-prose-headings': 'var(--text)',
-              h1: {
-                fontWeight: 'normal',
-                marginBottom: '0.25em',
-              },
+          css: {
+            '--tw-prose-body': 'var(--text)',
+            '--tw-prose-headings': 'var(--text)',
+            h1: {
+              fontWeight: 'normal',
+              marginBottom: '0.25em',
             },
-          ],
+          },
         },
         base: {
-          css: [
-            {
-              h1: {
-                fontSize: '2.5rem',
-              },
-              h2: {
-                fontSize: '1.25rem',
-                fontWeight: 600,
-              },
+          css: {
+            h1: {
+              fontSize: '2.5rem',
             },
-          ],
+            h2: {
+              fontSize: '1.25rem',
+              fontWeight: 600,
+            },
+          },
         },
         md: {
-          css: [
-            {
-              h1: {
-                fontSize: '3.5rem',
-              },
-              h2: {
-                fontSize: '1.5rem',
-              },
+          css: {
+            h1: {
+              fontSize: '3.5rem',
             },
-          ],
+            h2: {
+              fontSize: '1.5rem',
+            },
+          },
         },
-      }),
+      },
     },
   },
 }
