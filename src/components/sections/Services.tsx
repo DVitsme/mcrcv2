@@ -83,7 +83,7 @@ const Services = () => {
   }, [carouselApi])
 
   return (
-    <section className="mt-[-10rem] md:py-24 lg:py-32 bg-purple">
+    <section className="mt-[-10rem] md:py-24 lg:py-32 bg-darkgreen">
       <div className="container pt-16 mx-auto px-4">
         <div className="my-8 text-center md:mb-12">
           <Badge variant="outline" className="mb-3 text-primary-foreground">

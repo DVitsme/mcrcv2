@@ -1,12 +1,14 @@
 import { Metadata } from 'next'
 import { Hero } from '@/components/sections/Hero'
 import { Services } from '@/components/sections/Services'
-import { AboutSnippet } from '@/components/sections/AboutSnippet'
+import { AboutPreview } from '@/components/sections/AboutPreview'
+import { EventsPreview } from '@/components/sections/EventPreview'
 import { CallToAction } from '@/components/sections/CallToAction'
-import { FeatureSection } from '@/components/sections/FeatureSection'
+import { GetInvolved } from '@/components/sections/GetInvolved'
 import { Stats } from '@/components/sections/Stats'
 import { Volunteer } from '@/components/sections/Volunteer'
 import { TypeWriter } from '@/components/ui/TypeWriter'
+import { BlogPreview } from '@/components/sections/BlogPreview'
 
 export const metadata: Metadata = {
   title: 'Home | Your Organization Name',
@@ -50,10 +52,6 @@ const mockData = {
       icon: 'arrow-right',
     },
   ],
-  about: {
-    text: 'Our organization has been serving the community for over 20 years, making a lasting impact through various initiatives and programs.',
-    image: '/images/mediation/coupleoncouch.jpeg',
-  },
   cta: {
     backgroundImage: '/images/cta-bg.jpg',
     title: 'Join Our Mission',
@@ -65,12 +63,6 @@ const mockData = {
     text: 'Our innovative approach combines traditional methods with modern solutions to create lasting change.',
     image: '/images/features.jpg',
   },
-  stats: [
-    { number: '1000+', label: 'Volunteers' },
-    { number: '50+', label: 'Programs' },
-    { number: '20+', label: 'Years' },
-    { number: '10000+', label: 'Lives Impacted' },
-  ],
   volunteer: {
     image: '/images/volunteer.jpg',
   },
@@ -95,8 +87,8 @@ export default function Home() {
         </div>
       </section>
       <Services />
-
-      <AboutSnippet text={mockData.about.text} image={mockData.about.image} />
+      <EventsPreview />
+      <AboutPreview />
 
       <CallToAction
         backgroundImage={mockData.cta.backgroundImage}
@@ -106,10 +98,11 @@ export default function Home() {
         buttonLink={mockData.cta.buttonLink}
       />
 
-      <FeatureSection text={mockData.features.text} image={mockData.features.image} />
+      <GetInvolved />
 
-      <Stats stats={mockData.stats} />
+      <Stats />
 
+      <BlogPreview />
       <Volunteer image={mockData.volunteer.image} />
     </main>
   )
