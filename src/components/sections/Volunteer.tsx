@@ -30,11 +30,7 @@ const formSchema = z.object({
   }),
 })
 
-interface VolunteerProps {
-  image: string
-}
-
-export function Volunteer({ image }: VolunteerProps) {
+export function Volunteer() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,9 +53,9 @@ export function Volunteer({ image }: VolunteerProps) {
           {/* Form Column */}
           <Card>
             <CardHeader>
-              <CardTitle>Become a Volunteer</CardTitle>
+              <CardTitle>Get In Touch</CardTitle>
               <CardDescription>
-                Fill out the form below to start your volunteer journey with us.
+                Please fill out the form below to get in touch with us.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -132,7 +128,7 @@ export function Volunteer({ image }: VolunteerProps) {
           {/* Image Column */}
           <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
             <Image
-              src={image}
+              src="/images/restorative-justice/6.jpg"
               alt="Volunteer with us"
               fill
               className="object-cover"

@@ -17,8 +17,15 @@ import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import { TopBar } from '@/Header/TopBar'
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  params,
+  children,
+}: {
+  params: { slug: string }
+  children: React.ReactNode
+}) {
   const { isEnabled } = await draftMode()
+  console.log('Current slug on the server:', params.slug)
 
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>

@@ -63,9 +63,6 @@ const mockData = {
     text: 'Our innovative approach combines traditional methods with modern solutions to create lasting change.',
     image: '/images/features.jpg',
   },
-  volunteer: {
-    image: '/images/volunteer.jpg',
-  },
 }
 
 export default function Home() {
@@ -103,7 +100,7 @@ export default function Home() {
       <Stats />
 
       <BlogPreview />
-      <Volunteer image={mockData.volunteer.image} />
+      <Volunteer />
     </main>
   )
 }

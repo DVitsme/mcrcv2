@@ -221,20 +221,21 @@ const solutionTechnologies = [
 
 const productCategories = [
   {
-    title: 'Core Products',
+    title: 'Mediation',
     products: [
       {
         id: 'product-1',
-        title: 'Task Management',
+        title: 'Mediation',
         description: 'Organize and track work efficiently.',
-        href: '#',
+        href: '/services/mediation',
         image: 'https://shadcnblocks.com/images/block/block-1.svg',
       },
       {
         id: 'product-2',
-        title: 'Team Calendar',
-        description: 'Coordinate schedules and deadlines.',
-        href: '#',
+        title: 'Restorative Justice',
+        description:
+          'Focuses on repairing the harm caused by harm and conflict, rather than focusing solely on punishment.',
+        href: '/services/Restorative-Justice',
         image: 'https://shadcnblocks.com/images/block/block-2.svg',
       },
       {
@@ -247,7 +248,26 @@ const productCategories = [
     ],
   },
   {
-    title: 'Advanced Features',
+    title: 'Restorative Justice',
+    products: [
+      {
+        id: 'product-4',
+        title: 'Portfolio Management',
+        description: 'Track and optimize project portfolios at scale.',
+        href: '#',
+        image: 'https://shadcnblocks.com/images/block/block-4.svg',
+      },
+      {
+        id: 'product-5',
+        title: 'Resource Planning',
+        description: 'Optimize team workload and capacity.',
+        href: '#',
+        image: 'https://shadcnblocks.com/images/block/block-5.svg',
+      },
+    ],
+  },
+  {
+    title: 'Facilitation',
     products: [
       {
         id: 'product-4',
@@ -1186,9 +1206,6 @@ const Header = () => {
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
                     Contact
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
-                    <PartnersMenu />
-                  </NavigationMenuContent>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="text-xs xl:text-sm">
