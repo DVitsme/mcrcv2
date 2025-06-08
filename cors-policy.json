@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {
+      "allowedOrigins": [
+        "https://mcrchoward.org",
+        "https://*.vercel.app",
+        "http://localhost:3000",
+        "http://localhost:3001"
+      ],
+      "AllowedMethods": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+      "AllowedHeaders": ["*"],
+      "ExposeHeaders": ["ETag"],
+      "MaxAgeSeconds": 3000
+    }
+  ]
+}

@@ -280,6 +280,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -377,6 +378,7 @@ export interface Category {
  */
 export interface User {
   id: number;
+  name: string;
   role: 'admin' | 'coordinator' | 'mediator' | 'participant';
   updatedAt: string;
   createdAt: string;
@@ -1235,6 +1237,7 @@ export interface PostsSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1346,6 +1349,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
   role?: T;
   updatedAt?: T;
   createdAt?: T;
