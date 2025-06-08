@@ -61,3 +61,9 @@ export const isAuthenticated: Access = ({ req }: { req: { user: User | null } })
 export const isAdminFieldLevel = ({ req }: { req: { user: User | null } }): boolean => {
   return req.user?.role === 'admin'
 }
+
+// Field-level access control for Admins or Coordinators
+export const isCoordinatorFieldLevel = ({ req }: { req: { user: User | null } }): boolean => {
+  const user = req.user
+  return hasRole(user, 'admin') || hasRole(user, 'coordinator')
+}
