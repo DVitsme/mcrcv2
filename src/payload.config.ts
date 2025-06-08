@@ -1,11 +1,11 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 // import { supabase } from './utilities/supabase'
-
 import sharp from 'sharp' // sharp-import
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import { resendAdapter } from '@payloadcms/email-resend'
+import { s3Storage } from '@payloadcms/storage-s3'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
@@ -78,7 +78,28 @@ export default buildConfig({
   collections: [Pages, Posts, Media, Categories, Users, Events, Cases],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
-  plugins: [...plugins],
+  plugins: [
+    ...plugins, // Your other custom plugins from './plugins'
+    s3Storage({
+      collections: {
+        media: {
+          // This should match the slug of your Media collection
+          // You can add a prefix to all files uploaded to this collection
+          prefix: 'media-assets',
+        },
+      },
+      bucket: process.env.S3_BUCKET!,
+      config: {
+        endpoint: process.env.S3_ENDPOINT!,
+        region: process.env.S3_REGION!,
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+        },
+      },
+    }),
+    // The storage-adapter-placeholder comment can now be removed
+  ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {
