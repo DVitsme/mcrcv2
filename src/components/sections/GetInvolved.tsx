@@ -1,4 +1,3 @@
-import { Button } from '@payloadcms/ui'
 import Image from 'next/image'
 import Link from 'next/link'
 import ButtonAnimated from '@/components/ui/button-animated'

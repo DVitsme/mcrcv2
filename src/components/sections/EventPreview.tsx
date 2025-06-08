@@ -6,12 +6,8 @@ import {
   Globe,
   HeartHandshake,
   MessageCircleDashedIcon,
-  MessagesSquare,
   PanelsTopLeft,
   PenTool,
-  ScissorsLineDashed,
-  ShieldCheck,
-  Users,
   Users2,
   Zap,
 } from 'lucide-react'
