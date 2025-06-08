@@ -25,6 +25,11 @@ export const Users: CollectionConfig = {
   fields: [
     // Add the 'role' field
     {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
       name: 'role',
       label: 'Role',
       type: 'select',
