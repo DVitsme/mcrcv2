@@ -106,6 +106,8 @@ const TypeWriterEffect = ({
     texts,
     currentTextIndex,
     loop,
+    currentText,
+    initialDelay,
   ])
 
   return (
