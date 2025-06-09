@@ -30,7 +30,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export function ContactPageClient() {
+export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Initialize form with validation
