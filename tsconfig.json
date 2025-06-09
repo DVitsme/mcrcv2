@@ -40,6 +40,9 @@
       "@/*": [
         "./src/*"
       ],
+      "@collections/*": [
+        "./src/collections/*"
+      ],
       "payload/types": [
         "./src/payload-types.ts"
       ]

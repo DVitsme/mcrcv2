@@ -1,9 +1,17 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
+import dotenv from 'dotenv'
+
+// Load environment variables from .env file
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+dotenv.config({
+  path: path.resolve(__dirname, '../.env'),
+})
+
 import { postgresAdapter } from '@payloadcms/db-postgres'
 // import { supabase } from './utilities/supabase'
 import sharp from 'sharp' // sharp-import
-import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
-import { fileURLToPath } from 'url'
 import { resendAdapter } from '@payloadcms/email-resend'
 import { s3Storage } from '@payloadcms/storage-s3'
 
@@ -46,6 +54,7 @@ if (!process.env.RESEND_API) {
 }
 
 export default buildConfig({
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
   admin: {
     components: {
       beforeLogin: ['@/components/BeforeLogin'],
@@ -98,7 +107,6 @@ export default buildConfig({
         },
       },
     }),
-    // The storage-adapter-placeholder comment can now be removed
   ],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
@@ -114,5 +122,8 @@ export default buildConfig({
       },
     },
     tasks: [],
+  },
+  graphQL: {
+    schemaOutputFile: path.resolve(dirname, 'generated-schema.graphql'),
   },
 })

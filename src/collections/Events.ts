@@ -1,45 +1,22 @@
-import type { CollectionConfig, Where } from 'payload'
+import type { CollectionConfig } from 'payload'
 import { isCoordinatorOrAdmin, isAdmin } from '../access/roles'
-import type { Event } from '../payload-types'
+import type { User, Event, Media } from '../payload-types'
 
 export const Events: CollectionConfig = {
   slug: 'events',
   admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'status', 'startDate', 'endDate'],
+    useAsTitle: 'name',
+    defaultColumns: ['name', 'eventType', 'status', 'eventStartTime'],
   },
   access: {
-    // --- CHANGE 2: Updated 'read' access logic ---
-    read: ({ req: { user } }) => {
-      // Admins and Coordinators can see everything.
+    read: ({ req: { user } }: { req: { user: User | null } }) => {
       if (user && (user.role === 'admin' || user.role === 'coordinator')) {
         return true
       }
-
-      // Build the 'or' array explicitly to help TypeScript's type inference.
-      const orConditions: Where[] = [
-        {
-          status: {
-            equals: 'published',
-          },
-        },
-      ]
-
-      if (user) {
-        orConditions.push({
-          participants: {
-            contains: user.id,
-          },
-        })
-        orConditions.push({
-          mediators: {
-            contains: user.id,
-          },
-        })
-      }
-
       return {
-        or: orConditions,
+        status: {
+          in: ['published', 'completed', 'cancelled'],
+        },
       }
     },
     create: isCoordinatorOrAdmin,
@@ -48,119 +25,245 @@ export const Events: CollectionConfig = {
   },
   fields: [
     {
-      name: 'title',
+      name: 'name',
+      label: 'Event Name',
       type: 'text',
       required: true,
-      admin: {
-        description: 'The title of the event',
-      },
     },
     {
-      name: 'status',
-      type: 'select',
-      options: [
-        { label: 'Draft', value: 'draft' },
-        { label: 'Published', value: 'published' },
+      type: 'row',
+      fields: [
+        {
+          name: 'status',
+          type: 'select',
+          options: [
+            { label: 'Draft', value: 'draft' },
+            { label: 'Published', value: 'published' },
+            { label: 'Completed', value: 'completed' },
+            { label: 'Cancelled', value: 'cancelled' },
+            { label: 'Archived', value: 'archived' },
+          ],
+          defaultValue: 'draft',
+          required: true,
+        },
+        {
+          name: 'eventType',
+          label: 'Event Type Badge',
+          type: 'text',
+          admin: {
+            description: 'A short label, e.g., "Workshop", "Networking", "Training".',
+          },
+        },
       ],
-      defaultValue: 'draft',
-      required: true,
-      admin: {
-        description: 'Event visibility status',
-      },
     },
     {
-      name: 'description',
-      type: 'textarea',
-      required: true,
-      admin: {
-        description: 'Detailed description of the event',
-      },
-    },
-    {
-      name: 'startDate',
-      type: 'date',
-      required: true,
-      admin: {
-        description: 'When the event starts',
-        date: {
-          pickerAppearance: 'dayAndTime',
-          displayFormat: 'MMM d, yyyy h:mm a',
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Event Details',
+          fields: [
+            {
+              name: 'eventStartTime',
+              label: 'Start Time',
+              type: 'date',
+              required: true,
+              admin: {
+                date: { pickerAppearance: 'dayAndTime' },
+              },
+            },
+            {
+              name: 'eventEndTime',
+              label: 'End Time',
+              type: 'date',
+              admin: {
+                date: { pickerAppearance: 'dayAndTime' },
+              },
+              validate: (
+                value: Date | null | undefined,
+                { siblingData }: { siblingData: Partial<Event> },
+              ) => {
+                if (
+                  value &&
+                  siblingData.eventStartTime &&
+                  new Date(value) <= new Date(siblingData.eventStartTime)
+                ) {
+                  return 'End time must be after start time'
+                }
+                return true
+              },
+            },
+            {
+              name: 'modality',
+              type: 'radio',
+              options: [
+                { label: 'In-Person', value: 'in_person' },
+                { label: 'Online', value: 'online' },
+                { label: 'Hybrid', value: 'hybrid' },
+              ],
+              defaultValue: 'in_person',
+            },
+            {
+              name: 'location',
+              label: 'Location / Venue',
+              type: 'group',
+              admin: {
+                condition: (_: unknown, siblingData: Partial<Event>) =>
+                  siblingData.modality === 'in_person' || siblingData.modality === 'hybrid',
+              },
+              fields: [
+                {
+                  name: 'venueName',
+                  label: 'Venue Name',
+                  type: 'text',
+                },
+                {
+                  name: 'address',
+                  label: 'Address',
+                  type: 'text',
+                },
+              ],
+            },
+            {
+              name: 'onlineMeeting',
+              label: 'Online Meeting',
+              type: 'group',
+              admin: {
+                condition: (_: unknown, siblingData: Partial<Event>) =>
+                  siblingData.modality === 'online' || siblingData.modality === 'hybrid',
+              },
+              fields: [
+                {
+                  name: 'url',
+                  label: 'Meeting URL',
+                  type: 'text',
+                },
+                {
+                  name: 'details',
+                  label: 'Meeting Details (e.g., ID, Passcode)',
+                  type: 'text',
+                },
+              ],
+            },
+          ],
         },
-      },
-    },
-    {
-      name: 'endDate',
-      type: 'date',
-      required: true,
-      admin: {
-        description: 'When the event ends',
-        date: {
-          pickerAppearance: 'dayAndTime',
-          displayFormat: 'MMM d, yyyy h:mm a',
+        {
+          label: 'Content & Media',
+          fields: [
+            {
+              name: 'summary',
+              type: 'textarea',
+              maxLength: 250,
+              admin: {
+                description: 'A short summary for event cards and SEO.',
+              },
+            },
+            {
+              name: 'description',
+              label: 'Full Description',
+              type: 'richText',
+            },
+            {
+              name: 'featuredImage',
+              type: 'upload',
+              relationTo: 'media',
+            },
+            {
+              name: 'supportingImage',
+              type: 'upload',
+              relationTo: 'media',
+            },
+          ],
         },
-      },
-      validate: (
-        value: Date | null | undefined,
-        { siblingData }: { siblingData: Partial<Event> },
-      ) => {
-        if (value && siblingData.startDate && new Date(value) <= new Date(siblingData.startDate)) {
-          return 'End date must be after start date'
-        }
-        return true
-      },
+        {
+          label: 'Pricing & Registration',
+          fields: [
+            {
+              name: 'isFree',
+              type: 'checkbox',
+              label: 'This event is free',
+              defaultValue: true,
+            },
+            {
+              name: 'cost',
+              label: 'Cost Details',
+              type: 'group',
+              admin: {
+                condition: (_: unknown, siblingData: Partial<Event>) => !siblingData.isFree,
+              },
+              fields: [
+                {
+                  name: 'amount',
+                  type: 'number',
+                },
+                {
+                  name: 'currency',
+                  type: 'text',
+                  defaultValue: 'USD',
+                },
+                {
+                  name: 'description',
+                  type: 'text',
+                  label: 'Cost Description (e.g., "Per ticket")',
+                },
+              ],
+            },
+            {
+              name: 'isRegistrationRequired',
+              type: 'checkbox',
+              label: 'Registration is required',
+              defaultValue: true,
+            },
+            {
+              name: 'externalRegistrationLink',
+              type: 'text',
+            },
+            {
+              name: 'registrationDeadline',
+              type: 'date',
+              admin: {
+                date: { pickerAppearance: 'dayAndTime' },
+              },
+            },
+          ],
+        },
+        {
+          label: 'Staffing & Notes',
+          fields: [
+            {
+              name: 'contact',
+              label: 'Event Contact',
+              type: 'group',
+              fields: [
+                { name: 'name', type: 'text' },
+                { name: 'email', type: 'email' },
+                { name: 'phone', type: 'text' },
+              ],
+            },
+            {
+              name: 'createdBy',
+              type: 'relationship',
+              relationTo: 'users',
+              admin: {
+                readOnly: true,
+                position: 'sidebar',
+              },
+              defaultValue: ({ user }: { user: User }) => user.id,
+            },
+            {
+              name: 'additionalNotes',
+              type: 'array',
+              fields: [{ name: 'item', type: 'text' }],
+            },
+          ],
+        },
+      ],
     },
     {
-      name: 'location',
+      name: 'slug',
       type: 'text',
-      required: true,
+      index: true,
       admin: {
-        description: 'Where the event will take place',
-      },
-    },
-    {
-      name: 'maxParticipants',
-      type: 'number',
-      min: 1,
-      admin: {
-        description: 'Maximum number of participants allowed',
-      },
-      validate: (
-        value: number | null | undefined,
-        { siblingData }: { siblingData: Partial<Event> },
-      ) => {
-        if (
-          value &&
-          siblingData.participants &&
-          Array.isArray(siblingData.participants) &&
-          siblingData.participants.length > value
-        ) {
-          return `The number of participants (${siblingData.participants.length}) exceeds the maximum allowed (${value}).`
-        }
-        return true
-      },
-    },
-    {
-      name: 'participants',
-      type: 'relationship',
-      relationTo: 'users',
-      hasMany: true,
-      filterOptions: {
-        role: { equals: 'participant' },
-      },
-      admin: {
-        description: 'Participants registered for this event',
-      },
-    },
-    {
-      name: 'mediators',
-      type: 'relationship',
-      relationTo: 'users',
-      hasMany: true,
-      filterOptions: {
-        role: { equals: 'mediator' },
-      },
-      admin: {
-        description: 'Mediators assigned to this event',
+        position: 'sidebar',
       },
     },
   ],

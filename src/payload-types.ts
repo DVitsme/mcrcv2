@@ -739,42 +739,66 @@ export interface Form {
  */
 export interface Event {
   id: number;
+  name: string;
+  status: 'draft' | 'published' | 'completed' | 'cancelled' | 'archived';
   /**
-   * The title of the event
+   * A short label, e.g., "Workshop", "Networking", "Training".
    */
-  title: string;
+  eventType?: string | null;
+  eventStartTime: string;
+  eventEndTime?: string | null;
+  modality?: ('in_person' | 'online' | 'hybrid') | null;
+  location?: {
+    venueName?: string | null;
+    address?: string | null;
+  };
+  onlineMeeting?: {
+    url?: string | null;
+    details?: string | null;
+  };
   /**
-   * Event visibility status
+   * A short summary for event cards and SEO.
    */
-  status: 'draft' | 'published';
-  /**
-   * Detailed description of the event
-   */
-  description: string;
-  /**
-   * When the event starts
-   */
-  startDate: string;
-  /**
-   * When the event ends
-   */
-  endDate: string;
-  /**
-   * Where the event will take place
-   */
-  location: string;
-  /**
-   * Maximum number of participants allowed
-   */
-  maxParticipants?: number | null;
-  /**
-   * Participants registered for this event
-   */
-  participants?: (number | User)[] | null;
-  /**
-   * Mediators assigned to this event
-   */
-  mediators?: (number | User)[] | null;
+  summary?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  featuredImage?: (number | null) | Media;
+  supportingImage?: (number | null) | Media;
+  isFree?: boolean | null;
+  cost?: {
+    amount?: number | null;
+    currency?: string | null;
+    description?: string | null;
+  };
+  isRegistrationRequired?: boolean | null;
+  externalRegistrationLink?: string | null;
+  registrationDeadline?: string | null;
+  contact?: {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  };
+  createdBy?: (number | null) | User;
+  additionalNotes?:
+    | {
+        item?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1366,15 +1390,54 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "events_select".
  */
 export interface EventsSelect<T extends boolean = true> {
-  title?: T;
+  name?: T;
   status?: T;
+  eventType?: T;
+  eventStartTime?: T;
+  eventEndTime?: T;
+  modality?: T;
+  location?:
+    | T
+    | {
+        venueName?: T;
+        address?: T;
+      };
+  onlineMeeting?:
+    | T
+    | {
+        url?: T;
+        details?: T;
+      };
+  summary?: T;
   description?: T;
-  startDate?: T;
-  endDate?: T;
-  location?: T;
-  maxParticipants?: T;
-  participants?: T;
-  mediators?: T;
+  featuredImage?: T;
+  supportingImage?: T;
+  isFree?: T;
+  cost?:
+    | T
+    | {
+        amount?: T;
+        currency?: T;
+        description?: T;
+      };
+  isRegistrationRequired?: T;
+  externalRegistrationLink?: T;
+  registrationDeadline?: T;
+  contact?:
+    | T
+    | {
+        name?: T;
+        email?: T;
+        phone?: T;
+      };
+  createdBy?: T;
+  additionalNotes?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
