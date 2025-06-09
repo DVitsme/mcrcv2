@@ -11,7 +11,7 @@ import { TypeWriter } from '@/components/ui/TypeWriter'
 import { BlogPreview } from '@/components/sections/BlogPreview'
 
 export const metadata: Metadata = {
-  title: 'Home | Your Organization Name',
+  title: 'Home | Mediation and Conflict Resolution Center',
   description:
     'Welcome to our organization. We are dedicated to making a difference in our community.',
 }

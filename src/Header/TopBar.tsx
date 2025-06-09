@@ -1,6 +1,13 @@
+'use client'
 import { Mail, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export function TopBar() {
+  const pathname = usePathname()
+  const isHomePage = pathname === '/'
+
+  if (!isHomePage) return null
+
   return (
     <section className="hidden md:block w-full text-muted-foreground border-b border-border text-xs ">
       <div className="container flex items-center justify-between py-1.5">

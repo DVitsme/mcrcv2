@@ -28,11 +28,11 @@ const Hero = () => {
           <div className="flex w-full flex-col justify-between gap-10">
             <div className="mx-auto flex max-w-[31.25rem] flex-1 flex-col items-center justify-center gap-7 sm:max-w-[37.5rem] md:max-w-[50rem]">
               <h1 className="text-center text-4xl leading-tight font-medium text-foreground sm:text-5xl md:text-6xl">
-                Transform Your Vision Into Digital Reality
+                Welcome to the Mediation and Conflict Resolution Center
               </h1>
               <p className="text-center text-lg text-balance text-foreground md:text-2xl">
-                We craft exceptional digital solutions that help brands stand out and make a lasting
-                impact in the digital landscape.
+                Conflict is part of life—it shapes our relationships, our communities, and our
+                growth.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Button

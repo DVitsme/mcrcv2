@@ -1,6 +1,6 @@
 'use client'
 
-import { PageHero } from '@/Header/PageHero'
+import { PageHero } from '@/heros/PageHero'
 
 import { StickyTitleScrollingBlocks } from '@/components/sections/StickyTitleScrollingBlocks'
 import { TwoColRightImage } from '@/components/sections/TwoColRightImage'
@@ -12,35 +12,37 @@ const AboutPage = () => {
     <div>
       <PageHero
         heading="About Us"
-        description="We are a team of developers who are passionate about building great products."
+        description="Conflict is part of life—it shapes our relationships, our communities, and our growth. At the Mediation and Conflict Resolution Center, we believe that conflict, when approached with care and intention, can be a pathway to healing, understanding, and transformation."
         image={{
           src: 'https://www.shadcnblocks.com/images/block/placeholder-1.svg',
           alt: 'About Us',
         }}
+        badge="Our History"
+        buttons={{
+          primary: {
+            text: 'Our Services',
+            url: '/services',
+          },
+          secondary: {
+            text: 'Get Started',
+            url: '/',
+          },
+        }}
       />
       <section className="py-32">
         <div className="container mx-auto max-w-7xl flex flex-col gap-28 md:px-10">
-          <div className="flex flex-col gap-7">
-            <h1 className="text-4xl font-semibold lg:text-7xl">About Us</h1>
-            <p className="max-w-xl text-lg">
-              Conflict is part of life—it shapes our relationships, our communities, and our growth.
-              At the Mediation and Conflict Resolution Center, we believe that conflict, when
-              approached with care and intention, can be a pathway to healing, understanding, and
-              transformation.
-            </p>
-          </div>
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="flex flex-col justify-between gap-10 rounded-2xl bg-muted p-10 size-full max-h-96">
-              <p className="text-sm text-muted-foreground pb-14">OUR MISSION</p>
+            <div className="flex flex-col justify-between gap-10 rounded-2xl bg-secondary p-10 size-full max-h-96">
+              <p className="text-sm text-black font-bold">OUR MISSION</p>
               <p className="text-lg font-medium">
                 Provide widely accessible and affordable conflict resolution services and education
                 that help all community members manage conflict and have difficult conversations in
                 a meaningful, proactive way.
               </p>
             </div>
-            <div className="flex flex-col justify-between gap-10 rounded-2xl bg-muted p-10">
+            <div className="flex flex-col bg-yellow text-black font-bold justify-between gap-10 rounded-2xl p-10">
               <p className="text-sm text-muted-foreground">OUR VISION</p>
-              <p className="text-lg font-medium">
+              <p className="text-2xl ">
                 MCRC envisions a strong, vibrant, peaceful community where all members have the
                 strategies, skills, and support to resolve conflict.
               </p>
