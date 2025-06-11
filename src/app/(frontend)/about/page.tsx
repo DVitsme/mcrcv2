@@ -2,7 +2,7 @@
 
 import { PageHero } from '@/heros/PageHero'
 
-import { StickyTitleScrollingBlocks } from '@/components/sections/StickyTitleScrollingBlocks'
+import { StickyTitleScrollingCards } from '@/components/ScrollingCards/StickyTitleScrollingCards'
 import { TwoColRightImage } from '@/components/sections/TwoColRightImage'
 import { FAQ } from '@/components/sections/FAQ'
 import { GridImageCards } from '@/components/sections/GridImageCards'
@@ -54,10 +54,10 @@ const AboutPage = () => {
             description="Originally connected to Howard Community College, we have since grown into an independent, community-rooted organization. Our work is grounded in the belief that people hold the wisdom and capacity to navigate their own challenges when given the right support. We walk alongside individuals, families, and groups to facilitate conversations that restore trust, mend relationships, and build stronger communities."
             image="https://shadcnblocks.com/images/block/photos/pawel-czerwinski-O4fAgtXLRwI-unsplash.jpg"
           />
-          <StickyTitleScrollingBlocks
+          <StickyTitleScrollingCards
             title="Our Core Values"
             description="MCRC is committed to building an inclusive and equitable community. We use Alternative Dispute Resolution (ADR) to resolve conflicts in a way that values equity, diversity, and collaboration. By prioritizing fair access, amplifying diverse voices, removing barriers to participation, and fostering shared investment, these values guide our principles, shaping how we serve and engage with individuals and groups in Howard County."
-            Values={CoreValues}
+            cards={CoreValues}
           />
           <FAQ heading="MCRC Commitment to the The Nine Hallmarks of Community Mediation" />
           <GridImageCards CardData={CardData} />

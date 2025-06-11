@@ -54,11 +54,11 @@ const mockData = {
     },
   ],
   cta: {
-    backgroundImage: '/images/cta-bg.jpg',
-    title: 'Join Our Mission',
-    description: 'Be part of something bigger. Make a difference today.',
-    buttonText: 'Get Involved',
-    buttonLink: '/volunteer',
+    imgSrc: '/images/mediation/happy-conversation.jpg',
+    title: 'Help us keep mediation free, mediation is not just a service it is a cause.',
+    description: 'Join the Giving Circle',
+    buttonText: 'Donate Here',
+    buttonLink: '/donate',
   },
   features: {
     text: 'Our innovative approach combines traditional methods with modern solutions to create lasting change.',
@@ -122,7 +122,7 @@ export default function Home() {
       />
 
       <CallToAction
-        backgroundImage={mockData.cta.backgroundImage}
+        imgSrc={mockData.cta.imgSrc}
         title={mockData.cta.title}
         description={mockData.cta.description}
         buttonText={mockData.cta.buttonText}

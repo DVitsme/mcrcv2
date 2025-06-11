@@ -9,7 +9,7 @@ interface CtaTitleFullWidthProps {
 const CtaTitleFullWidth = ({
   heading,
   bgColor = 'bg-blue',
-  textColor = 'text-white',
+  textColor = 'text-blue-foreground',
 }: CtaTitleFullWidthProps) => {
   return (
     <section className="py-32">
@@ -18,7 +18,7 @@ const CtaTitleFullWidth = ({
           <div
             className={`flex flex-col items-center rounded-lg ${bgColor} p-6 text-center md:rounded-xl lg:py-8 ${textColor}`}
           >
-            <h3 className="mb-3 max-w-4xl text-2xl font-semibold md:mb-4 md:text-4xl lg:mb-6">
+            <h3 className="my-6 pb-4 max-w-4xl text-2xl font-semibold md:mb-4 md:text-4xl lg:mb-6">
               {heading}
             </h3>
           </div>

@@ -32,7 +32,7 @@ const AboutPreview = ({ data }: AboutPreviewProps) => {
               <h2 className="mb-9 text-3xl font-medium uppercase md:text-5xl text-secondary">
                 {header}
                 <br />
-                <span className="text-primary-foreground">{subheader}</span>
+                <span className="text-primary-foreground capitalize font-regular">{subheader}</span>
               </h2>
               <p className="text-primary-foreground">{description}</p>
               <div className="my-4">

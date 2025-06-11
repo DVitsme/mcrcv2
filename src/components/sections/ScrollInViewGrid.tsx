@@ -31,7 +31,7 @@ const ScrollInViewGrid = ({
   videoSrc,
 }: ScrollInViewGridProps) => {
   return (
-    <div className="mb-32 mt-10 flex flex-col items-center gap-10 lg:mt-24 lg:flex-row-reverse">
+    <div className="mb-32 mt-10 container flex flex-col items-center gap-10 lg:mt-24 lg:flex-row-reverse">
       <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800/20 lg:w-1/2">
         {/* Animate the image with a subtle scale-up effect */}
         <motion.div

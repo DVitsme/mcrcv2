@@ -1,13 +1,13 @@
 import React from 'react'
 
-const StickyTitleScrollingBlocks = ({
+const StickyTitleScrollingCards = ({
   title,
   description,
-  Values,
+  cards,
 }: {
   title: string
   description: string
-  Values: { title: string; description: string }[] | undefined
+  cards: { title: string; description: string }[] | undefined
 }) => {
   return (
     <section className="py-16">
@@ -17,15 +17,15 @@ const StickyTitleScrollingBlocks = ({
           <p className="mb-8 text-muted-foreground lg:text-lg">{description}</p>
         </div>
         <div className="grid gap-y-5 md:col-span-6 md:gap-y-[1.875rem] lg:col-start-7">
-          {Values &&
-            Values.map((value, index) => (
+          {cards &&
+            cards.map((card, index) => (
               <div
                 key={index}
                 className="group flex flex-col justify-center overflow-clip rounded-2xl bg-accent px-6 py-8 md:px-8 md:py-10 lg:px-10 lg:py-12"
               >
-                <p className="mb-3 text-xs font-medium tracking-wider uppercase">{value.title}</p>
+                <p className="mb-3 text-xs font-medium tracking-wider uppercase">{card.title}</p>
                 <p className="mb-4 font-semibold text-muted-foreground lg:text-xl">
-                  {value.description}
+                  {card.description}
                 </p>
               </div>
             ))}
@@ -35,4 +35,4 @@ const StickyTitleScrollingBlocks = ({
   )
 }
 
-export { StickyTitleScrollingBlocks }
+export { StickyTitleScrollingCards }

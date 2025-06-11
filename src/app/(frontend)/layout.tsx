@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
+import { fontSans } from '@/fonts'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import React from 'react'
@@ -26,7 +27,7 @@ export default async function RootLayout({
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
+    <html className={cn(fontSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -39,16 +40,6 @@ export default async function RootLayout({
               preview: isEnabled,
             }}
           />
-          {/* {
-            params.slug === 'home' && (
-              <>
-                <TopBar />
-                <Header />
-                {children}
-                <Footer />
-              </>
-            )
-          } */}
           <TopBar />
           <Header />
           {children}

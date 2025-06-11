@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const sections = [
   {
@@ -48,10 +49,10 @@ interface Footer3Props {
 }
 const Footer = ({
   logo = {
-    url: 'https://www.shadcnblocks.com',
-    src: 'https://shadcnblocks.com/images/block/logos/shadcnblockscom-icon.svg',
+    url: '/',
+    src: '/images/logo/mcrc-logo.png',
     alt: 'logo',
-    title: 'Shadcnblocks.com',
+    title: 'MCRC Howard County',
   },
 }: Footer3Props) => {
   return (
@@ -60,16 +61,16 @@ const Footer = ({
         <footer>
           {/* Logo */}
           <div className="flex items-center gap-2 lg:justify-start">
-            <a href="https://shadcnblocks.com">
+            <Link href={logo.url}>
               <Image
                 src={logo.src}
                 alt={logo.alt}
                 title={logo.title}
-                className="h-8"
-                width={32}
-                height={32}
+                className="h-12"
+                width={48}
+                height={48}
               />
-            </a>
+            </Link>
           </div>
           <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-5 xl:grid-cols-4">
             {sections.map((section, sectionIdx) => (
@@ -78,7 +79,7 @@ const Footer = ({
                 <ul className="space-y-4 text-muted-foreground">
                   {section.links.map((link, linkIdx) => (
                     <li key={linkIdx} className="font-medium hover:text-primary">
-                      <a href={link.href}>{link.name}</a>
+                      <Link href={link.href}>{link.name}</Link>
                     </li>
                   ))}
                 </ul>
@@ -87,39 +88,39 @@ const Footer = ({
             <div className="lg:col-span-2 xl:col-span-1">
               <ul className="mb-10 flex items-center gap-2 text-muted-foreground">
                 <li className="font-medium">
-                  <a href="#">
+                  <Link href="#">
                     <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
                       <FaInstagram className="size-6" />
                     </span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="font-medium">
-                  <a href="#">
+                  <Link href="#">
                     <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
                       <FaRedditAlien className="size-6" />
                     </span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="font-medium">
-                  <a href="#">
+                  <Link href="#">
                     <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
                       <FaTwitter className="size-6" />
                     </span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="font-medium">
-                  <a href="#">
+                  <Link href="#">
                     <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
                       <FaTelegramPlane className="size-6" />
                     </span>
-                  </a>
+                  </Link>
                 </li>
                 <li className="font-medium">
-                  <a href="#">
+                  <Link href="#">
                     <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
                       <FaLinkedin className="size-6" />
                     </span>
-                  </a>
+                  </Link>
                 </li>
               </ul>
               <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -130,9 +131,9 @@ const Footer = ({
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   By submitting, you agree to our
-                  <a href="#" className="ml-1 text-primary hover:underline">
+                  <Link href="#" className="ml-1 text-primary hover:underline">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>
@@ -141,10 +142,10 @@ const Footer = ({
             <p>© {new Date().getFullYear()} MCRC Howard County. All rights reserved.</p>
             <ul className="flex gap-4">
               <li className="whitespace-nowrap underline hover:text-primary">
-                <a href="#">Terms and Conditions</a>
+                <Link href="#">Terms and Conditions</Link>
               </li>
               <li className="whitespace-nowrap underline hover:text-primary">
-                <a href="#">Privacy Policy</a>
+                <Link href="#">Privacy Policy</Link>
               </li>
             </ul>
           </div>

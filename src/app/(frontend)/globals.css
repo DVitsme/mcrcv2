@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: rgb(249, 249, 249);
+    --background: rgb(252, 252, 252);
     --foreground: rgb(32, 32, 32);
     --card: rgb(252, 252, 252);
     --card-foreground: rgb(32, 32, 32);
@@ -26,7 +26,7 @@
     --burgundy: rgba(45, 21, 13, 1);
     --burgundy-foreground: rgba(192, 210, 61, 1);
     --darkgreen: rgba(40, 62, 0, 1);
-    --darkgreen-foreground: rgba(238, 203, 199, 1);
+    --darkgreen-foreground: rgba(206, 255, 120, 1);
 
     --muted: rgb(239, 239, 239);
     --muted-foreground: rgb(100, 100, 100);

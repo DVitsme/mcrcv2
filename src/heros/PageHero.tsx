@@ -43,7 +43,7 @@ const PageHero = ({
     },
   },
   image = {
-    src: 'https://www.shadcnblocks.com/images/block/placeholder-1.svg',
+    src: '/images/facilitation/facilitation-v2.jpg',
     alt: 'Hero section demo image showing interface components',
   },
 }: Hero1Props) => {
@@ -58,7 +58,7 @@ const PageHero = ({
                 <span className="mr-2">{badge}</span>
               </Badge>
             )}
-            <h1 className="my-6 pb-6 pt-4 text-4xl font-bold text-pretty lg:text-8xl uppercase">
+            <h1 className="my-6 pb-6 pt-4 text-4xl font-bold text-pretty md:text-8xl uppercase">
               {heading}
             </h1>
             <p className="mb-8 max-w-xl text-blue-foreground lg:text-xl">{description}</p>

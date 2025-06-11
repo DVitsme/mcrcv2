@@ -2,7 +2,20 @@
 
 import { PageHero } from '@/heros/PageHero'
 
-import { Award, CircleCheckBig, Dna, Ear, Handshake, MessageCircle } from 'lucide-react'
+import {
+  Award,
+  BadgeCheck,
+  CircleCheckBig,
+  Cloud,
+  Dna,
+  Ear,
+  Goal,
+  Handshake,
+  MessageCircle,
+  Timer,
+  Users,
+  XCircle,
+} from 'lucide-react'
 import { Rocket } from 'lucide-react'
 import { Wallet } from 'lucide-react'
 import { ScrollInViewTitleAndDescription } from '@/components/sections/ScrollInViewTitleAndDescription'
@@ -10,7 +23,10 @@ import { ScrollInViewGrid } from '@/components/sections/ScrollInViewGrid'
 import { TwoColTitleCheckListImage } from '@/components/sections/TwoColTitleCheckListImage'
 import { ThreeColTitleBoxes } from '@/components/sections/ThreeColTitleBoxes'
 import { CtaTitleFullWidth } from '@/components/sections/CtaTitleFullWidth'
-import { AboutPreview } from '@/components/sections/AboutPreview'
+import { ServicePageFooter } from '@/components/sections/ServicePageFooter'
+import { ThreeColImages } from '@/components/sections/ThreeColImages'
+import { BiggerBlockCards } from '@/components/ScrollingCards/BiggerBlockCards'
+import { CallToAction } from '@/components/sections/CallToAction'
 
 const sectionData = {
   title:
@@ -97,31 +113,86 @@ const ThreeColData = {
   ],
 }
 
-const AboutData = {
-  image: '/images/mediation/mediation-group-tictactoe.jpg',
-  imageAlt: 'Mediation',
-  header: 'Who are the mediators?',
-  subheader: 'At MCRC, we use a co-mediator model',
-  description:
-    'This means there are two mediators in each session. This ensures balance, collaboration, and greater support for everyone involved. Mediators are not decision-makers. They don’t give advice or make judgments. Instead, they create a space for collaborative problem-solving so you and the other person can come up with solutions that fit your unique situation. Each mediator is a specially trained volunteer from Howard County or a neighboring community. Mediators are here to:',
-  buttonText: 'Learn More',
-  buttonLink: '/services/mediation',
-  dataList: [
+const ThreeColImagesData = {
+  title: 'Who are the mediators?',
+  subtitle:
+    'Mediators are not decision-makers. They don’t give advice or make judgments. Instead, they create a space for collaborative problem-solving so you and the other person can come up with solutions that fit your unique situation. At MCRC, we use a co-mediator model, which means there are two mediators in each session. This ensures balance, collaboration, and greater support for everyone involved. Each mediator is a specially trained volunteer from Howard County or a neighboring community. Mediators are here to:',
+  cards: [
     {
       title: 'Guide the conversation',
-      icon: Handshake,
+      description:
+        'Mediators are trained to listen deeply and make sure everyone has a chance to speak and be understood.',
+      image: '/images/mediation/mediation-group-tictactoe.jpg',
+      alt: 'Mediation',
     },
     {
       title: 'Ensure everyone has space to speak and be heard',
-      icon: Handshake,
+      description:
+        'Mediators are trained to listen deeply and make sure everyone has a chance to speak and be understood.',
+      image: '/images/mediation/mediation-group-tictactoe.jpg',
+      alt: 'Mediation',
     },
     {
-      title:
-        'Support a respectful and productive process that includes tracking key concerns, values and ideas for resolution.',
-      icon: Handshake,
+      title: 'Support a respectful and productive process ',
+      description:
+        'Mediators are trained to listen deeply and make sure everyone has a chance to speak and be understood.',
+      image: '/images/mediation/mediation-group-tictactoe.jpg',
+      alt: 'Mediation',
     },
   ],
 }
+
+const stickyCards = [
+  {
+    icon: <Ear strokeWidth={1.5} className="size-12" />,
+    title: 'Step 1: We Listen First',
+    description:
+      'Before anything else, we meet individually with each person involved. This is your chance to tell your story, ask questions, and learn more about how mediation works. We explain what to expect and talk through whether this process feels like a good fit for you.',
+  },
+  {
+    icon: <Timer strokeWidth={1.5} className="size-12" />,
+    title: 'Step 2: We Find a Time That Works',
+    description:
+      'If everyone agrees to move forward, we work together to schedule your session. We coordinate with two of our trained volunteer mediators to find a time and place that works for all involved—often in your neighborhood or online.',
+  },
+  {
+    icon: <Handshake strokeWidth={1.5} className="size-12" />,
+    title: 'Step 3: We Ask for Your Consent',
+    description:
+      'Before the session begins, all participants sign a simple agreement that outlines the voluntary and confidential nature of mediation. This ensures that everyone is entering the space willingly and with shared expectations.',
+  },
+  {
+    icon: <MessageCircle strokeWidth={1.5} className="size-12" />,
+    title: 'Step 4: Everyone Gets to Speak',
+    description:
+      'We start by inviting each person to share their perspective. Each participant has uninterrupted time to speak about what’s been happening and what matters to them. There’s no need to debate or convince—this is about being heard.',
+  },
+  {
+    icon: <Goal strokeWidth={1.5} className="size-12" />,
+    title: 'Step 5: We Look for Shared Ground',
+    description:
+      'With the support of mediators, you’ll begin to notice shared concerns or goals. In many conflicts, even if people disagree on the details, they often care about some of the same things—like feeling respected, keeping a neighborhood safe, or protecting a relationship.',
+  },
+  {
+    icon: <Users strokeWidth={1.5} className="size-12" />,
+    title: 'Step 6: We Explore Possibilities',
+    description:
+      'Once common ground is established, the group begins to explore ways forward. Mediators help guide the conversation as participants suggest ideas and alternatives that could address shared concerns. All ideas are welcomed—this is a space for creativity and collaboration.',
+  },
+  {
+    icon: <BadgeCheck strokeWidth={1.5} className="size-12" />,
+    title: 'Step 7: You Choose What Works',
+    description:
+      'Together, you’ll reflect on each possible solution—what might work, what needs adjusting, and whether it feels fair. Sometimes an agreement is reached, and sometimes the process leads to a better understanding, even if full agreement isn’t yet possible.',
+  },
+  {
+    icon: <Users strokeWidth={1.5} className="size-12" />,
+    title: 'Step 8: We Reflect',
+    description:
+      'At the end of the process, we invite participants to share how it felt, what they learned, and what next steps—if any—they’d like to take. This final reflection helps us improve, and it gives you a chance to close the conversation with clarity and care.',
+  },
+]
+
 export default function Mediation() {
   const { title, imageUrl, imageAlt, videoSrc } = sectionData
 
@@ -157,7 +228,38 @@ export default function Mediation() {
       <TwoColTitleCheckListImage data={WhyMediate} />
       <ThreeColTitleBoxes data={ThreeColData} />
       <CtaTitleFullWidth heading="Community mediation is a powerful alternative to hiring a lawyer or going to court. It’s collaborative, confidential, and often more sustainable—because the people involved created the agreement themselves." />
-      <AboutPreview data={AboutData} />
+      <ThreeColImages data={ThreeColImagesData} />
+      <BiggerBlockCards
+        title="What to Expect: "
+        titleGray="The Mediation Process"
+        description="Every mediation is different, but here’s what the journey typically looks like at MCRC. We move at the pace of trust, with respect for everyone’s story and voice."
+        cards={stickyCards}
+      />
+      <CallToAction
+        title="A Note from Us"
+        description="We believe conflict is a part of being in community—and that navigating it with care, clarity, and connection is possible. Mediation isn’t about winners and losers. It’s about creating space for change, for dignity, and for forward movement."
+        imgSrc="/images/mediation/happy-conversation.jpg"
+      />
+      <ServicePageFooter SectionTitle="Discover other services" cards={footerCards} />
     </main>
   )
 }
+
+const footerCards = [
+  {
+    title: 'Facilitation',
+    subtitle: 'Service',
+    href: '/services/facilitation',
+    bgColor: 'bg-darkgreen',
+    textColor: 'text-darkgreen-foreground',
+    iconColor: 'bg-darkgreen-foreground',
+  },
+  {
+    title: 'Restorative Justice',
+    subtitle: 'Service',
+    href: '/services/restorative-justice',
+    bgColor: 'bg-blue',
+    textColor: 'text-blue-foreground',
+    iconColor: 'bg-blue-foreground',
+  },
+]
