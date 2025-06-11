@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface MenuItem {
   title: string
@@ -50,7 +51,7 @@ interface Navbar1Props {
 const Header = ({
   logo = {
     url: '/',
-    src: 'https://shadcnblocks.com/images/block/logos/shadcnblockscom-icon.svg',
+    src: '/images/logo/mcrc-logo.png',
     alt: 'logo',
     title: 'MCRC Howard',
   },
@@ -136,10 +137,10 @@ const Header = ({
         <nav className="hidden justify-between lg:flex">
           <div className="flex items-center gap-6">
             {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
+            <Link href={logo.url} className="flex items-center gap-2">
               <Image src={logo.src} className="max-h-8" alt={logo.alt} width={32} height={32} />
               <span className="text-lg font-semibold tracking-tighter">{logo.title}</span>
-            </a>
+            </Link>
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>{menu.map((item) => renderMenuItem(item))}</NavigationMenuList>

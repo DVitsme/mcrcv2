@@ -10,16 +10,18 @@ interface ScrollInViewTitleAndDescriptionProps {
 }
 
 export function ScrollInViewTitleAndDescription({
-  title = 'Therapy & Coaching for a global workforce',
-  subtitle = 'Professional therapy and coaching for your team',
-  description = "Provide easy access to professional coaching and therapy for your team, ensuring privacy and quality, no matter where they're based.",
+  title,
+  subtitle,
+  description,
 }: ScrollInViewTitleAndDescriptionProps) {
   return (
-    <section id="coaching-therapy" className="container py-16 text-center lg:py-24">
+    <div className="container py-16 text-center lg:py-24">
       <div className="space-y-3 xl:space-y-6">
         <div className="space-y-4">
           <AnimateInView>
-            <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">{title}</h2>
+            <h2 className="text-3xl mb-4 font-medium tracking-tighter sm:text-4xl md:text-4xl/[3.1rem]">
+              {title}
+            </h2>
             <p className="text-lg text-muted-foreground md:text-xl">{subtitle}</p>
           </AnimateInView>
           <AnimateInView delay={0.1}>
@@ -29,6 +31,6 @@ export function ScrollInViewTitleAndDescription({
           </AnimateInView>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

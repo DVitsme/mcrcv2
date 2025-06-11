@@ -1,5 +1,5 @@
 import { PageHero } from '@/heros/PageHero'
-import { TherapyAndCoachingSection } from '@/components/sections/ScrollInViewTitleAndDescription'
+import { ScrollInViewTitleAndDescription } from '@/components/sections/ScrollInViewTitleAndDescription'
 
 export default function Facilitation() {
   return (
@@ -30,7 +30,7 @@ export default function Facilitation() {
           </div>
         </div>
       </div>
-      <TherapyAndCoachingSection />
+      <ScrollInViewTitleAndDescription title="Facilitation" />
     </main>
   )
 }

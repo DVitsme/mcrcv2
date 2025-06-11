@@ -9,6 +9,7 @@ import { Stats } from '@/components/sections/Stats'
 import { Volunteer } from '@/components/sections/Volunteer'
 import { TypeWriter } from '@/components/ui/TypeWriter'
 import { BlogPreview } from '@/components/sections/BlogPreview'
+import { CheckCircle, Edit, Timer, List, MessagesSquare } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Home | Mediation and Conflict Resolution Center',
@@ -85,7 +86,40 @@ export default function Home() {
       </section>
       <Services />
       <EventsPreview />
-      <AboutPreview />
+      <AboutPreview
+        data={{
+          header: 'About Us',
+          subheader: 'And A Bit of Our History',
+          description:
+            'Originally connected to Howard Community College, we have since grown into an independent, community-rooted organization. Our work is grounded in the belief that people hold the wisdom and capacity to navigate their own challenges when given the right support. We walk alongside individuals, families, and groups to facilitate conversations that restore trust, mend relationships, and build stronger communities.',
+          image: '/images/facilitation/cheerful-woman-speaking-on-a-microphone.jpg',
+          imageAlt: 'Cheerful woman speaking',
+          buttonText: 'Learn More',
+          buttonLink: '/about',
+          dataList: [
+            {
+              title: 'Our Mission',
+              icon: MessagesSquare,
+            },
+            {
+              title: 'Our Core Values',
+              icon: Edit,
+            },
+            {
+              title: 'Nine Hallmarks of Community Mediation',
+              icon: CheckCircle,
+            },
+            {
+              title: 'Our Staff',
+              icon: List,
+            },
+            {
+              title: 'Our Partners',
+              icon: Timer,
+            },
+          ],
+        }}
+      />
 
       <CallToAction
         backgroundImage={mockData.cta.backgroundImage}

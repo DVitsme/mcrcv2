@@ -21,11 +21,17 @@ interface ScrollInViewGridProps {
   imageUrl: string
   imageAlt: string
   featuresData: Feature[]
+  videoSrc?: string
 }
 
-const ScrollInViewGrid = ({ imageUrl, imageAlt, featuresData }: ScrollInViewGridProps) => {
+const ScrollInViewGrid = ({
+  imageUrl,
+  imageAlt,
+  featuresData,
+  videoSrc,
+}: ScrollInViewGridProps) => {
   return (
-    <div className="mb-12 mt-10 flex flex-col items-center gap-10 lg:mt-24 lg:flex-row-reverse">
+    <div className="mb-32 mt-10 flex flex-col items-center gap-10 lg:mt-24 lg:flex-row-reverse">
       <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800/20 lg:w-1/2">
         {/* Animate the image with a subtle scale-up effect */}
         <motion.div
@@ -35,13 +41,17 @@ const ScrollInViewGrid = ({ imageUrl, imageAlt, featuresData }: ScrollInViewGrid
           viewport={{ once: true, amount: 0.3 }}
           transition={{ type: 'spring', duration: 1 }}
         >
-          <Image
-            alt={imageAlt}
-            src={imageUrl}
-            width={620}
-            height={465}
-            className="object-contain"
-          />
+          {videoSrc ? (
+            <video src={videoSrc} autoPlay muted loop className="w-full h-full object-cover" />
+          ) : (
+            <Image
+              alt={imageAlt}
+              src={imageUrl}
+              width={620}
+              height={465}
+              className="object-contain"
+            />
+          )}
         </motion.div>
       </div>
 
@@ -51,4 +61,4 @@ const ScrollInViewGrid = ({ imageUrl, imageAlt, featuresData }: ScrollInViewGrid
   )
 }
 
-export default ScrollInViewGrid
+export { ScrollInViewGrid }

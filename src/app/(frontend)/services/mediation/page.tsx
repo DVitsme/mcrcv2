@@ -1,31 +1,129 @@
 'use client'
 
 import { PageHero } from '@/heros/PageHero'
-import Image from 'next/image'
-import { motion, type Variants } from 'framer-motion'
-import { AnimateInView } from '@/components/animations/AnimateInView'
-import { FeaturesGrid } from '@/components/sections/FeaturesGrid'
-import { Award, Dna } from 'lucide-react'
+
+import { Award, CircleCheckBig, Dna, Ear, Handshake, MessageCircle } from 'lucide-react'
 import { Rocket } from 'lucide-react'
 import { Wallet } from 'lucide-react'
+import { ScrollInViewTitleAndDescription } from '@/components/sections/ScrollInViewTitleAndDescription'
+import { ScrollInViewGrid } from '@/components/sections/ScrollInViewGrid'
+import { TwoColTitleCheckListImage } from '@/components/sections/TwoColTitleCheckListImage'
+import { ThreeColTitleBoxes } from '@/components/sections/ThreeColTitleBoxes'
+import { CtaTitleFullWidth } from '@/components/sections/CtaTitleFullWidth'
+import { AboutPreview } from '@/components/sections/AboutPreview'
 
 const sectionData = {
-  title: 'Therapy & Coaching for a global workforce',
-  subtitle: 'Professional therapy and coaching for your team',
+  title:
+    'Mediation is a safe, confidential space where people in conflict can talk things through—with support. If you’re having a tough time working something out with someone, or you know a hard conversation needs to happen but don’t know where to start, mediation can help.',
+  subtitle:
+    'Trained, neutral mediators guide the conversation—not to take sides or make decisions for you, but to help you:',
+  imageUrl: '/images/mediation/mediation-group-tictactoe.jpg',
+  imageAlt: 'Mediation',
+  videoSrc: '/videos/mediation/mediation-office.mp4',
+}
+
+const featuresData = [
+  {
+    icon: Award,
+    title: 'Share your perspective',
+    description:
+      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  },
+  {
+    icon: Dna,
+    title: 'Clarify what matters most to you',
+    description:
+      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  },
+  {
+    icon: Rocket,
+    title: 'Understand the other person’s point of view',
+    description:
+      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  },
+  {
+    icon: Wallet,
+    title: 'Explore possible ways forward—together',
+    description:
+      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+  },
+]
+const WhyMediate = {
+  imageUrl: '/images/mediation/mediation-group-tictactoe.jpg',
+  imageAlt: 'Mediation',
+  title: 'Why Choose Mediation?',
   description:
-    "Provide easy access to professional coaching and therapy for your team, ensuring privacy and quality, no matter where they're based.",
-  imageUrl:
-    'https://unmind.cdn.prismic.io/unmind/ZsN2BUaF0TcGJEdg_therapists.svg?fit=fill&max-w=1920&w=1920&q=70',
-  imageAlt: 'Practitioner profiles',
+    "You stay in control. You're the expert in your own situation. Mediators won’t tell you what to do—they’ll help you identify solutions that fit your unique needs.",
+  checkList: [
+    'It’s confidential. What’s said in mediation stays private, making it easier to be honest and explore real solutions.',
+    'It can preserve important relationships. We often find ourselves in conflict with the people we live, work, or care for. Mediation supports respectful, collaborative dialogue so relationships can heal or move forward.',
+    'It’s accessible. Mediation at MCRC is provided free of charge. It’s an excellent alternative to going to court.',
+  ],
 }
 
-const imageVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1 },
+const ThreeColData = {
+  title: 'How can it help me?',
+  description:
+    'Most people have the ability to resolve conflict—what we often need is the right support.',
+  cardData: [
+    {
+      title: 'You’re heard.',
+      description:
+        'Mediators are trained to listen deeply and make sure everyone has a chance to speak and be understood.',
+      icon: Ear,
+      bgColor: 'bg-secondary',
+    },
+    {
+      title: 'You stay in control.',
+      description:
+        'You’re the expert in your own situation. Mediators won’t tell you what to do—they’ll help you identify solutions that fit your unique needs.',
+      icon: CircleCheckBig,
+      bgColor: 'bg-secondary',
+    },
+    {
+      title: 'You create the solutions.',
+      description:
+        'Together, you and the other person can identify solutions that meet your unique needs.',
+      icon: Handshake,
+      bgColor: 'bg-secondary',
+    },
+    {
+      title: 'You’re not forced to decide.',
+      description:
+        'If you’re not ready to resolve certain parts of the conflict, that’s okay. Mediation honors your pace.',
+      icon: MessageCircle,
+      bgColor: 'bg-secondary',
+    },
+  ],
 }
 
+const AboutData = {
+  image: '/images/mediation/mediation-group-tictactoe.jpg',
+  imageAlt: 'Mediation',
+  header: 'Who are the mediators?',
+  subheader: 'At MCRC, we use a co-mediator model',
+  description:
+    'This means there are two mediators in each session. This ensures balance, collaboration, and greater support for everyone involved. Mediators are not decision-makers. They don’t give advice or make judgments. Instead, they create a space for collaborative problem-solving so you and the other person can come up with solutions that fit your unique situation. Each mediator is a specially trained volunteer from Howard County or a neighboring community. Mediators are here to:',
+  buttonText: 'Learn More',
+  buttonLink: '/services/mediation',
+  dataList: [
+    {
+      title: 'Guide the conversation',
+      icon: Handshake,
+    },
+    {
+      title: 'Ensure everyone has space to speak and be heard',
+      icon: Handshake,
+    },
+    {
+      title:
+        'Support a respectful and productive process that includes tracking key concerns, values and ideas for resolution.',
+      icon: Handshake,
+    },
+  ],
+}
 export default function Mediation() {
-  const { title, subtitle, description, imageUrl, imageAlt } = sectionData
+  const { title, imageUrl, imageAlt, videoSrc } = sectionData
 
   return (
     <main>
@@ -49,73 +147,17 @@ export default function Mediation() {
         }}
       />
 
-      <section id="coaching-therapy" className="container py-16 text-center lg:py-24">
-        <div className="space-y-3 xl:space-y-6">
-          <div className="space-y-4">
-            <AnimateInView>
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                {title}
-              </h2>
-              <p className="text-lg text-muted-foreground md:text-xl">{subtitle}</p>
-            </AnimateInView>
-            <AnimateInView delay={0.1}>
-              <div className="mx-auto max-w-[800px] text-lg text-muted-foreground lg:w-4/5">
-                <p>{description}</p>
-              </div>
-            </AnimateInView>
-          </div>
-        </div>
-        <div className="mb-12 mt-10 flex flex-col items-center gap-10 lg:mt-24 lg:flex-row-reverse">
-          <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-800/20 lg:w-1/2">
-            {/* Animate the image with a subtle scale-up effect */}
-            <motion.div
-              variants={imageVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ type: 'spring', duration: 1 }}
-            >
-              <Image
-                alt={imageAlt}
-                src={imageUrl}
-                width={620}
-                height={465}
-                className="object-contain"
-              />
-            </motion.div>
-          </div>
-
-          {/* Render the client component responsible for the grid and its animations */}
-          <FeaturesGrid featuresData={featuresData} />
-        </div>
-      </section>
+      <ScrollInViewTitleAndDescription title={title} />
+      <ScrollInViewGrid
+        imageUrl={imageUrl}
+        imageAlt={imageAlt}
+        featuresData={featuresData}
+        videoSrc={videoSrc}
+      />
+      <TwoColTitleCheckListImage data={WhyMediate} />
+      <ThreeColTitleBoxes data={ThreeColData} />
+      <CtaTitleFullWidth heading="Community mediation is a powerful alternative to hiring a lawyer or going to court. It’s collaborative, confidential, and often more sustainable—because the people involved created the agreement themselves." />
+      <AboutPreview data={AboutData} />
     </main>
   )
 }
-
-const featuresData = [
-  {
-    icon: Award,
-    title: 'Diverse',
-    description:
-      'Give your people access to a high-quality network of licensed therapists and coaches, with over 20 modalities and 50 specialisms available.',
-  },
-  {
-    icon: Dna,
-    title: 'Scientific',
-    description:
-      'Outcome based measurements of care ensure each session provides a solid step towards achieving personal and professional goals.',
-  },
-  {
-    icon: Rocket,
-    title: 'AI enhanced',
-    description:
-      'Streamlining the search for the perfect practitioner, cutting through the clutter to find the right fit for individual needs.',
-  },
-  {
-    icon: Wallet,
-    title: 'Flexible',
-    description:
-      'Flexible Talk bundles allow for a tailored solution to ensure personalized, effective care for your employees and optimize value of investment.',
-  },
-]

@@ -4,7 +4,24 @@ import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
 import ButtonAnimated from '../ui/button-animated'
 
-const AboutPreview = () => {
+interface AboutPreviewProps {
+  data: {
+    header: string
+    description: string
+    subheader: string
+    image: string
+    imageAlt: string
+    buttonText: string
+    buttonLink?: string
+    dataList: {
+      title: string
+      icon: React.ElementType
+    }[]
+  }
+}
+
+const AboutPreview = ({ data }: AboutPreviewProps) => {
+  const { header, description, subheader, image, imageAlt, buttonText, buttonLink, dataList } = data
   return (
     <section className="relative py-32 bg-blue">
       <div className="pointer-events-none absolute inset-0 z-10 bg-[50%_0] bg-[url('/images/block/shadow-overlay.png')] bg-no-repeat"></div>
@@ -12,55 +29,32 @@ const AboutPreview = () => {
         <div className="grid gap-12 lg:grid-cols-3">
           <div className="flex flex-col justify-between gap-8">
             <div>
-              <h2 className="mb-9 text-3xl font-medium md:text-5xl text-secondary">
-                ABOUT US
+              <h2 className="mb-9 text-3xl font-medium uppercase md:text-5xl text-secondary">
+                {header}
                 <br />
-                <span className="text-primary-foreground">And A Bit of Our History</span>
+                <span className="text-primary-foreground">{subheader}</span>
               </h2>
-              <p className="text-primary-foreground">
-                Originally connected to Howard Community College, we have since grown into an
-                independent, community-rooted organization. Our work is grounded in the belief that
-                people hold the wisdom and capacity to navigate their own challenges when given the
-                right support. We walk alongside individuals, families, and groups to facilitate
-                conversations that restore trust, mend relationships, and build stronger
-                communities.
-              </p>
+              <p className="text-primary-foreground">{description}</p>
               <div className="my-4">
-                <ButtonAnimated text="Learn More" />
+                <ButtonAnimated text={buttonText} link={buttonLink} />
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 text-primary-foreground">
-                <MessagesSquare className="h-auto w-4" />
-                Our Mission & Vision
-              </div>
-              <Separator />
-              <div className="flex items-center gap-2 text-primary-foreground">
-                <Edit className="h-auto w-4" />
-                Our Core Values
-              </div>
-              <Separator />
-              <div className="flex items-center gap-2 text-primary-foreground">
-                <CheckCircle className="h-auto w-4" />
-                Nine Hallmarks of Community Mediation
-              </div>
-              <Separator />
-              <div className="flex items-center gap-2 text-primary-foreground">
-                <List className="h-auto w-4" />
-                Our Staff
-              </div>
-              <Separator />
-              <div className="flex items-center gap-2 text-primary-foreground">
-                <Timer className="h-auto w-4" />
-                Our Partners
-              </div>
-              <Separator />
+              {dataList.map((item) => (
+                <div key={item.title}>
+                  <div className="flex items-center gap-2 text-primary-foreground">
+                    <item.icon className="h-auto w-4" />
+                    {item.title}
+                  </div>
+                  <Separator />
+                </div>
+              ))}
             </div>
           </div>
           <div className="flex aspect-square w-full items-center justify-center overflow-hidden  lg:col-span-2">
             <Image
-              src="/images/facilitation/cheerful-woman-speaking-on-a-microphone.jpg"
-              alt="placeholder"
+              src={image}
+              alt={imageAlt}
               className="w-full rounded-lg object-cover"
               width={1300}
               height={1300}
