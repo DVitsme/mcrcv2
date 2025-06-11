@@ -28,11 +28,11 @@ const ThreeColImages = ({ data }: { data: SectionData }) => {
               </div>
 
               {/* 2. Push this image container to the bottom of the card */}
-              <span className="mt-auto flex items-center justify-center rounded-2xl bg-secondary pt-4">
+              <span className="mt-auto flex items-center justify-center rounded-2xl bg-secondary py-4 shadow-lg">
                 <Image
                   src={card.image}
                   alt={card.alt}
-                  className="h-36 w-36"
+                  className="h-48 w-48"
                   width={300}
                   height={300}
                 />

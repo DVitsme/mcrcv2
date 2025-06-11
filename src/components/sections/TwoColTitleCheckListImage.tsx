@@ -1,4 +1,4 @@
-import { Check, MessagesSquare } from 'lucide-react'
+import { Check } from 'lucide-react'
 import Image from 'next/image'
 
 interface TwoColTitleCheckListImageProps {
@@ -7,7 +7,7 @@ interface TwoColTitleCheckListImageProps {
     imageAlt: string
     title: string
     description: string
-    checkList: string[]
+    checkList?: string[]
   }
 }
 
@@ -26,14 +26,16 @@ const TwoColTitleCheckListImage = ({ data }: TwoColTitleCheckListImageProps) => 
           <div className="flex flex-col lg:items-start lg:text-left">
             <h1 className="my-6 text-3xl font-bold text-pretty lg:text-4xl">{data.title}</h1>
             <p className="mb-8 max-w-xl text-muted-foreground lg:text-lg">{data.description}</p>
-            <ul className="ml-4 space-y-4 text-left">
-              {data.checkList.map((item: string, index: number) => (
-                <li key={index} className="flex items-center gap-3">
-                  <Check className="size-5" />
-                  <p className="text-muted-foreground">{item}</p>
-                </li>
-              ))}
-            </ul>
+            {data.checkList && (
+              <ul className="ml-4 space-y-4 text-left">
+                {data.checkList.map((item: string, index: number) => (
+                  <li key={index} className="flex items-center gap-3">
+                    <Check className="size-5" />
+                    <p className="text-muted-foreground">{item}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>

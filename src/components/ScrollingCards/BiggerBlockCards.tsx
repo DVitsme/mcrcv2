@@ -1,5 +1,9 @@
 'use client'
 
+import { Separator } from '@/components/ui/separator'
+import Link from 'next/link'
+import { Button } from '../ui/button'
+
 interface CardItem {
   icon: React.ReactNode
   title: string
@@ -28,6 +32,17 @@ const BiggerBlockCards = ({ title, titleGray, description, cards }: BiggerBlockC
                 </span>
               </h2>
               <p className="mt-12 text-lg text-black">{description}</p>
+              <Separator className="my-12" />
+              <p className="mt-12 text-lg text-black">
+                Are you ready to get started?
+                <span className="mt-4 font-bold block text-xl">
+                  <Link href="https://forms.gle/MkdSqa6UFrcCgQKq9" target="_blank">
+                    <Button className="bg-primary text-white hover:bg-primary/80">
+                      Click here to get started
+                    </Button>
+                  </Link>
+                </span>
+              </p>
             </div>
           </div>
 
@@ -47,9 +62,7 @@ const BiggerBlockCards = ({ title, titleGray, description, cards }: BiggerBlockC
                     <h4 className="mb-2 text-3xl font-semibold text-secondary-foreground">
                       {card.title}
                     </h4>
-                    <p className="mt-6 text-lg text-secondary-foreground">
-                      {card.description}
-                    </p>
+                    <p className="mt-6 text-lg text-secondary-foreground">{card.description}</p>
                   </div>
                 </div>
               </div>

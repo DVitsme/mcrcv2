@@ -1,17 +1,19 @@
 import { PageHero } from '@/heros/PageHero'
 import { ScrollInViewTitleAndDescription } from '@/components/sections/ScrollInViewTitleAndDescription'
+import { ServicePageFooter } from '@/components/sections/ServicePageFooter'
 
 export default function Facilitation() {
   return (
     <main>
       <PageHero
         heading="Facilitation"
-        description="Facilitation is a process that helps people resolve conflicts and make decisions together. It is a way to resolve conflicts without going to court."
+        description="At MCRC, we believe that stronger communities are built through open, honest, and structured conversations. "
         image={{
-          src: 'https://www.shadcnblocks.com/images/block/placeholder-1.svg',
+          src: '/images/facilitation/facilitation-v2.jpg',
           alt: 'Facilitation',
         }}
         badge="Facilitation"
+        color="darkbrown"
         buttons={{
           primary: {
             text: 'Get Started',
@@ -31,6 +33,21 @@ export default function Facilitation() {
         </div>
       </div>
       <ScrollInViewTitleAndDescription title="Facilitation" />
+      <ServicePageFooter cards={footerCards} />
     </main>
   )
 }
+const footerCards = [
+  {
+    title: 'Mediation',
+    subtitle: 'Service',
+    href: '/services/mediation',
+    color: 'blue',
+  },
+  {
+    title: 'Restorative Justice',
+    subtitle: 'Service',
+    href: '/services/restorative-justice',
+    color: 'darkgreen',
+  },
+]

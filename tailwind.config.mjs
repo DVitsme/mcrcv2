@@ -85,9 +85,9 @@ const config = {
           DEFAULT: 'var(--blue)',
           foreground: 'var(--blue-foreground)',
         },
-        burgundy: {
-          DEFAULT: 'var(--burgundy)',
-          foreground: 'var(--burgundy-foreground)',
+        darkbrown: {
+          DEFAULT: 'var(--darkbrown)',
+          foreground: 'var(--darkbrown-foreground)',
         },
         darkgreen: {
           DEFAULT: 'var(--darkgreen)',

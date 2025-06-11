@@ -59,7 +59,10 @@ const AboutPage = () => {
             description="MCRC is committed to building an inclusive and equitable community. We use Alternative Dispute Resolution (ADR) to resolve conflicts in a way that values equity, diversity, and collaboration. By prioritizing fair access, amplifying diverse voices, removing barriers to participation, and fostering shared investment, these values guide our principles, shaping how we serve and engage with individuals and groups in Howard County."
             cards={CoreValues}
           />
-          <FAQ heading="MCRC Commitment to the The Nine Hallmarks of Community Mediation" />
+          <FAQ
+            heading="MCRC Commitment to the The Nine Hallmarks of Community Mediation"
+            items={faqItems}
+          />
           <GridImageCards CardData={CardData} />
         </div>
       </section>
@@ -89,6 +92,60 @@ const CoreValues = [
     title: 'Radical Inclusion',
     description:
       "We honor and uplift the voices of all individuals in our services, recognizing each person's inherent wisdom the inherent wisdom each person brings. We center self-determination, supporting individuals in reclaiming agency over their lives and decisions. By addressing and transforming power dynamics, we create spaces where those historically excluded or marginalized can access tools and resources to shape solutions that align with their unique needs and aspirations.",
+  },
+]
+
+const faqItems = [
+  {
+    id: 'faq-1',
+    question: 'Community-Based',
+    answer:
+      'A private non-profit or public agency or program thereof, with mediators, staff and governing/advisory board representative of the diversity of the community served.',
+  },
+  {
+    id: 'faq-2',
+    question: 'Open',
+    answer:
+      'The use of trained community volunteers as providers of mediation services; the practice of mediation is open to all persons.',
+  },
+  {
+    id: 'faq-3',
+    question: 'Accessible',
+    answer:
+      'Providing direct access to the public through self­-referral and striving to reduce barriers to service including physical, linguistic, cultural, programmatic and economic.',
+  },
+  {
+    id: 'faq-4',
+    question: 'Low-Cost',
+    answer: 'Providing service to clients regardless of their ability to pay.',
+  },
+  {
+    id: 'faq-5',
+    question: 'Inclusive',
+    answer:
+      'Providing service and hiring without discrimination on the basis of race, color, religion, gender, age, disabilities, national origin, marital status, personal appearance, gender identity, sexual orientation, family responsibilities, matriculation, political affiliation, source of income.',
+  },
+  {
+    id: 'faq-6',
+    question: 'Timely',
+    answer: 'Providing a forum for dispute resolution at the earliest stage of conflict.',
+  },
+  {
+    id: 'faq-7',
+    question: 'Innovative ',
+    answer: 'Providing an alternative to the judicial system at any stage of a conflict.',
+  },
+  {
+    id: 'faq-8',
+    question: 'Outcome-Oriented',
+    answer:
+      'Initiating, facilitating and educating for collaborative community relationships to effect positive systemic change.',
+  },
+  {
+    id: 'faq-9',
+    question: 'Newsworthy',
+    answer:
+      'Engaging in public awareness and educational activities about the values and practices of mediation.',
   },
 ]
 

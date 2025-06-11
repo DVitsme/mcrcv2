@@ -1,24 +1,19 @@
 import { ArrowRight, Users } from 'lucide-react'
+import Image from 'next/image'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
+import { cn } from '@/utilities/ui' // Make sure you import a utility for combining class names
 
 interface Hero1Props {
   badge?: string
   heading: string
   description: string
-  bgColor?: string
-  textColor?: string
+  // Use a specific type for colors for better autocompletion and safety
+  color?: 'blue' | 'darkbrown' | 'darkgreen' | 'yellow'
   buttons?: {
-    primary?: {
-      text: string
-      url: string
-    }
-    secondary?: {
-      text: string
-      url: string
-    }
+    primary?: { text: string; url: string }
+    secondary?: { text: string; url: string }
   }
   image: {
     src: string
@@ -30,46 +25,54 @@ const PageHero = ({
   badge = '✨ Your Website Builder',
   heading = 'Blocks Built With Shadcn & Tailwind',
   description = 'Finely crafted components built with React, Tailwind and Shadcn UI. Developers can copy and paste these blocks directly into their project.',
-  bgColor = 'bg-blue',
-  textColor = 'text-blue-foreground',
-  buttons = {
-    primary: {
-      text: 'Discover all components',
-      url: '/',
-    },
-    secondary: {
-      text: 'View on GitHub',
-      url: '/',
-    },
-  },
-  image = {
-    src: '/images/facilitation/facilitation-v2.jpg',
-    alt: 'Hero section demo image showing interface components',
-  },
+  color = 'blue',
+  buttons,
+  image,
 }: Hero1Props) => {
+  // --- Map the color prop to full, static Tailwind classes ---
+  const colorClasses = {
+    blue: 'bg-blue text-blue-foreground',
+    darkbrown: 'bg-darkbrown text-darkbrown-foreground',
+    darkgreen: 'bg-darkgreen text-darkgreen-foreground',
+    yellow: 'bg-yellow text-yellow-foreground',
+  }
+
+  // Determine button colors based on the section color for better contrast
+  const primaryButtonClasses = {
+    blue: 'bg-blue-foreground text-blue',
+    darkbrown: 'bg-darkbrown-foreground text-darkbrown',
+    darkgreen: 'bg-darkgreen-foreground text-darkgreen',
+    yellow: 'bg-yellow-foreground text-yellow',
+  }
+
   return (
-    <section className={`py-32 ${bgColor} ${textColor}`}>
+    // I was having issues with the colorClasses not being applied, so I added this colorClasses[color] temp fix that may end up being permanent
+    <section className={cn('py-32', colorClasses[color])}>
       <div className="container">
         <div className="grid items-center gap-8 lg:grid-cols-2">
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0">
             {badge && (
-              <Badge variant="outline" className={`${textColor}`}>
+              <Badge variant="outline" className="border-current text-current">
                 <Users className="ml-1 mr-2 size-4" />
                 <span className="mr-2">{badge}</span>
               </Badge>
             )}
-            <h1 className="my-6 pb-6 pt-4 text-4xl font-bold text-pretty md:text-8xl uppercase">
+            <h1 className="my-6 pb-6 pt-4 text-6xl hyphens-auto font-bold uppercase text-pretty lg:text-8xl break-words">
               {heading}
             </h1>
-            <p className="mb-8 max-w-xl text-blue-foreground lg:text-xl">{description}</p>
+            <p className="mb-8 max-w-xl lg:text-xl">{description}</p>
             <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
-              {buttons.primary && (
-                <Button asChild className="w-full sm:w-auto bg-blue-foreground text-blue">
+              {buttons?.primary && (
+                <Button asChild className={cn('w-full sm:w-auto', primaryButtonClasses[color])}>
                   <a href={buttons.primary.url}>{buttons.primary.text}</a>
                 </Button>
               )}
-              {buttons.secondary && (
-                <Button asChild variant="outline" className="w-full sm:w-auto text-foreground">
+              {buttons?.secondary && (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full sm:w-auto border-current text-black"
+                >
                   <a href={buttons.secondary.url}>
                     {buttons.secondary.text}
                     <ArrowRight className="size-4" />
@@ -81,7 +84,7 @@ const PageHero = ({
           <Image
             src={image.src}
             alt={image.alt}
-            className="max-h-96 w-full rounded-md object-cover"
+            className="max-h-96 ml-0 w-full rounded-md object-cover lg:ml-10"
             width={1000}
             height={1000}
           />
