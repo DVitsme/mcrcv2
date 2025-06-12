@@ -238,6 +238,7 @@ export default function Mediation() {
       <BiggerBlockCards
         title="What to Expect: "
         titleGray="The Mediation Process"
+        color="darkgreen"
         description="Every mediation is different, but here’s what the journey typically looks like at MCRC. We move at the pace of trust, with respect for everyone’s story and voice."
         cards={stickyCards}
       />

@@ -25,13 +25,7 @@ export default function Facilitation() {
           },
         }}
       />
-      <div className="container mx-auto max-w-7xl flex flex-col gap-28 md:px-10">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
-          <div className="flex flex-col gap-10 rounded-2xl bg-secondary p-10">
-            <h2 className="text-2xl font-bold">Facilitation</h2>
-          </div>
-        </div>
-      </div>
+
       <ScrollInViewTitleAndDescription title="Facilitation" />
       <ServicePageFooter cards={footerCards} />
     </main>

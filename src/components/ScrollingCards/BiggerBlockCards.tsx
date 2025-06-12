@@ -3,11 +3,14 @@
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { Button } from '../ui/button'
+import { ChevronRight, Dot } from 'lucide-react'
 
 interface CardItem {
   icon: React.ReactNode
   title: string
-  description: string
+  description?: string
+  listDescription?: string
+  listItems?: string[]
 }
 
 interface BiggerBlockCardsProps {
@@ -15,9 +18,16 @@ interface BiggerBlockCardsProps {
   titleGray: string
   description: string
   cards: CardItem[]
+  color?: string
 }
 
-const BiggerBlockCards = ({ title, titleGray, description, cards }: BiggerBlockCardsProps) => {
+const BiggerBlockCards = ({
+  title,
+  titleGray,
+  description,
+  cards,
+  color = 'blue',
+}: BiggerBlockCardsProps) => {
   return (
     <section className="py-32">
       <div className="container">
@@ -62,7 +72,24 @@ const BiggerBlockCards = ({ title, titleGray, description, cards }: BiggerBlockC
                     <h4 className="mb-2 text-3xl font-semibold text-secondary-foreground">
                       {card.title}
                     </h4>
-                    <p className="mt-6 text-lg text-secondary-foreground">{card.description}</p>
+                    {card.description && (
+                      <p className="mt-6 text-lg text-secondary-foreground">{card.description}</p>
+                    )}
+                    {card.listItems && (
+                      <div className="mt-6">
+                        <p className="mt-6 text-lg text-secondary-foreground">
+                          {card.listDescription}
+                        </p>
+                        <ul className="mt-6 space-y-2 text-lg text-secondary-foreground">
+                          {card.listItems.map((item, i) => (
+                            <li key={i} className="flex items-center">
+                              <ChevronRight className="mr-2 h-6 w-6" />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
