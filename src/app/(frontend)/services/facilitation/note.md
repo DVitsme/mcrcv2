@@ -1,8 +1,6 @@
 Facilitation
 What Is Group Facilitation?
-Holding Space for Meaningful Conversations
-At MCRC, we believe that stronger communities are built through open, honest, and structured conversations. Our group facilitation services create space for teams, organizations, and communities to work through challenges, strengthen relationships, and develop shared solutions.
-Whether you need support navigating internal conflicts, planning discussions, or community decision-making, our trained facilitators help guide the conversation with care, neutrality, and respect for all voices.
+
 We also offer Listening Sessions—intentional spaces designed for communities, workplaces, and organizations to share perspectives, process difficult topics, and build understanding. These sessions create opportunities for groups to be heard, reflect on concerns, and explore ways forward together.
 Our goal is always the same: to hold space where people can show up, speak honestly, and move forward—together.
 Who We Work With

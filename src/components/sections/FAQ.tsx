@@ -8,7 +8,8 @@ import {
 interface FaqItem {
   id: string
   question: string
-  answer: string
+  answer?: string
+  list?: string[]
 }
 
 interface FAQProps {
@@ -32,7 +33,17 @@ const FAQ = ({ heading = 'Frequently asked questions', subheading, items }: FAQP
                 <div className="font-medium sm:py-1 lg:py-2 lg:text-lg">{item.question}</div>
               </AccordionTrigger>
               <AccordionContent className="sm:mb-1 lg:mb-2">
-                <div className="text-muted-foreground lg:text-lg">{item.answer}</div>
+                <div className="text-muted-foreground lg:text-lg">
+                  {item.list ? (
+                    <ul className="list-disc pl-5">
+                      {item.list.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>{item.answer}</p>
+                  )}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
