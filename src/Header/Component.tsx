@@ -48,7 +48,7 @@ interface Navbar1Props {
   }
 }
 
-const Header = ({
+export function HomepageHeader({
   logo = {
     url: '/',
     src: '/images/logo/mcrc-logo.png',
@@ -79,6 +79,12 @@ const Header = ({
           description: 'Browse job listing and discover our workspace',
           icon: <Sunset className="size-5 shrink-0" />,
           url: '/services/restorative-justice',
+        },
+        {
+          title: 'Training',
+          description: 'Browse job listing and discover our workspace',
+          icon: <Sunset className="size-5 shrink-0" />,
+          url: '/services/training',
         },
       ],
     },
@@ -129,9 +135,9 @@ const Header = ({
     login: { title: 'Login', url: '/admin' },
     signup: { title: 'Get Started', url: '/get-started' },
   },
-}: Navbar1Props) => {
+}: Navbar1Props) {
   return (
-    <section className="py-4">
+    <section className="py-4 z-50 relative">
       <div className="container">
         {/* Desktop Menu */}
         <nav className="hidden justify-between lg:flex">
@@ -149,10 +155,10 @@ const Header = ({
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.title}</a>
+              <Link href={auth.login.url}>{auth.login.title}</Link>
             </Button>
             <Button asChild size="sm">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
+              <Link href={auth.signup.url}>{auth.signup.title}</Link>
             </Button>
           </div>
         </nav>
@@ -161,9 +167,9 @@ const Header = ({
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
-              <img src={logo.src} className="max-h-8" alt={logo.alt} />
-            </a>
+            <Link href={logo.url} className="flex items-center gap-2">
+              <Image src={logo.src} className="max-h-8" alt={logo.alt} width={32} height={32} />
+            </Link>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -173,9 +179,15 @@ const Header = ({
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
                   <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
-                      <img src={logo.src} className="max-h-8" alt={logo.alt} />
-                    </a>
+                    <Link href={logo.url} className="flex items-center gap-2">
+                      <Image
+                        src={logo.src}
+                        className="max-h-8"
+                        alt={logo.alt}
+                        width={32}
+                        height={32}
+                      />
+                    </Link>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 p-4">
@@ -185,10 +197,10 @@ const Header = ({
 
                   <div className="flex flex-col gap-3">
                     <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
+                      <Link href={auth.login.url}>{auth.login.title}</Link>
                     </Button>
                     <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
+                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
                     </Button>
                   </div>
                 </div>
@@ -211,7 +223,7 @@ const renderMenuItem = (item: MenuItem) => {
             {item.items.map((subItem) => (
               <li key={subItem.title}>
                 <NavigationMenuLink asChild>
-                  <a
+                  <Link
                     href={subItem.url}
                     className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                   >
@@ -224,7 +236,7 @@ const renderMenuItem = (item: MenuItem) => {
                         {subItem.description}
                       </p>
                     )}
-                  </a>
+                  </Link>
                 </NavigationMenuLink>
               </li>
             ))}
@@ -263,15 +275,15 @@ const renderMobileMenuItem = (item: MenuItem) => {
   }
 
   return (
-    <a key={item.title} href={item.url} className="text-md font-semibold">
+    <Link key={item.title} href={item.url} className="text-md font-semibold">
       {item.title}
-    </a>
+    </Link>
   )
 }
 
 const SubMenuLink = ({ item }: { item: MenuItem }) => {
   return (
-    <a
+    <Link
       className="flex flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground"
       href={item.url}
     >
@@ -282,8 +294,6 @@ const SubMenuLink = ({ item }: { item: MenuItem }) => {
           <p className="text-sm leading-snug text-muted-foreground">{item.description}</p>
         )}
       </div>
-    </a>
+    </Link>
   )
 }
-
-export { Header }

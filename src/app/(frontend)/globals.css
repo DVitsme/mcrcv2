@@ -19,6 +19,9 @@
 
     --yellow: rgba(255, 249, 100, 1);
     --yellow-foreground: rgba(45, 21, 13, 1);
+    --darkyellow: rgba(247, 247, 185, 1);
+    --darkyellow-foreground: rgba(25, 53, 48, 1);
+
     --purple: rgba(145, 66, 201, 1);
     --purple-foreground: rgba(192, 210, 61, 1);
     --blue: rgba(0, 22, 54, 1);

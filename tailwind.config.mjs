@@ -77,6 +77,10 @@ const config = {
           DEFAULT: 'var(--yellow)',
           foreground: 'var(--yellow-foreground)',
         },
+        darkyellow: {
+          DEFAULT: 'var(--darkyellow)',
+          foreground: 'var(--darkyellow-foreground)',
+        },
         purple: {
           DEFAULT: 'var(--purple)',
           foreground: 'var(--purple-foreground)',

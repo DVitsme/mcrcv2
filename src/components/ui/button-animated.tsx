@@ -8,13 +8,14 @@ import Link from 'next/link'
 interface ButtonAnimatedProps {
   text: string
   link?: string
+  color?: string
 }
 
-const ButtonAnimated = ({ text, link }: ButtonAnimatedProps) => {
+const ButtonAnimated = ({ text, link, color = 'secondary' }: ButtonAnimatedProps) => {
   const buttonContent = (
     <Button
       size="lg"
-      className="group w-fit gap-2 bg-secondary text-secondary-foreground transition-all duration-300"
+      className={`group w-fit gap-2 bg-${color}-foreground text-${color} transition-all duration-300`}
     >
       {text}
       <motion.div

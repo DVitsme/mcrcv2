@@ -23,7 +23,7 @@ const CtaTitleFullWidth = ({ heading, color = 'blue', button }: CtaTitleFullWidt
             </h3>
             {button && (
               <div className="mb-8 flex w-full flex-col justify-center gap-2 sm:flex-row">
-                <ButtonAnimated text={button.text} link={button.url} />
+                <ButtonAnimated text={button.text} link={button.url} color={color} />
               </div>
             )}
           </div>

@@ -1,33 +1,22 @@
 import type { Metadata } from 'next'
 
-import { cn } from '@/utilities/ui'
-import { fontSans } from '@/fonts'
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
-import React from 'react'
-
+import { cn } from '@/utilities/ui'
+import { InitTheme } from '../../providers/Theme/InitTheme/index'
 import { AdminBar } from '@/components/AdminBar'
-import { Footer } from '@/Footer/Component'
-import { Header } from '@/Header/Component'
-import { Providers } from '@/providers'
-import { InitTheme } from '@/providers/Theme/InitTheme'
-import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
-import { TopBar } from '@/Header/TopBar'
+import { Providers } from '@/providers'
+import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 
-export default async function RootLayout({
-  children,
-}: {
-  params: { slug: string; route: string; url: object }
-  children: React.ReactNode
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
 
   return (
-    <html className={cn(fontSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
+    <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <InitTheme />
         <link href="/favicon.ico" rel="icon" sizes="32x32" />
@@ -40,10 +29,7 @@ export default async function RootLayout({
               preview: isEnabled,
             }}
           />
-          <TopBar />
-          <Header />
           {children}
-          <Footer />
         </Providers>
       </body>
     </html>

@@ -10,7 +10,7 @@ interface Hero1Props {
   heading: string
   description: string
   // Use a specific type for colors for better autocompletion and safety
-  color?: 'blue' | 'darkbrown' | 'darkgreen' | 'yellow'
+  color?: 'blue' | 'darkbrown' | 'darkgreen' | 'yellow' | 'darkyellow'
   buttons?: {
     primary?: { text: string; url: string }
     secondary?: { text: string; url: string }
@@ -35,6 +35,7 @@ const PageHero = ({
     darkbrown: 'bg-darkbrown text-darkbrown-foreground',
     darkgreen: 'bg-darkgreen text-darkgreen-foreground',
     yellow: 'bg-yellow text-yellow-foreground',
+    darkyellow: 'bg-darkyellow text-darkyellow-foreground',
   }
 
   // Determine button colors based on the section color for better contrast
@@ -43,6 +44,7 @@ const PageHero = ({
     darkbrown: 'bg-darkbrown-foreground text-darkbrown',
     darkgreen: 'bg-darkgreen-foreground text-darkgreen',
     yellow: 'bg-yellow-foreground text-yellow',
+    darkyellow: 'bg-darkyellow-foreground text-darkyellow',
   }
 
   return (
