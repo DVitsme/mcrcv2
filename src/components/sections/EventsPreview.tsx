@@ -90,7 +90,7 @@ const EventsPreview = () => {
               We put together workshops and classes to teach the community successful mediation
               techniques.
             </p>
-            <ButtonAnimated text="View Upcomming Events" />
+            <ButtonAnimated text="View Upcomming Events" color="primary" />
             <div className="grid grid-cols-2 justify-between gap-4 pt-10 text-left md:gap-20">
               <div className="flex flex-col gap-1">
                 <h2 className="text-3xl font-semibold md:text-5xl">25+</h2>

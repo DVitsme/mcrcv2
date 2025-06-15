@@ -39,7 +39,7 @@ const Hero = () => {
                   asChild
                   className="block h-fit w-fit rounded-sm px-6 py-3.5 text-sm font-semibold tracking-wider text-nowrap uppercase"
                 >
-                  <a href="#">Explore Projects</a>
+                  <a href="#">Get Started</a>
                 </Button>
               </div>
             </div>
@@ -47,8 +47,8 @@ const Hero = () => {
               <div className="flex items-center gap-3">
                 <div className="h-8 w-1 bg-primary"></div>
                 <div className="text-sm font-medium text-muted-foreground">
-                  <p className="text-primary">Global Headquarters</p>
-                  <p>San Francisco, California</p>
+                  <p className="text-primary">Creating Connection Through Conversation</p>
+                  <p>Howard County, Maryland</p>
                 </div>
               </div>
               <Button
