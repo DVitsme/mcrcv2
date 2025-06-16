@@ -1,5 +1,5 @@
 import type { Post, ArchiveBlock } from '@/payload-types'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utilities/ui'
 
 interface RichTextProps {
   content: Post['content'] | ArchiveBlock['introContent']
