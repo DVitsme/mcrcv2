@@ -1,7 +1,7 @@
-import type { RichTextContent } from '@/payload-types'
+import type { Post } from '@/payload-types'
 
 interface RichTextProps {
-  content: RichTextContent
+  content: Post['content']
 }
 
 export default function RichText({ content }: RichTextProps) {
