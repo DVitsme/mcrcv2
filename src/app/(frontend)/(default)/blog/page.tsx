@@ -27,7 +27,11 @@ function getAuthorName(authors: Post['authors']): string {
   return typeof firstAuthor === 'object' ? firstAuthor.name : 'MCRC Staff'
 }
 
-export default async function BlogPage({ searchParams }: { searchParams: { tag?: string } }) {
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: { tag?: string | undefined }
+}) {
   const categorySlug = searchParams.tag
 
   // Fetch data in parallel using the new functions
