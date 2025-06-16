@@ -9,7 +9,7 @@ dotenv.config({
 })
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
-// import { supabase } from './utilities/supabase'
+
 import sharp from 'sharp' // sharp-import
 import { buildConfig, PayloadRequest } from 'payload'
 import { resendAdapter } from '@payloadcms/email-resend'
