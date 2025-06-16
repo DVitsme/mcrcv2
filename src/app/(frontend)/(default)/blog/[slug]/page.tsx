@@ -6,27 +6,21 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { BlogPostCard } from '@/components/cards/BlogPostCard'
 import RichText from '@/components/RichText'
-
 import { fetchPostBySlug, fetchRelatedPosts } from '@/lib/payload-api-blog'
 import type { Post, Category, User } from '@/payload-types'
 import { Metadata } from 'next'
 
-// --- CORRECTED: Define the full props type for a Next.js page ---
-type Props = {
-  params: { slug: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
-
-// --- CORRECTED: Use PageProps for generateMetadata ---
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
   const post = await fetchPostBySlug(params.slug)
+
   if (!post) {
     return { title: 'Post Not Found' }
   }
+
   return {
     title: post.meta?.title || post.title,
     description: post.meta?.description || '',
@@ -46,7 +40,6 @@ export async function generateMetadata({
   }
 }
 
-// --- CORRECTED: Use PageProps for the main component ---
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = await fetchPostBySlug(params.slug)
 
