@@ -13,9 +13,10 @@ import { Metadata } from 'next'
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }): Promise<Metadata> {
-  const post = await fetchPostBySlug(params.slug)
+  const slug = await params
+  const post = await fetchPostBySlug(slug.slug)
 
   if (!post) {
     return { title: 'Post Not Found' }
