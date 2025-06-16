@@ -149,6 +149,9 @@ const config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        transitionTimingFunction: {
+          'custom-bezier': 'cubic-bezier(0.77, 0, 0.175, 1)',
+        },
       },
       typography: {
         DEFAULT: {

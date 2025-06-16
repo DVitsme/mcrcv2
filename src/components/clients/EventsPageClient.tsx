@@ -141,7 +141,7 @@ export function EventsPageClient({ events, badges }: { events: Event[]; badges: 
                         : event.name
                     }
                     loading="lazy"
-                    className="absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-[cubic-bezier(0.77,0,0.175,1)] [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]"
+                    className="absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-custom-bezier [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]"
                     width={1000}
                     height={1000}
                   />
