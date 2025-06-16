@@ -30,9 +30,9 @@ function getAuthorName(authors: Post['authors']): string {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { tag?: string | undefined }
+  searchParams: Promise<{ tag?: string | undefined }>
 }) {
-  const categorySlug = searchParams.tag
+  const categorySlug = (await searchParams).tag
 
   // Fetch data in parallel using the new functions
   const [featuredPost, allPosts, categories] = await Promise.all([
@@ -106,7 +106,7 @@ export default async function BlogPage({
       {/* Category Filter */}
       <section className="mb-12">
         <div className="overflow-x-auto pb-2">
-          <Tabs defaultValue={searchParams.tag || 'all'} className="w-full">
+          <Tabs defaultValue={categorySlug || 'all'} className="w-full">
             <TabsList className="mb-8 flex w-full justify-start space-x-2 bg-transparent p-0">
               <TabsTrigger
                 value="all"
@@ -127,7 +127,7 @@ export default async function BlogPage({
               ))}
             </TabsList>
 
-            <TabsContent value={searchParams.tag || 'all'} className="mt-0">
+            <TabsContent value={categorySlug || 'all'} className="mt-0">
               <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 <Suspense fallback={<p>Loading blog posts...</p>}>
                   {allPosts.map((post) => (
