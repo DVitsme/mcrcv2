@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         )}
 
         <div className="prose prose-lg max-w-none dark:prose-invert">
-          <RichText content={post.content} />
+          <RichText data={post.content} />
         </div>
 
         {post.authors && (post.authors as User[]).length > 0 && (
