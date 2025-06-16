@@ -3,7 +3,7 @@
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
 import { Button } from '../ui/button'
-import { ChevronRight, Dot } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 
 interface CardItem {
   icon: React.ReactNode
@@ -21,13 +21,7 @@ interface BiggerBlockCardsProps {
   color?: string
 }
 
-const BiggerBlockCards = ({
-  title,
-  titleGray,
-  description,
-  cards,
-  color = 'blue',
-}: BiggerBlockCardsProps) => {
+const BiggerBlockCards = ({ title, titleGray, description, cards }: BiggerBlockCardsProps) => {
   return (
     <section className="py-32">
       <div className="container">

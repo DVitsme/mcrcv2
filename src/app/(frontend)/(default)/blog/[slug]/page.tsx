@@ -6,16 +6,18 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { BlogPostCard } from '@/components/cards/BlogPostCard'
 import RichText from '@/components/RichText'
+
 import { fetchPostBySlug, fetchRelatedPosts } from '@/lib/payload-api-blog'
 import type { Post, Category, User } from '@/payload-types'
 
-// Define the full props type for a Next.js page
-type PageProps = {
+// --- CORRECTED: Define the full props type for a Next.js page ---
+type Props = {
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export async function generateMetadata({ params }: PageProps) {
+// --- CORRECTED: Use PageProps for generateMetadata ---
+export async function generateMetadata({ params }: Props) {
   const post = await fetchPostBySlug(params.slug)
 
   if (!post) {
@@ -41,19 +43,20 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
+// --- CORRECTED: Use PageProps for the main component ---
+export default async function BlogPostPage({ params }: Props) {
   const post = await fetchPostBySlug(params.slug)
 
   if (!post) {
     notFound()
   }
 
-  // Get category IDs for related posts lookup
+  // --- Get category IDs for related posts lookup ---
   const categoryIds = (post.categories?.map((cat) => (typeof cat === 'object' ? cat.id : cat)) ||
     []) as (number | string)[]
   const relatedPosts = await fetchRelatedPosts(post.id, categoryIds)
 
-  // Helper functions
+  // --- Helper functions ---
   const getAuthorName = (authors: Post['authors']): string => {
     if (!authors || authors.length === 0) return 'MCRC Staff'
     const firstAuthor = authors[0] as User
@@ -119,7 +122,6 @@ export default async function BlogPostPage({ params }: PageProps) {
           <RichText content={post.content} />
         </div>
 
-        {/* Author Bio */}
         {post.authors && (post.authors as User[]).length > 0 && (
           <div className="mt-16 rounded-xl bg-muted p-6">
             <h3 className="mb-2 text-lg font-semibold">About the Author</h3>
@@ -130,7 +132,6 @@ export default async function BlogPostPage({ params }: PageProps) {
         )}
       </article>
 
-      {/* Related Posts */}
       {relatedPosts.length > 0 && (
         <aside className="mt-20">
           <h2 className="mb-8 text-2xl font-bold">Related Articles</h2>

@@ -3,7 +3,6 @@
 import { PageHero } from '@/heros/PageHero'
 import { ScrollInViewTitleAndDescription } from '@/components/sections/ScrollInViewTitleAndDescription'
 import { ServicePageFooter } from '@/components/sections/ServicePageFooter'
-import { ScrollInViewGrid } from '@/components/sections/ScrollInViewGrid'
 import { TwoColTitleCheckListImage } from '@/components/sections/TwoColTitleCheckListImage'
 import { TwoBoxes } from '@/components/TwoCol/TwoBoxes'
 import { FAQ } from '@/components/sections/FAQ'

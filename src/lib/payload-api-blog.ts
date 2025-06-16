@@ -1,4 +1,4 @@
-import type { Post, Category, User } from '@/payload-types'
+import type { Post, Category } from '@/payload-types'
 
 /**
  * Fetches published posts from the Payload API. Can optionally filter by category.

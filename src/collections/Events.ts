@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isCoordinatorOrAdmin, isAdmin } from '../access/roles'
-import type { User, Event, Media } from '../payload-types'
+import type { User, Event } from '../payload-types'
 
 export const Events: CollectionConfig = {
   slug: 'events',
