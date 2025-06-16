@@ -9,6 +9,7 @@ import RichText from '@/components/RichText'
 
 import { fetchPostBySlug, fetchRelatedPosts } from '@/lib/payload-api-blog'
 import type { Post, Category, User } from '@/payload-types'
+import { Metadata } from 'next'
 
 // --- CORRECTED: Define the full props type for a Next.js page ---
 type Props = {
@@ -17,34 +18,36 @@ type Props = {
 }
 
 // --- CORRECTED: Use PageProps for generateMetadata ---
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Promise<Metadata> {
   const post = await fetchPostBySlug(params.slug)
-
   if (!post) {
     return { title: 'Post Not Found' }
   }
-
-  const postImage =
-    post.meta?.image && typeof post.meta.image === 'object' ? post.meta.image.url : null
-
   return {
     title: post.meta?.title || post.title,
-    description: post.meta?.description,
+    description: post.meta?.description || '',
     openGraph: {
       title: post.meta?.title || post.title,
       description: post.meta?.description || '',
-      images: postImage ? [{ url: postImage }] : [],
+      images:
+        post.meta?.image && typeof post.meta.image === 'object'
+          ? [{ url: post.meta.image.url! }]
+          : [],
       type: 'article',
       publishedTime: post.publishedAt || post.createdAt,
-      authors: post.authors
-        ?.map((author) => (typeof author === 'object' ? author.name : ''))
-        .filter(Boolean),
+      authors: (post.authors || [])
+        .map((a) => (typeof a === 'object' ? a.name : null))
+        .filter(Boolean) as string[],
     },
   }
 }
 
 // --- CORRECTED: Use PageProps for the main component ---
-export default async function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const post = await fetchPostBySlug(params.slug)
 
   if (!post) {
@@ -52,8 +55,7 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   // --- Get category IDs for related posts lookup ---
-  const categoryIds = (post.categories?.map((cat) => (typeof cat === 'object' ? cat.id : cat)) ||
-    []) as (number | string)[]
+  const categoryIds = ((post.categories || []) as Category[]).map((c) => c.id)
   const relatedPosts = await fetchRelatedPosts(post.id, categoryIds)
 
   // --- Helper functions ---
