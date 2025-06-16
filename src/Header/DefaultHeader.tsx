@@ -2,47 +2,21 @@
 
 import {
   AppWindow,
-  ArrowLeft,
   ArrowRight,
   ArrowRightLeft,
   Book,
-  Building,
-  Building2,
-  Calculator,
   Calendar,
-  CheckCircle2,
-  Clock,
-  Code,
-  Computer,
-  DollarSign,
-  File,
-  Flag,
-  Gavel,
   Globe,
-  Globe2,
   Lightbulb,
-  Lock,
   Menu,
   Mic,
   Newspaper,
-  Phone,
-  PieChart,
   Play,
   PlayCircle,
-  Puzzle,
   Pyramid,
   Rocket,
-  Scale,
-  Search,
-  ShieldCheck,
-  Speech,
   Sunset,
-  Table,
   Trees,
-  UserPlus,
-  UserRound,
-  Users,
-  X,
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -365,7 +339,7 @@ export function DefaultHeader({
                         <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
                           {item.items.map((subItem) => (
                             <li key={subItem.title}>
-                              <NavigationMenuLink asChild>
+                              <NavigationMenuLink asChild className="lg:p-2">
                                 <SubMenuLink item={subItem} />
                               </NavigationMenuLink>
                             </li>
@@ -377,7 +351,7 @@ export function DefaultHeader({
                     <NavigationMenuItem key={item.title}>
                       <Link href={item.url} legacyBehavior passHref>
                         <NavigationMenuLink
-                          className={navigationMenuTriggerStyle()}
+                          className={cn(navigationMenuTriggerStyle(), 'lg:p-2')}
                           active={pathname === item.url}
                         >
                           {item.title}
