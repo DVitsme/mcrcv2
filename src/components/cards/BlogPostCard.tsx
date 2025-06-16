@@ -47,6 +47,10 @@ export function BlogPostCard({ post }: { post: Post }) {
       <CardHeader className="px-0 pt-4">
         <div className="flex items-center gap-2">
           {primaryCategory && <Badge className={`font-medium`}>{primaryCategory.title}</Badge>}
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            <span>5 min read</span>
+          </div>
         </div>
         <CardTitle className="mt-2 line-clamp-2">
           <Link href={`/blog/${post.slug}`} className="hover:text-primary">

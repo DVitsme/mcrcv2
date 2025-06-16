@@ -111,8 +111,8 @@ export async function fetchPostBySlug(slug: string): Promise<Post | null> {
  * @param categoryIds - An array of category IDs to find related posts in.
  */
 export async function fetchRelatedPosts(
-  currentPostId: number,
-  categoryIds: number[],
+  currentPostId: number | string,
+  categoryIds: (number | string)[],
 ): Promise<Post[]> {
   if (!categoryIds || categoryIds.length === 0) return []
 

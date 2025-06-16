@@ -9,7 +9,13 @@ import RichText from '@/components/RichText'
 import { fetchPostBySlug, fetchRelatedPosts } from '@/lib/payload-api-blog'
 import type { Post, Category, User } from '@/payload-types'
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+// Define the full props type for a Next.js page
+type PageProps = {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata({ params }: PageProps) {
   const post = await fetchPostBySlug(params.slug)
 
   if (!post) {
@@ -35,7 +41,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+export default async function BlogPostPage({ params }: PageProps) {
   const post = await fetchPostBySlug(params.slug)
 
   if (!post) {
@@ -44,7 +50,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   // Get category IDs for related posts lookup
   const categoryIds = (post.categories?.map((cat) => (typeof cat === 'object' ? cat.id : cat)) ||
-    []) as number[]
+    []) as (number | string)[]
   const relatedPosts = await fetchRelatedPosts(post.id, categoryIds)
 
   // Helper functions
@@ -88,6 +94,11 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             <div className="flex items-center gap-1">
               <CalendarDays className="h-4 w-4" />
               <span>{formatDate(post.publishedAt || post.createdAt)}</span>
+            </div>
+            <Separator orientation="vertical" className="hidden h-6 sm:block" />
+            <div className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              <span>5 min read</span>
             </div>
           </div>
         </header>
