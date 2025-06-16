@@ -70,7 +70,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 mt-32 py-12">
       <div className="mb-8">
         <Link href="/blog" className="text-sm text-primary hover:underline">
           &larr; Back to Blog

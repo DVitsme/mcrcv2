@@ -63,8 +63,8 @@ const resources: MenuItem[] = [
     icon: <Calendar className="size-5 shrink-0" />,
   },
   {
-    title: 'Podcasts',
-    description: 'Insights on productivity and leadership.',
+    title: 'Past Recordings',
+    description: 'Listen to past webinars and events.',
     url: '#',
     icon: <Mic className="size-5 shrink-0" />,
   },
@@ -88,7 +88,7 @@ const resources: MenuItem[] = [
   },
   {
     title: 'Success Stories',
-    description: 'See how others achieve more.',
+    description: 'How our services have helped others.',
     url: '#',
     icon: <Lightbulb className="size-5 shrink-0" />,
   },
@@ -99,10 +99,10 @@ const topicGroups = [
     title: 'Learning Resources',
     topics: [
       { title: 'Getting Started Guide', url: '#', icon: Globe },
-      { title: 'Product Updates', url: '#', icon: Rocket },
+      { title: 'Updates', url: '#', icon: Rocket },
       { title: 'Best Practices', url: '#', icon: Pyramid },
-      { title: 'Integrations', url: '#', icon: ArrowRightLeft },
-      { title: 'API Documentation', url: '#', icon: AppWindow },
+      { title: 'Apply to Become a Partner', url: '#', icon: ArrowRightLeft },
+      { title: 'Partner Resources', url: '#', icon: AppWindow },
     ],
   },
   {
@@ -126,7 +126,7 @@ const ResourcesMenu = () => (
               <ArrowRight className="ml-1 size-4 transition-transform group-hover:translate-x-1" />
             </div>
             <p className="mt-2 text-xs">
-              Access guides, tutorials, and best practices to maximize your success.
+              Access guides, tutorials, and best practices to assist you in your journey.
             </p>
           </div>
           <div className="absolute inset-0">

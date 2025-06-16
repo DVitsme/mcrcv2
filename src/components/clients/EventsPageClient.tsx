@@ -39,7 +39,7 @@ export function EventsPageClient({ events, badges }: { events: Event[]; badges: 
    */
   function EmptyState() {
     return (
-      <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+      <div className="col-span-full flex flex-col items-center justify-center mt-32 py-12 text-center">
         <FileText className="mb-4 h-12 w-12 text-muted-foreground" strokeWidth={1} />
         <h3 className="text-xl font-semibold">No events found</h3>
         <p className="mt-2 text-muted-foreground">
@@ -50,7 +50,7 @@ export function EventsPageClient({ events, badges }: { events: Event[]; badges: 
   }
 
   return (
-    <section className="bg-muted/60 py-16">
+    <section className="bg-muted/60 mt-32 py-16">
       <div className="center-container">
         <div className="relative mx-auto flex max-w-screen-xl flex-col gap-20 lg:flex-row">
           {/* Left sidebar with filters */}

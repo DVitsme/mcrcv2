@@ -42,7 +42,7 @@ export default async function BlogPage({
   ])
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 mt-32 py-12">
       {/* Hero Section with Featured Post */}
       {featuredPost &&
         !categorySlug && ( // Only show hero on the main "All" page

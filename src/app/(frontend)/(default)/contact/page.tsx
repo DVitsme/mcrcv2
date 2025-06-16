@@ -71,8 +71,8 @@ export default function Contact() {
   }
 
   return (
-    <section className="py-16">
-      <div className="center-container">
+    <section className="mt-32 py-16">
+      <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between">
           <div className="max-w-full md:w-1/2 mb-8">
             <h1 className="mb-3 text-xl font-medium text-muted-foreground">Contact us</h1>
