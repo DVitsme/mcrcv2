@@ -249,7 +249,7 @@ export function HomepageHeader({
         },
       ],
     },
-    { title: 'Resources', url: '/resources' }, // Added Resources
+    // { title: 'Resources', url: '/resources' },
     { title: 'Events', url: '/events' },
     { title: 'Blog', url: '/blog' },
     { title: 'Contact', url: '/contact' },

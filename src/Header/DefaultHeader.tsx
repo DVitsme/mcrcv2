@@ -258,10 +258,10 @@ const defaultMenu: MenuItem[] = [
       },
     ],
   },
-  {
-    title: 'Resources', // New top-level item
-    url: '/resources',
-  },
+  // {
+  //   title: 'Resources',
+  //   url: '/resources',
+  // },
   { title: 'Events', url: '/events' },
   { title: 'Blog', url: '/blog' },
   { title: 'Contact', url: '/contact' },

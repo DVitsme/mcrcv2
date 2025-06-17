@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator'
 
 export default function BlogLoading() {
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 mt-32 py-12">
       {/* Featured Post Loading Skeleton */}
       <section className="mb-16">
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
