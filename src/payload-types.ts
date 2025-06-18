@@ -245,6 +245,7 @@ export interface Post {
    */
   readTimeMinutes?: number | null;
   publishedAt?: string | null;
+  relatedPosts?: (number | Post)[] | null;
   populatedAuthors?:
     | {
         id?: string | null;
@@ -256,6 +257,10 @@ export interface Post {
   meta?: {
     title?: string | null;
     description?: string | null;
+    /**
+     * Recommended size: 1200x630px.
+     */
+    image?: (number | null) | Media;
   };
   updatedAt: string;
   createdAt: string;
@@ -1239,6 +1244,7 @@ export interface PostsSelect<T extends boolean = true> {
   authors?: T;
   readTimeMinutes?: T;
   publishedAt?: T;
+  relatedPosts?: T;
   populatedAuthors?:
     | T
     | {
@@ -1252,6 +1258,7 @@ export interface PostsSelect<T extends boolean = true> {
     | {
         title?: T;
         description?: T;
+        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;

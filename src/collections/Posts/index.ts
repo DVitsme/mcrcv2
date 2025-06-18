@@ -1,11 +1,11 @@
 // src/collections/Posts/index.ts
 
 import type { CollectionConfig } from 'payload'
-// --- CORRECTED: Importing the correct access control functions ---
 import { isAdmin, isCoordinatorOrAdmin } from '@/access/roles'
-import { populateAuthors } from './hooks/populateAuthors'
-import { revalidatePost, revalidateDelete } from './hooks/revalidatePost'
+import { populateAuthors } from '@/collections/Posts/hooks/populateAuthors'
+import { revalidatePost, revalidateDelete } from '@/collections/Posts/hooks/revalidatePost'
 import { slugField } from '@/fields/slug'
+import type { Media } from '@/payload-types' // Import Media type for meta image
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -20,19 +20,14 @@ export const Posts: CollectionConfig = {
   },
   versions: {
     drafts: {
-      autosave: true, // Autosave is a great feature for content editors
+      autosave: true,
     },
     maxPerDoc: 10,
   },
   access: {
-    // Anyone can read published posts
     read: () => true,
-    // --- CORRECTED: Use 'isCoordinatorOrAdmin' as requested ---
-    // Admins and Coordinators can create posts
     create: isCoordinatorOrAdmin,
-    // Admins and Coordinators can update posts
     update: isCoordinatorOrAdmin,
-    // Only Admins can delete posts
     delete: isAdmin,
   },
   fields: [
@@ -78,10 +73,9 @@ export const Posts: CollectionConfig = {
       admin: {
         position: 'sidebar',
       },
-      // Optional: Filter the author list to only show users who can write posts
       filterOptions: {
         role: {
-          in: ['admin', 'coordinator'], // Or whatever roles you designate as authors
+          in: ['admin', 'coordinator'],
         },
       },
     },
@@ -108,7 +102,6 @@ export const Posts: CollectionConfig = {
       hooks: {
         beforeChange: [
           ({ siblingData, value }) => {
-            // If the post is being published and has no publishedAt date, set it to now
             if (siblingData._status === 'published' && !value) {
               return new Date()
             }
@@ -117,8 +110,21 @@ export const Posts: CollectionConfig = {
         ],
       },
     },
-    // The populatedAuthors field from the template is a great pattern for exposing author names
-    // without exposing their full user object. Let's keep it.
+    // --- NEW: Added relatedPosts field ---
+    {
+      name: 'relatedPosts',
+      type: 'relationship',
+      relationTo: 'posts',
+      hasMany: true,
+      // This filter prevents a post from being related to itself
+      filterOptions: ({ id }) => {
+        return {
+          id: {
+            not_equals: id,
+          },
+        }
+      },
+    },
     {
       name: 'populatedAuthors',
       type: 'array',
@@ -133,18 +139,11 @@ export const Posts: CollectionConfig = {
         update: () => false,
       },
       fields: [
-        {
-          name: 'id',
-          type: 'text',
-        },
-        {
-          name: 'name',
-          type: 'text',
-        },
+        { name: 'id', type: 'text' },
+        { name: 'name', type: 'text' },
       ],
     },
-    // --- CORRECTED: Use the spread operator for the slug field ---
-    ...slugField(), // This correctly adds the fields from the function to the array
+    ...slugField(),
     {
       name: 'meta',
       label: 'SEO',
@@ -160,8 +159,18 @@ export const Posts: CollectionConfig = {
           label: 'Meta Description',
           type: 'textarea',
         },
+        // --- NEW: Added meta image field ---
+        {
+          name: 'image',
+          label: 'Meta Image',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            description: 'Recommended size: 1200x630px.',
+          },
+        },
       ],
     },
   ],
-  timestamps: true, // Explicitly add timestamps
+  timestamps: true,
 }

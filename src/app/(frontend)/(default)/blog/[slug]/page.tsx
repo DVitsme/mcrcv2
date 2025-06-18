@@ -96,7 +96,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <Separator orientation="vertical" className="hidden h-6 sm:block" />
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              <span>5 min read</span>
+              <span>    {post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read'}</span>
             </div>
           </div>
         </header>
