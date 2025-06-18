@@ -15,7 +15,7 @@ interface Hero1Props {
     primary?: { text: string; url: string }
     secondary?: { text: string; url: string }
   }
-  image: {
+  image?: {
     src: string
     alt: string
   }
@@ -51,19 +51,31 @@ const PageHero = ({
     // I was having issues with the colorClasses not being applied, so I added this colorClasses[color] temp fix that may end up being permanent
     <section className={cn('py-32', colorClasses[color])}>
       <div className="container">
-        <div className="grid items-center gap-8 lg:grid-cols-2">
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left min-w-0">
+        <div className={cn('grid items-center gap-8', image ? 'lg:grid-cols-2' : '')}>
+          <div
+            className={cn(
+              'flex flex-col items-center text-center',
+              image
+                ? 'lg:items-start lg:text-left min-w-0'
+                : 'lg:items-center lg:text-center min-w-full',
+            )}
+          >
             {badge && (
               <Badge variant="outline" className="border-current text-current">
                 <Users className="ml-1 mr-2 size-4" />
                 <span className="mr-2">{badge}</span>
               </Badge>
             )}
-            <h1 className="my-6 pb-6 pt-4 text-6xl hyphens-auto font-bold uppercase text-pretty lg:text-8xl break-words">
+            <h1 className="my-6 pb-6 pt-4 text-6xl font-bold uppercase text-pretty lg:text-8xl">
               {heading}
             </h1>
             <p className="mb-8 max-w-xl lg:text-xl">{description}</p>
-            <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
+            <div
+              className={cn(
+                'flex w-full flex-col justify-center gap-2 sm:flex-row',
+                image ? 'lg:justify-start' : 'lg:justify-center',
+              )}
+            >
               {buttons?.primary && (
                 <Button asChild className={cn('w-full sm:w-auto', primaryButtonClasses[color])}>
                   <a href={buttons.primary.url}>{buttons.primary.text}</a>
@@ -83,13 +95,15 @@ const PageHero = ({
               )}
             </div>
           </div>
-          <Image
-            src={image.src}
-            alt={image.alt}
-            className="max-h-96 ml-0 w-full rounded-md object-cover lg:ml-10"
-            width={1000}
-            height={1000}
-          />
+          {image && (
+            <Image
+              src={image.src}
+              alt={image.alt}
+              className="max-h-96 ml-0 w-full rounded-md object-cover lg:ml-10"
+              width={1000}
+              height={1000}
+            />
+          )}
         </div>
       </div>
     </section>

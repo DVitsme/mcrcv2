@@ -1,6 +1,8 @@
+// src/collections/Events.ts
+
 import type { CollectionConfig } from 'payload'
 import { isCoordinatorOrAdmin, isAdmin } from '../access/roles'
-import type { User, Event } from '../payload-types'
+import type { User, Event, Media } from '../payload-types'
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -9,7 +11,7 @@ export const Events: CollectionConfig = {
     defaultColumns: ['name', 'eventType', 'status', 'eventStartTime'],
   },
   access: {
-    read: ({ req: { user } }: { req: { user: User | null } }) => {
+    read: ({ req: { user } }) => {
       if (user && (user.role === 'admin' || user.role === 'coordinator')) {
         return true
       }
@@ -78,19 +80,6 @@ export const Events: CollectionConfig = {
               admin: {
                 date: { pickerAppearance: 'dayAndTime' },
               },
-              validate: (
-                value: Date | null | undefined,
-                { siblingData }: { siblingData: Partial<Event> },
-              ) => {
-                if (
-                  value &&
-                  siblingData.eventStartTime &&
-                  new Date(value) <= new Date(siblingData.eventStartTime)
-                ) {
-                  return 'End time must be after start time'
-                }
-                return true
-              },
             },
             {
               name: 'modality',
@@ -107,7 +96,7 @@ export const Events: CollectionConfig = {
               label: 'Location / Venue',
               type: 'group',
               admin: {
-                condition: (_: unknown, siblingData: Partial<Event>) =>
+                condition: (_, siblingData) =>
                   siblingData.modality === 'in_person' || siblingData.modality === 'hybrid',
               },
               fields: [
@@ -128,7 +117,7 @@ export const Events: CollectionConfig = {
               label: 'Online Meeting',
               type: 'group',
               admin: {
-                condition: (_: unknown, siblingData: Partial<Event>) =>
+                condition: (_, siblingData) =>
                   siblingData.modality === 'online' || siblingData.modality === 'hybrid',
               },
               fields: [
@@ -188,7 +177,7 @@ export const Events: CollectionConfig = {
               label: 'Cost Details',
               type: 'group',
               admin: {
-                condition: (_: unknown, siblingData: Partial<Event>) => !siblingData.isFree,
+                condition: (_, siblingData) => !siblingData.isFree,
               },
               fields: [
                 {

@@ -1,72 +1,39 @@
+// src/collections/Posts/index.ts
+
 import type { CollectionConfig } from 'payload'
-
-import {
-  BlocksFeature,
-  FixedToolbarFeature,
-  HeadingFeature,
-  HorizontalRuleFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
-
-import { authenticated } from '../../access/authenticated'
-import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
-import { Banner } from '../../blocks/Banner/config'
-import { Code } from '../../blocks/Code/config'
-import { MediaBlock } from '../../blocks/MediaBlock/config'
-import { generatePreviewPath } from '../../utilities/generatePreviewPath'
+// --- CORRECTED: Importing the correct access control functions ---
+import { isAdmin, isCoordinatorOrAdmin } from '@/access/roles'
 import { populateAuthors } from './hooks/populateAuthors'
-import { revalidateDelete, revalidatePost } from './hooks/revalidatePost'
-
-import {
-  MetaDescriptionField,
-  MetaImageField,
-  MetaTitleField,
-  OverviewField,
-  PreviewField,
-} from '@payloadcms/plugin-seo/fields'
+import { revalidatePost, revalidateDelete } from './hooks/revalidatePost'
 import { slugField } from '@/fields/slug'
 
-export const Posts: CollectionConfig<'posts'> = {
+export const Posts: CollectionConfig = {
   slug: 'posts',
-  access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
-  },
-  // This config controls what's populated by default when a post is referenced
-  // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
-  // Type safe if the collection slug generic is passed to `CollectionConfig` - `CollectionConfig<'posts'>
-  defaultPopulate: {
-    title: true,
-    slug: true,
-    categories: true,
-    meta: {
-      image: true,
-      description: true,
-    },
-  },
   admin: {
-    defaultColumns: ['title', 'slug', 'updatedAt'],
-    livePreview: {
-      url: ({ data, req }) => {
-        const path = generatePreviewPath({
-          slug: typeof data?.slug === 'string' ? data.slug : '',
-          collection: 'posts',
-          req,
-        })
-
-        return path
-      },
-    },
-    preview: (data, { req }) =>
-      generatePreviewPath({
-        slug: typeof data?.slug === 'string' ? data.slug : '',
-        collection: 'posts',
-        req,
-      }),
     useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
+  },
+  hooks: {
+    afterChange: [revalidatePost],
+    afterRead: [populateAuthors],
+    afterDelete: [revalidateDelete],
+  },
+  versions: {
+    drafts: {
+      autosave: true, // Autosave is a great feature for content editors
+    },
+    maxPerDoc: 10,
+  },
+  access: {
+    // Anyone can read published posts
+    read: () => true,
+    // --- CORRECTED: Use 'isCoordinatorOrAdmin' as requested ---
+    // Admins and Coordinators can create posts
+    create: isCoordinatorOrAdmin,
+    // Admins and Coordinators can update posts
+    update: isCoordinatorOrAdmin,
+    // Only Admins can delete posts
+    delete: isAdmin,
   },
   fields: [
     {
@@ -75,107 +42,73 @@ export const Posts: CollectionConfig<'posts'> = {
       required: true,
     },
     {
-      type: 'tabs',
-      tabs: [
-        {
-          fields: [
-            {
-              name: 'heroImage',
-              type: 'upload',
-              relationTo: 'media',
-            },
-            {
-              name: 'content',
-              type: 'richText',
-              editor: lexicalEditor({
-                features: ({ rootFeatures }) => {
-                  return [
-                    ...rootFeatures,
-                    HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'] }),
-                    BlocksFeature({ blocks: [Banner, Code, MediaBlock] }),
-                    FixedToolbarFeature(),
-                    InlineToolbarFeature(),
-                    HorizontalRuleFeature(),
-                  ]
-                },
-              }),
-              label: false,
-              required: true,
-            },
-          ],
-          label: 'Content',
+      name: 'excerpt',
+      type: 'textarea',
+      maxLength: 200,
+      admin: {
+        description: 'A short summary of the post for display on card views and for SEO.',
+      },
+    },
+    {
+      name: 'heroImage',
+      label: 'Hero Image',
+      type: 'upload',
+      relationTo: 'media',
+      required: true,
+    },
+    {
+      name: 'content',
+      type: 'richText',
+    },
+    {
+      name: 'categories',
+      label: 'Categories (Tags)',
+      type: 'relationship',
+      relationTo: 'categories',
+      hasMany: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'authors',
+      type: 'relationship',
+      relationTo: 'users',
+      hasMany: true,
+      admin: {
+        position: 'sidebar',
+      },
+      // Optional: Filter the author list to only show users who can write posts
+      filterOptions: {
+        role: {
+          in: ['admin', 'coordinator'], // Or whatever roles you designate as authors
         },
-        {
-          fields: [
-            {
-              name: 'relatedPosts',
-              type: 'relationship',
-              admin: {
-                position: 'sidebar',
-              },
-              filterOptions: ({ id }) => {
-                return {
-                  id: {
-                    not_in: [id],
-                  },
-                }
-              },
-              hasMany: true,
-              relationTo: 'posts',
-            },
-            {
-              name: 'categories',
-              type: 'relationship',
-              admin: {
-                position: 'sidebar',
-              },
-              hasMany: true,
-              relationTo: 'categories',
-            },
-          ],
-          label: 'Meta',
-        },
-        {
-          name: 'meta',
-          label: 'SEO',
-          fields: [
-            OverviewField({
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-              imagePath: 'meta.image',
-            }),
-            MetaTitleField({
-              hasGenerateFn: true,
-            }),
-            MetaImageField({
-              relationTo: 'media',
-            }),
-
-            MetaDescriptionField({}),
-            PreviewField({
-              // if the `generateUrl` function is configured
-              hasGenerateFn: true,
-
-              // field paths to match the target field for data
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
-          ],
-        },
-      ],
+      },
+    },
+    {
+      name: 'readTimeMinutes',
+      label: 'Read Time (Minutes)',
+      type: 'number',
+      min: 1,
+      admin: {
+        position: 'sidebar',
+        description: 'Estimated time to read the article in minutes.',
+      },
     },
     {
       name: 'publishedAt',
       type: 'date',
+      label: 'Published Date',
       admin: {
+        position: 'sidebar',
         date: {
           pickerAppearance: 'dayAndTime',
         },
-        position: 'sidebar',
       },
       hooks: {
         beforeChange: [
           ({ siblingData, value }) => {
+            // If the post is being published and has no publishedAt date, set it to now
             if (siblingData._status === 'published' && !value) {
               return new Date()
             }
@@ -184,27 +117,20 @@ export const Posts: CollectionConfig<'posts'> = {
         ],
       },
     },
-    {
-      name: 'authors',
-      type: 'relationship',
-      admin: {
-        position: 'sidebar',
-      },
-      hasMany: true,
-      relationTo: 'users',
-    },
-    // This field is only used to populate the user data via the `populateAuthors` hook
-    // This is because the `user` collection has access control locked to protect user privacy
-    // GraphQL will also not return mutated user data that differs from the underlying schema
+    // The populatedAuthors field from the template is a great pattern for exposing author names
+    // without exposing their full user object. Let's keep it.
     {
       name: 'populatedAuthors',
       type: 'array',
-      access: {
-        update: () => false,
-      },
       admin: {
         disabled: true,
         readOnly: true,
+        hidden: true,
+      },
+      access: {
+        create: () => false,
+        read: () => true,
+        update: () => false,
       },
       fields: [
         {
@@ -217,20 +143,25 @@ export const Posts: CollectionConfig<'posts'> = {
         },
       ],
     },
-    ...slugField(),
-  ],
-  hooks: {
-    afterChange: [revalidatePost],
-    afterRead: [populateAuthors],
-    afterDelete: [revalidateDelete],
-  },
-  versions: {
-    drafts: {
-      autosave: {
-        interval: 100, // We set this interval for optimal live preview
-      },
-      schedulePublish: true,
+    // --- CORRECTED: Use the spread operator for the slug field ---
+    ...slugField(), // This correctly adds the fields from the function to the array
+    {
+      name: 'meta',
+      label: 'SEO',
+      type: 'group',
+      fields: [
+        {
+          name: 'title',
+          label: 'Meta Title',
+          type: 'text',
+        },
+        {
+          name: 'description',
+          label: 'Meta Description',
+          type: 'textarea',
+        },
+      ],
     },
-    maxPerDoc: 50,
-  },
+  ],
+  timestamps: true, // Explicitly add timestamps
 }

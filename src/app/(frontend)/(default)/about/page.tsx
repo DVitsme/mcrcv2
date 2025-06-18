@@ -13,11 +13,8 @@ const AboutPage = () => {
       <PageHero
         heading="About Us"
         description="Conflict is part of life—it shapes our relationships, our communities, and our growth. At the Mediation and Conflict Resolution Center, we believe that conflict, when approached with care and intention, can be a pathway to healing, understanding, and transformation."
-        image={{
-          src: 'https://www.shadcnblocks.com/images/block/placeholder-1.svg',
-          alt: 'About Us',
-        }}
         badge="Our History"
+        color="yellow"
         buttons={{
           primary: {
             text: 'Our Services',
