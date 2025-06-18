@@ -1,4 +1,13 @@
-import { FaInstagram, FaLinkedin, FaRedditAlien, FaTelegramPlane, FaTwitter } from 'react-icons/fa'
+import {
+  FaEnvelope,
+  FaInstagram,
+  FaLinkedin,
+  FaMapMarkerAlt,
+  FaPhone,
+  FaRedditAlien,
+  FaTelegramPlane,
+  FaTwitter,
+} from 'react-icons/fa'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -6,36 +15,46 @@ import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import Link from 'next/link'
 
+interface FooterLink {
+  name: string
+  href: string
+  icon?: React.ReactNode
+}
+
 const sections = [
   {
-    title: 'Product',
+    title: 'Pages',
     links: [
-      { name: 'Overview', href: '#' },
-      { name: 'Pricing', href: '#' },
-      { name: 'Marketplace', href: '#' },
-      { name: 'Features', href: '#' },
-      { name: 'Integrations', href: '#' },
-      { name: 'Pricing', href: '#' },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      { name: 'About', href: '#' },
-      { name: 'Team', href: '#' },
-      { name: 'Blog', href: '#' },
-      { name: 'Careers', href: '#' },
-      { name: 'Contact', href: '#' },
-      { name: 'Privacy', href: '#' },
-    ],
+      { name: 'Home', href: '/' },
+      { name: 'About', href: '/about' },
+      { name: 'Services', href: '/services' },
+      { name: 'Events', href: '/events' },
+      { name: 'Contact', href: '/contact' },
+      { name: 'Donate', href: '/donate' },
+    ] as FooterLink[],
   },
   {
     title: 'Resources',
     links: [
-      { name: 'Help', href: '#' },
-      { name: 'Sales', href: '#' },
-      { name: 'Advertise', href: '#' },
-    ],
+      { name: 'Blog', href: '/blog' },
+      { name: 'News', href: '/news' },
+      { name: 'Resources', href: '/resources' },
+      { name: 'FAQs', href: '/faqs' },
+      { name: 'Contact', href: '/contact' },
+      { name: 'Privacy', href: '/privacy' },
+    ] as FooterLink[],
+  },
+  {
+    title: 'Our Location',
+    links: [
+      {
+        name: '9770 Patuxent Woods Drive, Columbia, MD 21046, Suite 306',
+        href: 'https://maps.app.goo.gl/9770PatuxentWoodsDriveSuite306ColumbiaMD21046',
+        icon: <FaMapMarkerAlt />,
+      },
+      { name: '(443) 518-7693', href: 'tel:+14435187693', icon: <FaPhone /> },
+      { name: 'info@mcrchoward.org', href: 'mailto:info@mcrchoward.org', icon: <FaEnvelope /> },
+    ] as FooterLink[],
   },
 ]
 
@@ -45,6 +64,7 @@ interface Footer3Props {
     src: string
     alt: string
     title: string
+    icon?: React.ReactNode
   }
 }
 const Footer = ({
@@ -53,15 +73,16 @@ const Footer = ({
     src: '/images/logo/mcrc-logo.png',
     alt: 'logo',
     title: 'MCRC Howard County',
+    icon: <FaMapMarkerAlt />,
   },
 }: Footer3Props) => {
   return (
-    <section className="py-32 bg-tertiary text-tertiary-foreground">
+    <section className="pt-16 pb-32 bg-tertiary text-tertiary-foreground">
       <div className="container">
         <footer>
           {/* Logo */}
           <div className="flex items-center gap-2 lg:justify-start">
-            <Link href={logo.url}>
+            <Link href={logo.url} className="flex items-center gap-2">
               <Image
                 src={logo.src}
                 alt={logo.alt}
@@ -70,6 +91,9 @@ const Footer = ({
                 width={48}
                 height={48}
               />
+              <h3 className="font-bold text-2xl">
+                <span className="text-blue">MCRC</span> Howard County
+              </h3>
             </Link>
           </div>
           <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-5 xl:grid-cols-4">
@@ -78,7 +102,11 @@ const Footer = ({
                 <h3 className="mb-4 font-bold">{section.title}</h3>
                 <ul className="space-y-4 text-muted-foreground">
                   {section.links.map((link, linkIdx) => (
-                    <li key={linkIdx} className="font-medium hover:text-primary">
+                    <li
+                      key={linkIdx}
+                      className="font-medium flex hover:text-primary hover:underline"
+                    >
+                      {link.icon && <span className="mr-2 mt-1">{link.icon}</span>}
                       <Link href={link.href}>{link.name}</Link>
                     </li>
                   ))}
@@ -86,38 +114,41 @@ const Footer = ({
               </div>
             ))}
             <div className="lg:col-span-2 xl:col-span-1">
+              <h4 className="mb-4 font-bold text-lg border-b border-primary pb-2">
+                Get In Touch On :
+              </h4>
               <ul className="mb-10 flex items-center gap-2 text-muted-foreground">
                 <li className="font-medium">
                   <Link href="#">
-                    <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
+                    <span className="flex size-12 items-center justify-center rounded-full bg-darkgreen text-darkgreen-foreground transition-colors hover:text-yellow">
                       <FaInstagram className="size-6" />
                     </span>
                   </Link>
                 </li>
                 <li className="font-medium">
                   <Link href="#">
-                    <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
+                    <span className="flex size-12 items-center justify-center rounded-full bg-darkgreen text-darkgreen-foreground transition-colors hover:text-yellow">
                       <FaRedditAlien className="size-6" />
                     </span>
                   </Link>
                 </li>
                 <li className="font-medium">
                   <Link href="#">
-                    <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
+                    <span className="flex size-12 items-center justify-center rounded-full bg-darkgreen text-darkgreen-foreground transition-colors hover:text-yellow">
                       <FaTwitter className="size-6" />
                     </span>
                   </Link>
                 </li>
                 <li className="font-medium">
                   <Link href="#">
-                    <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
+                    <span className="flex size-12 items-center justify-center rounded-full bg-darkgreen text-darkgreen-foreground transition-colors hover:text-yellow">
                       <FaTelegramPlane className="size-6" />
                     </span>
                   </Link>
                 </li>
                 <li className="font-medium">
                   <Link href="#">
-                    <span className="flex size-12 items-center justify-center rounded-full bg-muted transition-colors hover:text-primary">
+                    <span className="flex size-12 items-center justify-center rounded-full bg-darkgreen text-darkgreen-foreground transition-colors hover:text-yellow">
                       <FaLinkedin className="size-6" />
                     </span>
                   </Link>
@@ -127,7 +158,9 @@ const Footer = ({
                 <Label htmlFor="email">Subscribe to our newsletter</Label>
                 <div className="flex w-full max-w-sm items-center space-x-2">
                   <Input type="email" placeholder="Email" />
-                  <Button type="submit">Subscribe</Button>
+                  <Button type="submit" className="text-white bg-primary">
+                    Subscribe
+                  </Button>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   By submitting, you agree to our
