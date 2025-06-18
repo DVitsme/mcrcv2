@@ -20,7 +20,8 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Fragment, useEffect, useState } from 'react' // CORRECTED: Fragment is from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 import {
   Accordion,
@@ -40,38 +41,28 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { cn } from '@/utilities/ui'
-import { usePathname } from 'next/navigation'
 
 // --- Types and Data ---
 interface MenuItem {
   title: string
-  url: string // Standardized to 'url'
+  url: string
   description?: string
   icon?: React.ReactNode
   items?: MenuItem[]
 }
 
 interface NavbarProps {
-  logo?: {
-    url: string
-    src: string
-    alt: string
-    title: string
-  }
+  logo?: { url: string; src: string; alt: string; title: string }
   menu?: MenuItem[]
-  auth?: {
-    login: {
-      title: string
-      url: string
-    }
-    signup: {
-      title: string
-      url: string
-    }
-  }
+  auth?: { login: { title: string; url: string }; signup: { title: string; url: string } }
 }
 
-// --- CORRECTED: Data for the Resources Menu (using 'url' instead of 'href') ---
+interface Topic {
+  title: string
+  url: string
+  icon: React.ComponentType<{ className?: string }>
+}
+
 const resources: MenuItem[] = [
   {
     title: 'Events & Webinars',
@@ -88,7 +79,7 @@ const resources: MenuItem[] = [
   {
     title: 'Blog',
     description: 'Latest updates and best practices.',
-    url: '/blog', // Example of a real link
+    url: '/blog',
     icon: <Newspaper className="size-5 shrink-0" />,
   },
   {
@@ -111,7 +102,7 @@ const resources: MenuItem[] = [
   },
 ]
 
-const topicGroups = [
+const topicGroups: { title: string; topics: Topic[] }[] = [
   {
     title: 'Learning Resources',
     topics: [
@@ -200,7 +191,7 @@ const ResourcesMenu = () => (
             </strong>
           </div>
           <menu className="mb-7 grid md:grid-cols-2 md:gap-x-6 lg:grid-cols-1 lg:gap-x-0">
-            {group.topics.map((topic) => (
+            {group.topics.map((topic: Topic) => (
               <li key={topic.title}>
                 <NavigationMenuLink asChild>
                   <Link
@@ -258,10 +249,10 @@ const defaultMenu: MenuItem[] = [
       },
     ],
   },
-  // {
-  //   title: 'Resources',
-  //   url: '/resources',
-  // },
+  {
+    title: 'Resources',
+    url: '/resources',
+  },
   { title: 'Events', url: '/events' },
   { title: 'Blog', url: '/blog' },
   { title: 'Contact', url: '/contact' },
@@ -328,6 +319,7 @@ export function DefaultHeader({
                   item.title === 'Resources' ? (
                     <NavigationMenuItem key={item.title}>
                       <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+                      {/* Note: Positioning classes have been removed as requested */}
                       <NavigationMenuContent className="min-w-[calc(100vw-4rem)] p-12 2xl:min-w-[calc(1400px-4rem)]">
                         <ResourcesMenu />
                       </NavigationMenuContent>
@@ -339,7 +331,7 @@ export function DefaultHeader({
                         <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
                           {item.items.map((subItem) => (
                             <li key={subItem.title}>
-                              <NavigationMenuLink asChild className="lg:p-2">
+                              <NavigationMenuLink asChild>
                                 <SubMenuLink item={subItem} />
                               </NavigationMenuLink>
                             </li>
@@ -348,15 +340,16 @@ export function DefaultHeader({
                       </NavigationMenuContent>
                     </NavigationMenuItem>
                   ) : (
+                    // --- CORRECTED: Modern Link Pattern ---
                     <NavigationMenuItem key={item.title}>
-                      <Link href={item.url} legacyBehavior passHref>
-                        <NavigationMenuLink
+                      <NavigationMenuLink asChild active={pathname === item.url}>
+                        <Link
+                          href={item.url}
                           className={cn(navigationMenuTriggerStyle(), 'lg:p-2')}
-                          active={pathname === item.url}
                         >
                           {item.title}
-                        </NavigationMenuLink>
-                      </Link>
+                        </Link>
+                      </NavigationMenuLink>
                     </NavigationMenuItem>
                   ),
                 )}
