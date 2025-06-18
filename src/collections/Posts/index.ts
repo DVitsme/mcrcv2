@@ -5,7 +5,10 @@ import { isAdmin, isCoordinatorOrAdmin } from '@/access/roles'
 import { populateAuthors } from '@/collections/Posts/hooks/populateAuthors'
 import { revalidatePost, revalidateDelete } from '@/collections/Posts/hooks/revalidatePost'
 import { slugField } from '@/fields/slug'
+import { Banner } from '../../blocks/Banner/config'
 import type { Media } from '@/payload-types' // Import Media type for meta image
+import { BlocksFeature } from '@payloadcms/richtext-lexical'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -170,6 +173,22 @@ export const Posts: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      name: 'banner',
+      type: 'richText', // Or 'blocks' if you are using a blocks field
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [
+              Banner,
+              // Code, // Add any other blocks you have here
+              // MediaBlock,
+            ],
+          }),
+        ],
+      }),
     },
   ],
   timestamps: true,
