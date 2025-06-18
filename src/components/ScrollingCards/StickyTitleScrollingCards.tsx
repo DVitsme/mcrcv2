@@ -1,13 +1,16 @@
+import { cn } from '@/utilities/ui'
 import React from 'react'
 
 const StickyTitleScrollingCards = ({
   title,
   description,
   cards,
+  color = 'secondary',
 }: {
   title: string
   description: string
   cards: { title: string; description: string }[] | undefined
+  color?: string
 }) => {
   return (
     <section className="py-16">
@@ -21,7 +24,10 @@ const StickyTitleScrollingCards = ({
             cards.map((card, index) => (
               <div
                 key={index}
-                className="group flex flex-col justify-center overflow-clip rounded-2xl bg-accent px-6 py-8 md:px-8 md:py-10 lg:px-10 lg:py-12"
+                className={cn(
+                  'group flex flex-col justify-center overflow-clip rounded-2xl px-6 py-8 md:px-8 md:py-10 lg:px-10 lg:py-12',
+                  `bg-${color} text-${color}-foreground`,
+                )}
               >
                 <p className="mb-3 text-xs font-medium tracking-wider uppercase">{card.title}</p>
                 <p className="mb-4 font-semibold text-muted-foreground lg:text-xl">

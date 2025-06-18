@@ -6,6 +6,7 @@ import { StickyTitleScrollingCards } from '@/components/ScrollingCards/StickyTit
 import { TwoColRightImage } from '@/components/sections/TwoColRightImage'
 import { FAQ } from '@/components/sections/FAQ'
 import { GridImageCards } from '@/components/sections/GridImageCards'
+import { OptimizedVideoPlayer } from '@/components/Media/VideoMedia/OptimizedVideoPlayer'
 
 const AboutPage = () => {
   return (
@@ -45,11 +46,16 @@ const AboutPage = () => {
               </p>
             </div>
           </div>
+          <OptimizedVideoPlayer
+            resource="/videos/howard-county/oldEllicottCityHowardCountyCourthouse.webm"
+            poster="/images/about/about-video-poster.jpg"
+            className="mx-auto max-h-[700px] w-full max-w-7xl rounded-t-lg object-cover shadow-lg"
+          />
           <TwoColRightImage
             subheader="26 Years of Service"
             title="Our History"
             description="Originally connected to Howard Community College, we have since grown into an independent, community-rooted organization. Our work is grounded in the belief that people hold the wisdom and capacity to navigate their own challenges when given the right support. We walk alongside individuals, families, and groups to facilitate conversations that restore trust, mend relationships, and build stronger communities."
-            image="https://shadcnblocks.com/images/block/photos/pawel-czerwinski-O4fAgtXLRwI-unsplash.jpg"
+            image="/images/howard-county/corner-church.jpg"
           />
           <StickyTitleScrollingCards
             title="Our Core Values"
