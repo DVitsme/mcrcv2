@@ -29,9 +29,7 @@ export async function generateMetadata({
       title: post.meta?.title || post.title,
       description: post.meta?.description || '',
       images:
-        post.meta?.image && typeof post.meta.image === 'object'
-          ? [{ url: post.meta.image.url! }]
-          : [],
+        post.heroImage && typeof post.heroImage === 'object' ? [{ url: post.heroImage.url! }] : [],
       type: 'article',
       publishedTime: post.publishedAt || post.createdAt,
       authors: (post.authors || [])
