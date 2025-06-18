@@ -1,13 +1,8 @@
-import type { CollectionConfig } from 'payload'
+// src/collections/Media.ts
 
-import {
-  FixedToolbarFeature,
-  InlineToolbarFeature,
-  lexicalEditor,
-} from '@payloadcms/richtext-lexical'
+import type { CollectionConfig } from 'payload'
 import path from 'path'
 import { fileURLToPath } from 'url'
-
 import { anyone } from '../access/anyone'
 import { authenticated } from '../access/authenticated'
 
@@ -26,33 +21,37 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      //required: true,
+      required: true, // It's a best practice for accessibility to require alt text.
     },
     {
       name: 'caption',
       type: 'richText',
-      editor: lexicalEditor({
-        features: ({ rootFeatures }) => {
-          return [...rootFeatures, FixedToolbarFeature(), InlineToolbarFeature()]
-        },
-      }),
+      // The richText editor config is not needed here as it will inherit from your payload.config.ts `editor` property
     },
   ],
   upload: {
-    // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
-    staticDir: path.resolve(dirname, '../../public/media'),
+    // This path is used as a fallback if the S3 adapter is disabled, but won't be used in production.
+    staticDir: path.resolve(dirname, '../../media'),
+
+    // --- RECOMMENDED FIX ---
+    // This is CRITICAL for cloud storage. It prevents Payload from saving a local copy
+    // of the file on the server, which is essential for ephemeral filesystems like Vercel.
     disableLocalStorage: true,
+
     adminThumbnail: 'thumbnail',
     focalPoint: true,
     imageSizes: [
       {
         name: 'thumbnail',
-        width: 300,
+        width: 400,
+        height: 300,
+        position: 'centre',
       },
       {
         name: 'square',
         width: 500,
         height: 500,
+        position: 'centre',
       },
       {
         name: 'small',
@@ -74,7 +73,7 @@ export const Media: CollectionConfig = {
         name: 'og',
         width: 1200,
         height: 630,
-        crop: 'center',
+        position: 'centre', // Changed from 'crop' to a valid Payload option
       },
     ],
   },

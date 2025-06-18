@@ -9,7 +9,6 @@ dotenv.config({
 })
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
-
 import sharp from 'sharp' // sharp-import
 import { buildConfig, PayloadRequest } from 'payload'
 import { resendAdapter } from '@payloadcms/email-resend'
@@ -53,6 +52,22 @@ if (!process.env.RESEND_API) {
   throw new Error('RESEND_API environment variable is not set!')
 }
 
+// --- DEBUGGING: Log S3 variables before they are used ---
+const s3Bucket = process.env.S3_BUCKET
+const s3Endpoint = process.env.S3_ENDPOINT
+const s3Region = process.env.S3_REGION
+const s3AccessKeyId = process.env.S3_ACCESS_KEY_ID
+const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY
+
+console.log('--- S3 Storage Configuration ---')
+console.log('S3_BUCKET:', s3Bucket)
+console.log('S3_ENDPOINT:', s3Endpoint)
+console.log('S3_REGION:', s3Region)
+console.log('S3_ACCESS_KEY_ID:', s3AccessKeyId ? '**********' : 'NOT SET')
+console.log('S3_SECRET_ACCESS_KEY:', s3SecretAccessKey ? '**********' : 'NOT SET')
+console.log('---------------------------------')
+// --- END DEBUGGING ---
+
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
   admin: {
@@ -80,7 +95,7 @@ export default buildConfig({
     },
   }),
   email: resendAdapter({
-    apiKey: process.env.RESEND_API,
+    apiKey: process.env.RESEND_API!,
     defaultFromAddress: 'noreply@mcrc.org',
     defaultFromName: 'MCRC',
   }),
@@ -92,18 +107,17 @@ export default buildConfig({
     s3Storage({
       collections: {
         media: {
-          // This should match the slug of your Media collection
-          // You can add a prefix to all files uploaded to this collection
           prefix: 'media-assets',
         },
       },
-      bucket: process.env.S3_BUCKET!,
+      // Use the variables we defined above for debugging
+      bucket: s3Bucket!,
       config: {
-        endpoint: process.env.S3_ENDPOINT!,
-        region: process.env.S3_REGION!,
+        endpoint: s3Endpoint!,
+        region: s3Region!,
         credentials: {
-          accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+          accessKeyId: s3AccessKeyId!,
+          secretAccessKey: s3SecretAccessKey!,
         },
       },
     }),

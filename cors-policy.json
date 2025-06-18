@@ -1,16 +1,14 @@
 {
   "rules": [
     {
-      "allowedOrigins": [
-        "https://mcrchoward.org",
-        "https://*.vercel.app",
-        "http://localhost:3000",
-        "http://localhost:3001"
-      ],
-      "AllowedMethods": ["GET", "HEAD", "PUT", "POST", "DELETE"],
-      "AllowedHeaders": ["*"],
-      "ExposeHeaders": ["ETag"],
-      "MaxAgeSeconds": 3000
+      "id": "AllowWebAppAccess",
+      "allowed": {
+        "origins": ["https://mcrchoward.org", "http://localhost:3000", "https://*.vercel.app"],
+        "methods": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+        "headers": ["*"]
+      },
+      "exposeHeaders": ["ETag"],
+      "maxAgeSeconds": 3000
     }
   ]
 }

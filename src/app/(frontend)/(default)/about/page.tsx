@@ -10,7 +10,7 @@ import { OptimizedVideoPlayer } from '@/components/Media/VideoMedia/OptimizedVid
 
 const AboutPage = () => {
   return (
-    <div>
+    <>
       <PageHero
         heading="About Us"
         description="Conflict is part of life—it shapes our relationships, our communities, and our growth. At the Mediation and Conflict Resolution Center, we believe that conflict, when approached with care and intention, can be a pathway to healing, understanding, and transformation."
@@ -46,30 +46,36 @@ const AboutPage = () => {
               </p>
             </div>
           </div>
+        </div>
+        <div className="mt-32 container mx-auto max-w-7xl">
           <OptimizedVideoPlayer
-            resource="/videos/howard-county/oldEllicottCityHowardCountyCourthouse.webm"
+            resource="/videos/howard-county/OldEllicottCityMarylandHowardCountyCourthouse.mp4"
             poster="/images/about/about-video-poster.jpg"
             className="mx-auto max-h-[700px] w-full max-w-7xl rounded-t-lg object-cover shadow-lg"
           />
+        </div>
+        <div className="py-32 container mx-auto max-w-7xl">
           <TwoColRightImage
             subheader="26 Years of Service"
             title="Our History"
             description="Originally connected to Howard Community College, we have since grown into an independent, community-rooted organization. Our work is grounded in the belief that people hold the wisdom and capacity to navigate their own challenges when given the right support. We walk alongside individuals, families, and groups to facilitate conversations that restore trust, mend relationships, and build stronger communities."
             image="/images/howard-county/corner-church.jpg"
           />
+        </div>
+        <div className="py-32 container mx-auto max-w-7xl">
           <StickyTitleScrollingCards
             title="Our Core Values"
             description="MCRC is committed to building an inclusive and equitable community. We use Alternative Dispute Resolution (ADR) to resolve conflicts in a way that values equity, diversity, and collaboration. By prioritizing fair access, amplifying diverse voices, removing barriers to participation, and fostering shared investment, these values guide our principles, shaping how we serve and engage with individuals and groups in Howard County."
             cards={CoreValues}
           />
-          <FAQ
-            heading="MCRC Commitment to the The Nine Hallmarks of Community Mediation"
-            items={faqItems}
-          />
-          <GridImageCards CardData={CardData} />
         </div>
+        <FAQ
+          heading="MCRC Commitment to the The Nine Hallmarks of Community Mediation"
+          items={faqItems}
+        />
+        <GridImageCards CardData={CardData} />
       </section>
-    </div>
+    </>
   )
 }
 
