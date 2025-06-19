@@ -391,7 +391,35 @@ export interface Category {
 export interface User {
   id: number;
   name: string;
-  role: 'admin' | 'coordinator' | 'mediator' | 'participant';
+  role: 'admin' | 'coordinator' | 'mediator' | 'volunteer' | 'participant';
+  /**
+   * Controls the user's application and activation status.
+   */
+  userStatus?: ('pending' | 'active' | 'rejected') | null;
+  avatar?: (number | null) | Media;
+  bio?: string | null;
+  phone_number?: string | null;
+  skills?:
+    | {
+        skill?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  languagesSpoken?:
+    | {
+        language?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  preferredCaseTypes?: ('mediation' | 'restorative_justice')[] | null;
+  isAvailableForNewCases?: boolean | null;
+  contactPreferences?: {
+    optInNewCaseNotifications?: boolean | null;
+  };
+  demographics?: {
+    age?: number | null;
+    raceEthnicity?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -820,20 +848,69 @@ export interface Event {
  */
 export interface Case {
   id: number;
-  /**
-   * Unique identifier for the case (e.g., CASE-2024-001)
-   */
-  caseReferenceId: string;
   title: string;
   /**
-   * Current status of the case
+   * Unique identifier for the case (e.g., MCRC-2025-001)
    */
-  status: 'open' | 'in-progress' | 'closed';
-  mediators: (number | User)[];
-  participants: (number | User)[];
+  caseReferenceId?: string | null;
+  status:
+    | 'new'
+    | 'under_review'
+    | 'awaiting_participant_2'
+    | 'p2_response_received'
+    | 'p2_declined_pending_closure'
+    | 'awaiting_mediator_assignment'
+    | 'awaiting_consent'
+    | 'scheduled'
+    | 'in_progress'
+    | 'follow_up_required'
+    | 'on_hold'
+    | 'closed_resolved_agreement'
+    | 'closed_resolved_no_agreement'
+    | 'closed_unresolved'
+    | 'closed_rejected_intake'
+    | 'closed_p2_declined'
+    | 'closed_other';
+  mainCategory?: ('Mediation' | 'Restorative Justice') | null;
+  caseSubtype?: string | null;
+  participant1?: {
+    fullName?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    conflictDescription?: string | null;
+    desiredOutcome?: string | null;
+  };
+  participant2?: {
+    fullName?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    relationshipToP1?: string | null;
+  };
+  p2WillingToMediate?: boolean | null;
+  conflictDescriptionByP2?: string | null;
+  assignedCoordinator?: (number | null) | User;
+  mediators?:
+    | {
+        mediator: number | User;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  participants?:
+    | {
+        participant: number | User;
+        roleInCase: 'participant_1' | 'participant_2' | 'other_involved_party';
+        consentFormLink?: string | null;
+        consentFormSignedAt?: string | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   coordinatorNotes?: string | null;
   mediatorNotes?: string | null;
   publicNotes?: string | null;
+  rejectionClosureReason?: string | null;
+  rejectionClosureDetails?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1390,6 +1467,35 @@ export interface CategoriesSelect<T extends boolean = true> {
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
   role?: T;
+  userStatus?: T;
+  avatar?: T;
+  bio?: T;
+  phone_number?: T;
+  skills?:
+    | T
+    | {
+        skill?: T;
+        id?: T;
+      };
+  languagesSpoken?:
+    | T
+    | {
+        language?: T;
+        id?: T;
+      };
+  preferredCaseTypes?: T;
+  isAvailableForNewCases?: T;
+  contactPreferences?:
+    | T
+    | {
+        optInNewCaseNotifications?: T;
+      };
+  demographics?:
+    | T
+    | {
+        age?: T;
+        raceEthnicity?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1461,14 +1567,53 @@ export interface EventsSelect<T extends boolean = true> {
  * via the `definition` "cases_select".
  */
 export interface CasesSelect<T extends boolean = true> {
-  caseReferenceId?: T;
   title?: T;
+  caseReferenceId?: T;
   status?: T;
-  mediators?: T;
-  participants?: T;
+  mainCategory?: T;
+  caseSubtype?: T;
+  participant1?:
+    | T
+    | {
+        fullName?: T;
+        email?: T;
+        phone?: T;
+        conflictDescription?: T;
+        desiredOutcome?: T;
+      };
+  participant2?:
+    | T
+    | {
+        fullName?: T;
+        email?: T;
+        phone?: T;
+        relationshipToP1?: T;
+      };
+  p2WillingToMediate?: T;
+  conflictDescriptionByP2?: T;
+  assignedCoordinator?: T;
+  mediators?:
+    | T
+    | {
+        mediator?: T;
+        notes?: T;
+        id?: T;
+      };
+  participants?:
+    | T
+    | {
+        participant?: T;
+        roleInCase?: T;
+        consentFormLink?: T;
+        consentFormSignedAt?: T;
+        notes?: T;
+        id?: T;
+      };
   coordinatorNotes?: T;
   mediatorNotes?: T;
   publicNotes?: T;
+  rejectionClosureReason?: T;
+  rejectionClosureDetails?: T;
   updatedAt?: T;
   createdAt?: T;
 }

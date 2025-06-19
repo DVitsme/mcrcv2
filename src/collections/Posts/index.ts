@@ -6,7 +6,6 @@ import { populateAuthors } from '@/collections/Posts/hooks/populateAuthors'
 import { revalidatePost, revalidateDelete } from '@/collections/Posts/hooks/revalidatePost'
 import { slugField } from '@/fields/slug'
 import { Banner } from '../../blocks/Banner/config'
-import type { Media } from '@/payload-types'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 export const Posts: CollectionConfig = {

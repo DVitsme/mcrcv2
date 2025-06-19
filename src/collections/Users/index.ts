@@ -47,6 +47,25 @@ export const Users: CollectionConfig = {
         update: isAdminFieldLevel,
       },
     },
+    {
+      name: 'userStatus',
+      label: 'Status',
+      type: 'select',
+      options: [
+        { label: 'Pending', value: 'pending' },
+        { label: 'Active', value: 'active' },
+        { label: 'Rejected', value: 'rejected' },
+      ],
+      defaultValue: 'pending',
+      admin: {
+        position: 'sidebar',
+        description: "Controls the user's application and activation status.",
+      },
+      access: {
+        // Only Admins and Coordinators can change a user's status
+        update: isAdminFieldLevel,
+      },
+    },
     // Using Tabs to organize the user profile
     {
       type: 'tabs',

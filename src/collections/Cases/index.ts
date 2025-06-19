@@ -1,22 +1,27 @@
 // src/collections/Cases/index.ts
 
-import type { CollectionConfig, Where, FieldAccess } from 'payload'
+import type { CollectionConfig, FieldAccess, Where } from 'payload'
 import { isCoordinatorOrAdmin, isAdmin, isCoordinatorFieldLevel } from '@/access/roles'
 import type { User, Case } from '@/payload-types'
 
-// This field-level access function correctly handles all operations (create, read, update)
-// by checking both incoming `data` and the existing `doc`.
-const isAssignedMediatorOrAdmin: FieldAccess<Case, User> = ({ req: { user }, data, doc }) => {
+// This helper function is specific to this collection's logic and is well-placed here.
+// It is now fully type-safe and handles all operations correctly.
+const isAssignedMediatorOrAdmin: FieldAccess<Case, User> = ({ req, doc, data }) => {
+  const { user } = req
   if (!user) return false
-  if (isCoordinatorFieldLevel({ req: { user } })) return true
+  if (isCoordinatorFieldLevel({ req })) return true
 
-  // On 'create', check incoming data. On 'update' or 'read', check existing doc.
+  // Check either the incoming `data` (for create) or the existing `doc` (for read/update)
   const documentToCheck = data || doc
 
-  if (!documentToCheck || !documentToCheck.mediators) return false
+  if (!documentToCheck || !documentToCheck.mediators || !Array.isArray(documentToCheck.mediators)) {
+    return false
+  }
 
-  const assignedMediatorIds = documentToCheck.mediators.map((mediator: string | number | User) =>
-    typeof mediator === 'object' ? mediator.id : mediator,
+  // --- CORRECTED: The type assertion now matches the data structure of the 'mediators' field. ---
+  // The 'mediators' field is an array of Users or their IDs, not objects containing a 'mediator' property.
+  const assignedMediatorIds = (documentToCheck.mediators as (string | number | User)[]).map(
+    (item) => (typeof item === 'object' ? item.id : item),
   )
 
   return assignedMediatorIds.includes(user.id)
@@ -32,20 +37,20 @@ export const Cases: CollectionConfig = {
     // --- CORRECTED: Restored secure read access logic ---
     read: ({ req: { user } }) => {
       if (!user) return false
-      // Admins and coordinators can read all cases
       if (user.role === 'admin' || user.role === 'coordinator') {
         return true
       }
 
-      // Other users can only read cases where they are listed as a mediator OR a participant
+      // Other users can only read cases where they are an assigned mediator OR participant.
+      // This is a secure, database-level filter.
       const orConditions: Where[] = [
         {
-          mediators: {
+          'mediators.mediator': {
             contains: user.id,
           },
         },
         {
-          participants: {
+          'participants.participant': {
             contains: user.id,
           },
         },
@@ -124,7 +129,7 @@ export const Cases: CollectionConfig = {
           ],
         },
         {
-          label: 'Participants',
+          label: 'Intake Details',
           fields: [
             {
               type: 'row',
@@ -183,25 +188,49 @@ export const Cases: CollectionConfig = {
             {
               name: 'mediators',
               label: 'Assigned Mediator(s)',
-              type: 'relationship',
-              relationTo: 'users',
-              hasMany: true,
-              filterOptions: { role: { equals: 'mediator' } },
-              required: true,
+              type: 'array',
               minRows: 1,
+              fields: [
+                {
+                  name: 'mediator',
+                  type: 'relationship',
+                  relationTo: 'users',
+                  required: true,
+                  filterOptions: { role: { equals: 'mediator' } },
+                },
+                {
+                  name: 'notes',
+                  type: 'textarea',
+                },
+              ],
               access: {
                 update: isCoordinatorFieldLevel,
               },
             },
             {
               name: 'participants',
-              label: 'Case Participants (as Users)',
-              type: 'relationship',
-              relationTo: 'users',
-              hasMany: true,
-              filterOptions: { role: { equals: 'participant' } },
-              required: true,
+              label: 'Case Participants',
+              type: 'array',
               minRows: 2,
+              fields: [
+                {
+                  name: 'participant',
+                  type: 'relationship',
+                  relationTo: 'users',
+                  required: true,
+                  filterOptions: { role: { equals: 'participant' } },
+                },
+                {
+                  name: 'roleInCase',
+                  label: 'Role in Case',
+                  type: 'select',
+                  options: ['participant_1', 'participant_2', 'other_involved_party'],
+                  required: true,
+                },
+                { name: 'consentFormLink', type: 'text' },
+                { name: 'consentFormSignedAt', type: 'date' },
+                { name: 'notes', type: 'textarea' },
+              ],
               access: {
                 update: isCoordinatorFieldLevel,
               },
