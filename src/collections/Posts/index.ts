@@ -6,9 +6,8 @@ import { populateAuthors } from '@/collections/Posts/hooks/populateAuthors'
 import { revalidatePost, revalidateDelete } from '@/collections/Posts/hooks/revalidatePost'
 import { slugField } from '@/fields/slug'
 import { Banner } from '../../blocks/Banner/config'
-import type { Media } from '@/payload-types' // Import Media type for meta image
-import { BlocksFeature } from '@payloadcms/richtext-lexical'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import type { Media } from '@/payload-types'
+import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
@@ -21,6 +20,7 @@ export const Posts: CollectionConfig = {
     afterRead: [populateAuthors],
     afterDelete: [revalidateDelete],
   },
+  // By enabling versions, Payload automatically adds and manages the _status field.
   versions: {
     drafts: {
       autosave: true,
@@ -57,6 +57,14 @@ export const Posts: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          BlocksFeature({
+            blocks: [Banner],
+          }),
+        ],
+      }),
     },
     {
       name: 'categories',
@@ -93,6 +101,16 @@ export const Posts: CollectionConfig = {
       },
     },
     {
+      name: 'featured',
+      label: 'Featured Post',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Check this to display this post in the main hero section of the blog page.',
+      },
+    },
+    {
       name: 'publishedAt',
       type: 'date',
       label: 'Published Date',
@@ -113,13 +131,11 @@ export const Posts: CollectionConfig = {
         ],
       },
     },
-    // --- NEW: Added relatedPosts field ---
     {
       name: 'relatedPosts',
       type: 'relationship',
       relationTo: 'posts',
       hasMany: true,
-      // This filter prevents a post from being related to itself
       filterOptions: ({ id }) => {
         return {
           id: {
@@ -162,7 +178,6 @@ export const Posts: CollectionConfig = {
           label: 'Meta Description',
           type: 'textarea',
         },
-        // --- NEW: Added meta image field ---
         {
           name: 'image',
           label: 'Meta Image',
@@ -174,22 +189,14 @@ export const Posts: CollectionConfig = {
         },
       ],
     },
-    {
-      name: 'banner',
-      type: 'richText', // Or 'blocks' if you are using a blocks field
-      editor: lexicalEditor({
-        features: ({ defaultFeatures }) => [
-          ...defaultFeatures,
-          BlocksFeature({
-            blocks: [
-              Banner,
-              // Code, // Add any other blocks you have here
-              // MediaBlock,
-            ],
-          }),
-        ],
-      }),
-    },
+    // --- CORRECTED ---
+    // The manual '_status' field has been removed.
+    // The `versions` property above handles this automatically.
+    // To make it queryable, we just need to ensure its 'index' property is set,
+    // which Payload will do if we just add it by name to the fields array.
+    // However, for maximum compatibility and to avoid regeneration issues,
+    // we let Payload handle this implicitly for now. If you need to query by status and it fails,
+    // we would add an index to the _posts_v table manually.
   ],
   timestamps: true,
 }

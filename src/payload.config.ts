@@ -52,21 +52,11 @@ if (!process.env.RESEND_API) {
   throw new Error('RESEND_API environment variable is not set!')
 }
 
-// --- DEBUGGING: Log S3 variables before they are used ---
 const s3Bucket = process.env.S3_BUCKET
 const s3Endpoint = process.env.S3_ENDPOINT
 const s3Region = process.env.S3_REGION
 const s3AccessKeyId = process.env.S3_ACCESS_KEY_ID
 const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY
-
-console.log('--- S3 Storage Configuration ---')
-console.log('S3_BUCKET:', s3Bucket)
-console.log('S3_ENDPOINT:', s3Endpoint)
-console.log('S3_REGION:', s3Region)
-console.log('S3_ACCESS_KEY_ID:', s3AccessKeyId ? '**********' : 'NOT SET')
-console.log('S3_SECRET_ACCESS_KEY:', s3SecretAccessKey ? '**********' : 'NOT SET')
-console.log('---------------------------------')
-// --- END DEBUGGING ---
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,

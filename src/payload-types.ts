@@ -244,6 +244,10 @@ export interface Post {
    * Estimated time to read the article in minutes.
    */
   readTimeMinutes?: number | null;
+  /**
+   * Check this to display this post in the main hero section of the blog page.
+   */
+  featured?: boolean | null;
   publishedAt?: string | null;
   relatedPosts?: (number | Post)[] | null;
   populatedAuthors?:
@@ -262,21 +266,6 @@ export interface Post {
      */
     image?: (number | null) | Media;
   };
-  banner?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1258,6 +1247,7 @@ export interface PostsSelect<T extends boolean = true> {
   categories?: T;
   authors?: T;
   readTimeMinutes?: T;
+  featured?: T;
   publishedAt?: T;
   relatedPosts?: T;
   populatedAuthors?:
@@ -1275,7 +1265,6 @@ export interface PostsSelect<T extends boolean = true> {
         description?: T;
         image?: T;
       };
-  banner?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

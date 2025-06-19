@@ -1,5 +1,5 @@
 {
-  "id": "06b8771a-b5cb-434b-a813-9d7f58e57ba9",
+  "id": "f8090327-9e6b-4912-adb7-8b5805905cbf",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -3070,6 +3070,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "excerpt": {
+          "name": "excerpt",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "hero_image_id": {
           "name": "hero_image_id",
           "type": "integer",
@@ -3082,23 +3088,18 @@
           "primaryKey": false,
           "notNull": false
         },
-        "meta_title": {
-          "name": "meta_title",
-          "type": "varchar",
+        "read_time_minutes": {
+          "name": "read_time_minutes",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": false
         },
-        "meta_image_id": {
-          "name": "meta_image_id",
-          "type": "integer",
+        "featured": {
+          "name": "featured",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": false
-        },
-        "meta_description": {
-          "name": "meta_description",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": false
         },
         "published_at": {
           "name": "published_at",
@@ -3118,6 +3119,24 @@
           "primaryKey": false,
           "notNull": false,
           "default": true
+        },
+        "meta_title": {
+          "name": "meta_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_description": {
+          "name": "meta_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta_image_id": {
+          "name": "meta_image_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "updated_at": {
           "name": "updated_at",
@@ -3158,11 +3177,11 @@
           "method": "btree",
           "with": {}
         },
-        "posts_meta_meta_image_idx": {
-          "name": "posts_meta_meta_image_idx",
+        "posts_slug_idx": {
+          "name": "posts_slug_idx",
           "columns": [
             {
-              "expression": "meta_image_id",
+              "expression": "slug",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -3173,11 +3192,11 @@
           "method": "btree",
           "with": {}
         },
-        "posts_slug_idx": {
-          "name": "posts_slug_idx",
+        "posts_meta_meta_image_idx": {
+          "name": "posts_meta_meta_image_idx",
           "columns": [
             {
-              "expression": "slug",
+              "expression": "meta_image_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -3296,12 +3315,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "posts_id": {
-          "name": "posts_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "categories_id": {
           "name": "categories_id",
           "type": "integer",
@@ -3310,6 +3323,12 @@
         },
         "users_id": {
           "name": "users_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "posts_id": {
+          "name": "posts_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -3361,21 +3380,6 @@
           "method": "btree",
           "with": {}
         },
-        "posts_rels_posts_id_idx": {
-          "name": "posts_rels_posts_id_idx",
-          "columns": [
-            {
-              "expression": "posts_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "posts_rels_categories_id_idx": {
           "name": "posts_rels_categories_id_idx",
           "columns": [
@@ -3405,6 +3409,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "posts_rels_posts_id_idx": {
+          "name": "posts_rels_posts_id_idx",
+          "columns": [
+            {
+              "expression": "posts_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -3414,19 +3433,6 @@
           "tableTo": "posts",
           "columnsFrom": [
             "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "posts_rels_posts_fk": {
-          "name": "posts_rels_posts_fk",
-          "tableFrom": "posts_rels",
-          "tableTo": "posts",
-          "columnsFrom": [
-            "posts_id"
           ],
           "columnsTo": [
             "id"
@@ -3453,6 +3459,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "users_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "posts_rels_posts_fk": {
+          "name": "posts_rels_posts_fk",
+          "tableFrom": "posts_rels",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "posts_id"
           ],
           "columnsTo": [
             "id"
@@ -3577,6 +3596,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "version_excerpt": {
+          "name": "version_excerpt",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
         "version_hero_image_id": {
           "name": "version_hero_image_id",
           "type": "integer",
@@ -3589,23 +3614,18 @@
           "primaryKey": false,
           "notNull": false
         },
-        "version_meta_title": {
-          "name": "version_meta_title",
-          "type": "varchar",
+        "version_read_time_minutes": {
+          "name": "version_read_time_minutes",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": false
         },
-        "version_meta_image_id": {
-          "name": "version_meta_image_id",
-          "type": "integer",
+        "version_featured": {
+          "name": "version_featured",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": false
-        },
-        "version_meta_description": {
-          "name": "version_meta_description",
-          "type": "varchar",
-          "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": false
         },
         "version_published_at": {
           "name": "version_published_at",
@@ -3625,6 +3645,24 @@
           "primaryKey": false,
           "notNull": false,
           "default": true
+        },
+        "version_meta_title": {
+          "name": "version_meta_title",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_meta_description": {
+          "name": "version_meta_description",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version_meta_image_id": {
+          "name": "version_meta_image_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         },
         "version_updated_at": {
           "name": "version_updated_at",
@@ -3704,11 +3742,11 @@
           "method": "btree",
           "with": {}
         },
-        "_posts_v_version_meta_version_meta_image_idx": {
-          "name": "_posts_v_version_meta_version_meta_image_idx",
+        "_posts_v_version_version_slug_idx": {
+          "name": "_posts_v_version_version_slug_idx",
           "columns": [
             {
-              "expression": "version_meta_image_id",
+              "expression": "version_slug",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -3719,11 +3757,11 @@
           "method": "btree",
           "with": {}
         },
-        "_posts_v_version_version_slug_idx": {
-          "name": "_posts_v_version_version_slug_idx",
+        "_posts_v_version_meta_version_meta_image_idx": {
+          "name": "_posts_v_version_meta_version_meta_image_idx",
           "columns": [
             {
-              "expression": "version_slug",
+              "expression": "version_meta_image_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -3915,12 +3953,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "posts_id": {
-          "name": "posts_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
         "categories_id": {
           "name": "categories_id",
           "type": "integer",
@@ -3929,6 +3961,12 @@
         },
         "users_id": {
           "name": "users_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "posts_id": {
+          "name": "posts_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -3980,21 +4018,6 @@
           "method": "btree",
           "with": {}
         },
-        "_posts_v_rels_posts_id_idx": {
-          "name": "_posts_v_rels_posts_id_idx",
-          "columns": [
-            {
-              "expression": "posts_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
         "_posts_v_rels_categories_id_idx": {
           "name": "_posts_v_rels_categories_id_idx",
           "columns": [
@@ -4024,6 +4047,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "_posts_v_rels_posts_id_idx": {
+          "name": "_posts_v_rels_posts_id_idx",
+          "columns": [
+            {
+              "expression": "posts_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -4033,19 +4071,6 @@
           "tableTo": "_posts_v",
           "columnsFrom": [
             "parent_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "_posts_v_rels_posts_fk": {
-          "name": "_posts_v_rels_posts_fk",
-          "tableFrom": "_posts_v_rels",
-          "tableTo": "posts",
-          "columnsFrom": [
-            "posts_id"
           ],
           "columnsTo": [
             "id"
@@ -4078,6 +4103,19 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
+        },
+        "_posts_v_rels_posts_fk": {
+          "name": "_posts_v_rels_posts_fk",
+          "tableFrom": "_posts_v_rels",
+          "tableTo": "posts",
+          "columnsFrom": [
+            "posts_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -4100,7 +4138,7 @@
           "name": "alt",
           "type": "varchar",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "caption": {
           "name": "caption",
