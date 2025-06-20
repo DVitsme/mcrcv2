@@ -249,10 +249,10 @@ const defaultMenu: MenuItem[] = [
       },
     ],
   },
-  {
-    title: 'Resources',
-    url: '/resources',
-  },
+  // {
+  //   title: 'Resources',
+  //   url: '/resources',
+  // },
   { title: 'Events', url: '/events' },
   { title: 'Blog', url: '/blog' },
   { title: 'Contact', url: '/contact' },
