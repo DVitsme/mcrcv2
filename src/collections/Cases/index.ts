@@ -1,11 +1,17 @@
 // src/collections/Cases/index.ts
 
-import type { CollectionConfig, FieldAccess, Where } from 'payload'
+import type { CollectionConfig, Where, FieldAccess } from 'payload'
 import { isCoordinatorOrAdmin, isAdmin, isCoordinatorFieldLevel } from '@/access/roles'
 import type { User, Case } from '@/payload-types'
 
-// This helper function is specific to this collection's logic and is well-placed here.
-// It is now fully type-safe and handles all operations correctly.
+// --- NEW: Define a clear type for a row in the 'mediators' array to help with type safety. ---
+type MediatorRow = {
+  mediator: string | number | User
+  notes?: string | null
+  id?: string | null
+}
+
+// This helper function is now fully type-safe.
 const isAssignedMediatorOrAdmin: FieldAccess<Case, User> = ({ req, doc, data }) => {
   const { user } = req
   if (!user) return false
@@ -18,10 +24,9 @@ const isAssignedMediatorOrAdmin: FieldAccess<Case, User> = ({ req, doc, data }) 
     return false
   }
 
-  // --- CORRECTED: The type assertion now matches the data structure of the 'mediators' field. ---
-  // The 'mediators' field is an array of Users or their IDs, not objects containing a 'mediator' property.
-  const assignedMediatorIds = (documentToCheck.mediators as (string | number | User)[]).map(
-    (item) => (typeof item === 'object' ? item.id : item),
+  // --- CORRECTED: Use the MediatorRow type for the assertion. ---
+  const assignedMediatorIds = (documentToCheck.mediators as MediatorRow[]).map((item) =>
+    typeof item.mediator === 'object' ? item.mediator.id : item.mediator,
   )
 
   return assignedMediatorIds.includes(user.id)
@@ -34,15 +39,11 @@ export const Cases: CollectionConfig = {
     defaultColumns: ['title', 'caseReferenceId', 'status', 'updatedAt'],
   },
   access: {
-    // --- CORRECTED: Restored secure read access logic ---
     read: ({ req: { user } }) => {
       if (!user) return false
       if (user.role === 'admin' || user.role === 'coordinator') {
         return true
       }
-
-      // Other users can only read cases where they are an assigned mediator OR participant.
-      // This is a secure, database-level filter.
       const orConditions: Where[] = [
         {
           'mediators.mediator': {
@@ -55,7 +56,6 @@ export const Cases: CollectionConfig = {
           },
         },
       ]
-
       return {
         or: orConditions,
       }
