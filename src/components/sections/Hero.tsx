@@ -31,8 +31,8 @@ const Hero = () => {
                 Welcome to the Mediation and Conflict Resolution Center
               </h1>
               <p className="text-center text-lg text-balance text-foreground md:text-2xl">
-                Conflict is part of life—it shapes our relationships, our communities, and our
-                growth.
+                Conflict is part of life. <br /> It shapes our relationships, our communities, and
+                our growth.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Button

@@ -41,7 +41,7 @@ export default function HomePage() {
           <div className="relative mx-auto mt-24 aspect-video w-full max-w-6xl overflow-hidden rounded-2xl shadow-lg">
             <iframe
               className="absolute inset-0 h-full w-full"
-              src="https://www.youtube.com/embed/6ZggpBuuWHg?si=_D2R17FUmDaNkdp4"
+              src="https://www.youtube.com/embed/RKtyFi4dXKk?si=rlLcNwE5SlGQO7y6"
               title="Organization introduction video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
