@@ -14,9 +14,13 @@ const title =
 const whatToExpect = {
   imageUrl: '/images/restorative-justice/restorative-justice.jpg',
   imageAlt: 'restorative-justice',
-  title: 'What to Expect from a Restorative Circle?',
+  title: 'What Are Restorative Practices?',
   description:
-    'In a restorative circle, participants will gather in a safe, respectful space to share experiences, listen deeply, and explore the impact of harm. Guided by skilled facilitators, you’ll engage in honest dialogue, collaborative problem-solving, and mutual accountability—paving the way for genuine understanding, healing, and stronger community connections.',
+    'Restorative Practices are a relationship-centered approach to resolving conflict and harm. Instead of asking “What rule was broken and what punishment is deserved?” our questions are centered around:',
+  checkList: ['What happened?', 'Who was impacted?', 'What needs to be done to make things right?'],
+  bottomDescription:
+    'This approach supports our young people in taking respon­si­bil­i­ty for their actions, which helps them man­age con­flict, build empa­thy and mature into emo­tion­al­ly healthy adults',
+  showSeparator: false,
 }
 const whyChoose = {
   imageUrl: '/images/restorative-justice/restorative-justice-with-parent.jpg',

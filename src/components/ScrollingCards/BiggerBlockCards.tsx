@@ -15,13 +15,24 @@ interface CardItem {
 
 interface BiggerBlockCardsProps {
   title: string
-  titleGray: string
-  description: string
+  titleGray?: string
+  description?: string
+  buttonTitle?: string
+  buttonText?: string
+  buttonLink?: string
   cards: CardItem[]
   color?: string
 }
 
-const BiggerBlockCards = ({ title, titleGray, description, cards }: BiggerBlockCardsProps) => {
+const BiggerBlockCards = ({
+  title,
+  titleGray,
+  description,
+  buttonTitle = 'Are you ready to get started?',
+  buttonText = 'Click here to get started',
+  buttonLink = 'https://forms.gle/MkdSqa6UFrcCgQKq9',
+  cards,
+}: BiggerBlockCardsProps) => {
   return (
     <section className="py-32">
       <div className="container">
@@ -31,18 +42,20 @@ const BiggerBlockCards = ({ title, titleGray, description, cards }: BiggerBlockC
             <div className="max-w-lg">
               <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl">
                 {title}
-                <span className="relative inline-block">
-                  <span className="text-muted-foreground">{titleGray}</span>
-                </span>
+                {titleGray && (
+                  <span className="relative inline-block">
+                    <span className="text-muted-foreground">{titleGray}</span>
+                  </span>
+                )}
               </h2>
-              <p className="mt-12 text-lg text-black">{description}</p>
-              <Separator className="my-12" />
+              {description && <p className="mt-12 text-lg text-black">{description}</p>}
+              {description && <Separator className="my-12" />}
               <p className="mt-12 text-lg text-black">
-                Are you ready to get started?
+                {buttonTitle}
                 <span className="mt-4 font-bold block text-xl">
-                  <Link href="https://forms.gle/MkdSqa6UFrcCgQKq9" target="_blank">
+                  <Link href={buttonLink} target="_blank">
                     <Button className="bg-primary text-white hover:bg-primary/80">
-                      Click here to get started
+                      {buttonText}
                     </Button>
                   </Link>
                 </span>

@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { cn } from '@/utilities/ui'
+import { OptimizedVideoPlayer } from '@/components/Media/VideoMedia/OptimizedVideoPlayer'
 
 import { CheckList } from './CheckList'
 
@@ -10,10 +11,13 @@ interface TwoColImageProps {
     iconColor?: string
     imageUrl: string
     imageAlt: string
-    title: string
-    description: string
+    title?: string
+    description?: string
+    bottomDescription?: string
     checkList?: string[]
     listIcon?: React.ReactNode
+    showSeparator?: boolean
+    videoSrc?: string
   }
   imageSize?: {
     width?: number
@@ -40,8 +44,11 @@ const TwoColTitleCheckListImage = ({
     imageAlt,
     title,
     description,
+    bottomDescription,
     checkList,
     listIcon,
+    showSeparator = true,
+    videoSrc,
   } = data
 
   const contentSection = (
@@ -57,12 +64,27 @@ const TwoColTitleCheckListImage = ({
         </span>
       )}
       <h3 className="my-6 text-3xl font-bold text-pretty lg:text-4xl">{title}</h3>
-      <p className="mb-8 max-w-xl text-muted-foreground lg:text-lg">{description}</p>
-      {checkList && <CheckList items={checkList} customIcon={listIcon} />}
+      <p className={`${checkList ? 'mb-8' : ''} max-w-xl text-muted-foreground lg:text-lg`}>
+        {description}
+      </p>
+      {checkList && (
+        <CheckList items={checkList} customIcon={listIcon} showSeparator={showSeparator} />
+      )}
+      {bottomDescription && (
+        <p className="mt-8 max-w-xl text-muted-foreground lg:text-lg">{bottomDescription}</p>
+      )}
     </div>
   )
 
-  const imageSection = (
+  const mediaSection = videoSrc ? (
+    <div className="relative w-full">
+      <OptimizedVideoPlayer
+        resource={videoSrc}
+        poster={imageUrl}
+        className={cn('w-full rounded-xl object-cover', `max-h-[${imageSize.maxHeight}]`)}
+      />
+    </div>
+  ) : (
     <div className="relative w-full">
       <Image
         src={imageUrl}
@@ -81,13 +103,13 @@ const TwoColTitleCheckListImage = ({
         <div className="grid gap-8 lg:grid-cols-2">
           {imagePosition === 'left' ? (
             <>
-              {imageSection}
+              {mediaSection}
               {contentSection}
             </>
           ) : (
             <>
               {contentSection}
-              {imageSection}
+              {mediaSection}
             </>
           )}
         </div>

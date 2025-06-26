@@ -33,7 +33,7 @@ const itemVariants: Variants = {
 function FeatureItem({ icon: Icon, title, description }: Feature) {
   return (
     <div className="space-y-4 text-center lg:text-left">
-      <div className="flex flex-col items-center justify-center gap-2 lg:flex-row lg:items-end lg:justify-start">
+      <div className="flex flex-col items-start justify-center gap-2 lg:flex-row lg:items-start lg:justify-start">
         <Icon className="h-6 w-6 text-primary" />
         <h3 className="text-xl font-semibold leading-tight">{title}</h3>
       </div>

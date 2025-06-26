@@ -13,33 +13,33 @@ const features = [
     id: 'feature-1',
     title: 'Mediation',
     description:
-      'Nam vitae molestie arcu. Quisque eu libero orci. Aliquam imperdiet magna nec massa consectetur, id interdum ante congue.',
+      'We offer a neutral space where families, neighbors, coworkers, and businesses can resolve conflict without going to court.',
     icon: Cloud,
-    image: '/images/mediation/1.jpg',
+    image: '/images/mediation/mediation-group.jpg',
   },
   {
     id: 'feature-2',
     title: 'Restorative Practices',
     description:
-      'Nam vitae molestie arcu. Quisque eu libero orci. Aliquam imperdiet magna nec massa consectetur, id interdum ante congue.',
+      'Restorative practices support youth, whether harmed or causing harm, to heal in community and take part in meaningful repair.',
     icon: Star,
-    image: '/images/restorative-justice/5.jpg',
+    image: '/images/restorative-justice/restorative-justice-happy-kid.jpg',
   },
   {
     id: 'feature-3',
-    title: 'Facilitation',
+    title: 'Group Facilitation',
     description:
-      'Nam vitae molestie arcu. Quisque eu libero orci. Aliquam imperdiet magna nec massa consectetur, id interdum ante congue.',
+      'Our facilitators guide conversations with care and neutrality, supporting dialogue, navigating conflict, decision making, and community conversations.',
     icon: Bolt,
-    image: '/images/facilitation/3.jpg',
+    image: '/images/facilitation/facilitation-v2.jpg',
   },
   {
     id: 'feature-4',
-    title: 'Training & Education',
+    title: 'Community Education',
     description:
-      'Nam vitae molestie arcu. Quisque eu libero orci. Aliquam imperdiet magna nec massa consectetur, id interdum ante congue.',
+      'Everyone should have access to tools for healthy communication and resolving conflict. We work to make these skills available to all.',
     icon: MessagesSquare,
-    image: '/images/training/community-education.jpg',
+    image: '/images/training/one-on-one-office-training.jpg',
   },
 ]
 
@@ -87,13 +87,13 @@ const Services = () => {
       <div className="container pt-16 mx-auto px-4">
         <div className="my-8 text-center md:mb-12">
           <Badge variant="outline" className="mb-3 text-primary-foreground">
-            Powerful Features
+            MCRC Services
           </Badge>
           <h2 className="text-3xl leading-tight font-bold md:text-4xl lg:text-5xl text-primary-foreground">
-            Discover What Makes Us Different
+            Our Approach
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-primary-foreground md:mt-4 md:text-base">
-            Our platform combines powerful features with elegant design to help you accomplish more.
+            Grounded in respect. Guided by values. Learn how we support resolution
           </p>
         </div>
 

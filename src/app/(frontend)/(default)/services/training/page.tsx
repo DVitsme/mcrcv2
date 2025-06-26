@@ -7,6 +7,11 @@ import { TwoColTitleCheckListImage } from '@/components/sections/TwoColTitleChec
 import { TwoBoxes } from '@/components/TwoCol/TwoBoxes'
 import { FAQ } from '@/components/sections/FAQ'
 import { CtaTitleFullWidth } from '@/components/sections/CtaTitleFullWidth'
+import { BiggerBlockCards } from '@/components/ScrollingCards/BiggerBlockCards'
+import { BadgeCheck } from 'lucide-react'
+import { Users } from 'lucide-react'
+import { ThreeColTitleBoxes } from '@/components/sections/ThreeColTitleBoxes'
+import { CTAChecks } from '@/components/CTA/CTAChecks'
 
 export default function Training() {
   return (
@@ -18,7 +23,7 @@ export default function Training() {
           src: '/images/training/solo-teaching-board.jpg',
           alt: 'Training',
         }}
-        badge="Facilitation"
+        badge="Training & Education"
         color="darkyellow"
         buttons={{
           primary: {
@@ -32,7 +37,7 @@ export default function Training() {
         }}
       />
 
-      <ScrollInViewTitleAndDescription title="At MCRC, we believe that conflict skills are community skills. Through workshops, training, and tailored learning experiences, we help individuals and organizations in Howard County build the tools they need to communicate clearly, navigate conflict, and make collaborative decisions." />
+      <ScrollInViewTitleAndDescription title="At MCRC, we believe conflict is not a failure. It is an opportunity. Rooted in community care, our trainings and workshops support individuals and groups in deepening their ability to communicate, listen, and move through tension with compassion and clarity." />
       <TwoColTitleCheckListImage
         data={WhoWeWorkWith}
         imagePosition="left"
@@ -42,7 +47,7 @@ export default function Training() {
         heading="Interested in a Training or Custom Workshop?"
         color="darkyellow"
         button={{
-          text: 'Schedule a call',
+          text: 'Fill out our request form.',
           url: 'https://docs.google.com/document/d/1t-3PiTqKhlgMwrVNmrvYgPQ0momHdx5pkiOpHWjkT8o/edit?usp=sharing',
         }}
       />
@@ -51,8 +56,34 @@ export default function Training() {
         imagePosition="right"
         imageSize={{ maxHeight: '300px', height: 300, width: 500 }}
       />
-      <TwoBoxes data={TwoBoxesData} />
-      <FAQ heading="How We Can Help" items={faqItems} />
+      <BiggerBlockCards
+        title="Workshops & Trainings: "
+        titleGray="We Offer"
+        color="darkyellow"
+        description="Here are a few of the training we regularly offer. We can deliver these sessions virtually or in person, and most can be adapted for different group sizes or settings. We’ll work with you to design a session that meets your group’s specific needs—whether that’s navigating internal conflict, supporting your staff, or building skills for collaborative leadership."
+        cards={stickyCards}
+        buttonTitle="Let’s figure out your needs together."
+        buttonText="Click here to get started"
+        buttonLink="https://forms.gle/MkdSqa6UFrcCgQKq9"
+      />
+      <TwoColTitleCheckListImage
+        data={ourApproachToLearning}
+        imagePosition="right"
+        imageSize={{ maxHeight: '300px', height: 300, width: 500 }}
+      />
+      <CTAChecks
+        title="Who We Work With: "
+        description="MCRC offers training and workshops for individuals, groups, and organizations across Howard County. Our programs are designed with accessibility, flexibility, and care in mind. If you're not sure whether our offerings are a fit, reach out. We’re happy to talk through your needs and co-create something that works for your group."
+        color="darkyellow"
+        buttonText="Click here to get started"
+        buttonUrl="https://forms.gle/MkdSqa6UFrcCgQKq9"
+        items={[
+          'Community-based organizations and nonprofits',
+          'Schools and education professionals',
+          'Small businesses',
+          'Faith communities and mutual aid groups',
+        ]}
+      />
 
       <ServicePageFooter cards={footerCards} />
     </main>
@@ -61,92 +92,67 @@ export default function Training() {
 
 const WhoWeWorkWith = {
   imageUrl: '/images/mediation/mediation-group-tictactoe.jpg',
-  imageAlt: 'Mediation',
-  title: 'Accessible & Affordable Learning',
+  imageAlt: 'teaching group',
+  videoSrc: '/videos/training/teaching-group.mp4',
+  title: 'We see conflict skills as essential community tools.',
   description:
-    'As with all of MCRC’s services, pricing is offered on a sliding scale. We want to make skill-building accessible to as many community members and organizations as possible, and we’ll never turn a group away for lack of funds.',
+    'Whether you’re part of a grassroots organization, a local business, a school, or simply someone looking to navigate hard conversations more effectively, we’re here to build capacity with you.',
+  bottomDescription:
+    'From one-time workshops to custom-designed series, our learning spaces are interactive, accessible, and grounded in the wisdom we all carry. Together, we practice approaches that support trust, equity, and shared leadership.',
+}
+const ourApproachToLearning = {
+  imageUrl: '/images/training/teaching-group.jpg',
+  imageAlt: 'Teaching Group',
+  title: 'Our Approach to Learning',
+  description:
+    'We know that many traditional models of conflict resolution are shaped by dominant cultural norms and values. At MCRC, we are working to unlearn those patterns. Our programs honor lived experience, support different ways of knowing, and make space for people to come as they are.',
+  bottomDescription:
+    'We believe that learning is a shared process. You bring wisdom. We bring tools. Together, we create something stronger.',
 }
 const HowOurFacilitationServicesCanHelp = {
   imageUrl: '/images/mediation/mediation-group-tictactoe.jpg',
   imageAlt: 'Mediation',
-  title: 'How Our Facilitation Services Can Help',
+  videoSrc: '/videos/training/Accessible-Learning-for-all.mp4',
+  title: 'Accessible Learning for all',
   description:
-    'We design and lead conversations that help your group move forward with clarity and care. We keep conversations grounded, inclusive, and productive—so your group can stay connected to its purpose. Here are a few ways facilitation might support you:',
-  checkList: [
-    'Shaping the goals of a new advisory board',
-    'Working through a strategic plan or organizational priorities',
-    'Building trust after a conflict or loss',
-    'Supporting equity-focused conversations or hard decision-making',
-    'Creating space for everyone to be heard and valued',
-  ],
+    'As a nonprofit, MCRC is committed to making learning available to everyone. Our trainings are offered on a sliding scale, and no group is turned away because of limited funds. We center access and equity in all that we do and are happy to work with you to find a plan that fits.',
 }
-
-const TwoBoxesData = {
-  header: 'Our Approach: ',
-  title1: 'Trained Local Facilitators',
-  description1:
-    'Our facilitators are staff and trained volunteers who live in or near the communities we serve. They bring deep listening skills, cultural awareness, and a commitment to restorative practices. We often use circle processes and consensus-building to make sure each participant can contribute in a meaningful way. We believe community change happens through relationships—and that the best facilitation supports not just what’s said, but how we say it to one another.',
-  image1: '/images/training/training.jpg',
-  image1Alt: 'Training our Staff and Volunteers',
-  title2: 'Sliding Scale Pricing',
-  description2:
-    'We offer our facilitation services on a sliding scale based on your organization’s budget. No one is turned away due to lack of funds. We believe every group deserves access to skilled, community-rooted facilitation—regardless of financial resources.',
-  image2: '/images/facilitation/facilitation-extending-hand.jpg',
-  image2Alt: 'We Work with pay scales',
-  color2: 'darkgreen',
-}
-
-const faqItems = [
+const stickyCards = [
   {
-    id: 'faq-1',
-    question: 'Workplaces & Organizations',
-    list: [
-      'Support for team development, communication, and decision-making',
-      'Facilitate strategic planning sessions',
-      'Strengthen team collaboration',
-      'Navigate workplace transitions or tension',
-      'Promote inclusive staff engagement',
-    ],
-  },
-
-  {
-    id: 'faq-2',
-    question: 'Community Groups',
-    list: [
-      'Address challenges and plan together—openly and respectfully',
-      'Support neighborhood or school-based initiatives',
-      'Help boards or advisory groups set goals',
-      'Create space for multigenerational or cross-cultural dialogue',
-    ],
+    icon: <Users strokeWidth={1.5} className="size-12" />,
+    title: 'Mediation 101 for Businesses',
+    description:
+      'Learn the basics of mediation and how to integrate mediation-informed practices into your organization’s communication culture.',
   },
   {
-    id: 'faq-3',
-    question: 'Difficult Conversations',
-    list: [
-      'Skilled, neutral facilitation for sensitive topics',
-      'Address harm or broken trust',
-      'Explore issues of equity, identity, or inclusion',
-      'Process grief, change, or conflict',
-    ],
+    icon: <BadgeCheck strokeWidth={1.5} className="size-12" />,
+    title: 'Conflict Management in the Workplace',
+    description:
+      'Explore practical tools for recognizing, addressing, and de-escalating conflict on teams. Great for managers, team leads, and HR professionals.',
   },
   {
-    id: 'faq-4',
-    question: 'Skilled, neutral facilitation for sensitive topics',
-    list: [
-      'Address harm or broken trust',
-      'Explore issues of equity, identity, or inclusion',
-      'Process grief, change, or conflict',
-    ],
+    icon: <BadgeCheck strokeWidth={1.5} className="size-12" />,
+    title: 'Conflict Styles & Self-Awareness',
+    description:
+      'Explore your personal approach to conflict, learn about different conflict styles, and practice responding with intention during difficult conversations.',
   },
   {
-    id: 'faq-5',
-    question: 'Coalition Building & Planning ',
-    list: [
-      'Help your community or multi-partner effort move forward together',
-      'Support grassroots and cross-sector coalitions',
-      'Build shared goals and agreements',
-      'Guide inclusive planning and collaborative problem-solving',
-    ],
+    icon: <BadgeCheck strokeWidth={1.5} className="size-12" />,
+    title: 'Consensus-Based Decision Making',
+    description:
+      'Build the skills to make group decisions that are inclusive and transparent. This is especially helpful for communities or teams working toward trust and shared accountability.',
+  },
+  {
+    icon: <BadgeCheck strokeWidth={1.5} className="size-12" />,
+    title: 'Anger Management',
+    description:
+      'Join a supportive space for individuals who want to understand and manage strong emotions. This group explores anger, self-awareness, and healthier ways to respond.',
+  },
+  {
+    icon: <BadgeCheck strokeWidth={1.5} className="size-12" />,
+    title: 'Custom Trainings for Howard County Organizations',
+    description:
+      'We know that each organization is different. That’s why we offer tailor-made workshops for nonprofits, community-based organizations, schools, and businesses that serve Howard County.',
   },
 ]
 

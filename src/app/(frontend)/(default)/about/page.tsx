@@ -12,9 +12,9 @@ const AboutPage = () => {
   return (
     <>
       <PageHero
-        heading="About Us"
-        description="Conflict is part of life—it shapes our relationships, our communities, and our growth. At the Mediation and Conflict Resolution Center, we believe that conflict, when approached with care and intention, can be a pathway to healing, understanding, and transformation."
-        badge="Our History"
+        badge="Meet MCRC"
+        heading="A Community Approach to Conflict Resolution"
+        description="Originally rooted in Howard Community College, MCRC has grown into an independent, community-anchored organization. We believe that people hold the wisdom and capacity to navigate their own challenges, when given the right support. Our role is to walk alongside individuals, families, and groups, facilitating conversations that restore trust, repair relationships, and strengthen communities."
         color="yellow"
         buttons={{
           primary: {
@@ -159,6 +159,38 @@ const faqItems = [
 ]
 
 const CardData = [
+  {
+    id: 'person-executive-director',
+    name: 'Dawn',
+    role: 'Executive Director',
+    description:
+      'Elig doloremque mollitia fugiat omnis! Porro facilis quo animi consequatur. Explicabo.',
+    avatar: 'https://shadcnblocks.com/images/block/avatar-1.webp',
+  },
+  {
+    id: 'person-assistant-executive-director',
+    name: 'Kerry',
+    role: 'Assistant Executive Director',
+    description:
+      'Elig doloremque mollitia fugiat omnis! Porro facilis quo animi consequatur. Explicabo.',
+    avatar: 'https://shadcnblocks.com/images/block/avatar-1.webp',
+  },
+  {
+    id: 'person-case-manager-data-coordinator',
+    name: 'Tanisiha',
+    role: 'Case Manager & Data Coordinator',
+    description:
+      'Elig doloremque mollitia fugiat omnis! Porro facilis quo animi consequatur. Explicabo.',
+    avatar: 'https://shadcnblocks.com/images/block/avatar-1.webp',
+  },
+  {
+    id: 'person-school-coordinator-rj-facilitator',
+    name: 'Margie',
+    role: 'School Coordinator & RJ Facilitator',
+    description:
+      'Elig doloremque mollitia fugiat omnis! Porro facilis quo animi consequatur. Explicabo.',
+    avatar: 'https://shadcnblocks.com/images/block/avatar-1.webp',
+  },
   {
     id: 'person-1',
     name: "Tammatha O'Brien",

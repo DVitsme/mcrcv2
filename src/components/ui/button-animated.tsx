@@ -15,7 +15,7 @@ const ButtonAnimated = ({ text, link, color = 'secondary' }: ButtonAnimatedProps
   const buttonContent = (
     <Button
       size="lg"
-      className={`group w-fit gap-2 bg-${color} text-${color}-foreground transition-all duration-300`}
+      className={`group w-fit gap-2  bg-${color} text-${color}-foreground transition-all duration-300`}
     >
       {text}
       <motion.div

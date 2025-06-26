@@ -48,25 +48,25 @@ const featuresData = [
     icon: Award,
     title: 'Share your perspective',
     description:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      '“Being able to explain my viewpoint and confront the other person with their accusations” - Mediation Participant',
   },
   {
     icon: Dna,
     title: 'Clarify what matters most to you',
     description:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      '“It was like a family discussion centered on finding solutions and allowing all equal time and opportunities to discuss.” - Mediation Participant',
   },
   {
     icon: Rocket,
     title: 'Understand the other person’s point of view',
     description:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      '“They allowed us to talk and restated what we were saying to make sure we all understood what each one was saying.” - Mediation Participant',
   },
   {
     icon: Wallet,
     title: 'Explore possible ways forward—together',
     description:
-      'lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      '“It took a lot and we asked a lot of questions and they were patient in guiding us. Not a pressure cooker, it gave us time to think, reflect and come to our senses.” - Mediation Participant',
   },
 ]
 const WhyMediate = {
@@ -74,37 +74,37 @@ const WhyMediate = {
   imageAlt: 'Mediation',
   title: 'Why Choose Mediation?',
   description:
-    "You stay in control. You're the expert in your own situation. Mediators won’t tell you what to do—they’ll help you identify solutions that fit your unique needs.",
+    'You and the other party lead the process. Mediators help hold space for clarity, respect, and shared solutions.',
   checkList: [
-    'It’s confidential. What’s said in mediation stays private, making it easier to be honest and explore real solutions.',
-    'It can preserve important relationships. We often find ourselves in conflict with the people we live, work, or care for. Mediation supports respectful, collaborative dialogue so relationships can heal or move forward.',
-    'It’s accessible. Mediation at MCRC is provided free of charge. It’s an excellent alternative to going to court.',
+    'It is confidential. What is shared in mediation stays private (except in rare safety situations). That confidentiality creates space for honesty, reflection, and real solutions.',
+    'It supports real relationships. Many conflicts involve people we live with, work with, or care about. Mediation offers a respectful space to listen, speak honestly, and either repair the relationship—or move forward with understanding.',
+    'It is accessible. Mediation at MCRC is offered at no cost—because access to conflict resolution shouldn’t depend on income. It’s a people-centered alternative to court that prioritizes dialogue over punishment.',
   ],
 }
 
 const ThreeColData = {
   title: 'How can it help me?',
   description:
-    'Most people have the ability to resolve conflict—what we often need is the right support.',
+    'Most of us have what it takes to resolve conflict. Sometimes we just need space, support, and someone to guide the conversation.',
   cardData: [
     {
-      title: 'You’re heard.',
+      title: 'Your voice matters.',
       description:
-        'Mediators are trained to listen deeply and make sure everyone has a chance to speak and be understood.',
+        'Mediators help make sure the conversation is fair and respectful, giving each person space to share their side and really listen to others.',
       icon: Ear,
       bgColor: 'bg-secondary',
     },
     {
       title: 'You stay in control.',
       description:
-        'You’re the expert in your own situation. Mediators won’t tell you what to do—they’ll help you identify solutions that fit your unique needs.',
+        'Community mediation is a powerful alternative to hiring a lawyer or going to court. It’s collaborative, confidential, and often more sustainable—because the people involved created the agreement themselves.',
       icon: CircleCheckBig,
       bgColor: 'bg-secondary',
     },
     {
       title: 'You create the solutions.',
       description:
-        'Together, you and the other person can identify solutions that meet your unique needs.',
+        'There’s more than one way to resolve conflict. Mediation is a collaborative, confidential alternative to court that puts decision-making in your hands. When people craft their own agreements, they’re more likely to follow through and feel heard in the process.',
       icon: Handshake,
       bgColor: 'bg-secondary',
     },
@@ -122,29 +122,6 @@ const ThreeColImagesData = {
   title: 'Who are the mediators?',
   subtitle:
     'Mediators are not decision-makers. They don’t give advice or make judgments. Instead, they create a space for collaborative problem-solving so you and the other person can come up with solutions that fit your unique situation. At MCRC, we use a co-mediator model, which means there are two mediators in each session. This ensures balance, collaboration, and greater support for everyone involved. Each mediator is a specially trained volunteer from Howard County or a neighboring community. Mediators are here to:',
-  cards: [
-    {
-      title: 'Guide the conversation',
-      description:
-        'This helps keep the discussion productive and centered on what matters most to the participants.',
-      image: '/images/mediation/mediation-group-tictactoe.jpg',
-      alt: 'Mediation',
-    },
-    {
-      title: 'Ensure everyone has space to speak and be heard',
-      description:
-        'This structured approach guarantees no single voice dominates, fostering a fair and balanced exchange.',
-      image: '/images/mediation/mediation-group-tictactoe.jpg',
-      alt: 'Mediation',
-    },
-    {
-      title: 'Support a respectful and productive process ',
-      description:
-        'By capturing these details, they help participants build a practical and customized agreement together.',
-      image: '/images/mediation/mediation-group-tictactoe.jpg',
-      alt: 'Mediation',
-    },
-  ],
 }
 
 const stickyCards = [
@@ -211,7 +188,7 @@ export default function Mediation() {
           src: '/images/mediation/coupleoncouch.jpeg',
           alt: 'Mediation',
         }}
-        badge="Small Groups"
+        badge="Mediation"
         buttons={{
           primary: {
             text: 'How it works',
@@ -244,7 +221,7 @@ export default function Mediation() {
       />
       <CallToAction
         title="A Note from Us"
-        description="We believe conflict is a part of being in community—and that navigating it with care, clarity, and connection is possible. Mediation isn’t about winners and losers. It’s about creating space for change, for dignity, and for forward movement."
+        description="We believe conflict is a part of being in community and that navigating it with care, clarity, and connection is possible. Mediation isn’t about winners and losers. It’s about creating space for change, for dignity, and for forward movement."
         imgSrc="/images/mediation/community.jpg"
       />
       <FAQ heading="Types of mediation supported at MCRC" items={faqItems} />
