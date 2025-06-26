@@ -95,7 +95,7 @@ export default function HomePage() {
         />
         <GetInvolved />
         <Stats />
-        <BlogPreview />
+        {/* <BlogPreview /> */}
         <Volunteer />
       </main>
       <Footer />
