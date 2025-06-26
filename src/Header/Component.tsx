@@ -255,8 +255,8 @@ export function HomepageHeader({
     { title: 'Contact', url: '/contact' },
   ],
   auth = {
-    login: { title: 'Login', url: '/admin' },
-    signup: { title: 'Get Started', url: '/get-started' },
+    login: { title: 'Get Started', url: '/get-started' },
+    signup: { title: 'Donate', url: '/donate' },
   },
 }: NavbarProps) {
   // --- Encapsulated helper components ---

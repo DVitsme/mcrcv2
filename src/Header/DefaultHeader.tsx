@@ -263,8 +263,8 @@ export function DefaultHeader({
   logo = { url: '/', src: '/images/logo/mcrc-logo.png', alt: 'MCRC Logo', title: 'MCRC Howard' },
   menu = defaultMenu,
   auth = {
-    login: { title: 'Login', url: '/admin' },
-    signup: { title: 'Get Started', url: '/get-started' },
+    login: { title: 'Get Started', url: '/get-started' },
+    signup: { title: 'Donate', url: '/donate' },
   },
 }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false)

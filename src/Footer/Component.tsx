@@ -28,20 +28,16 @@ const sections = [
       { name: 'Home', href: '/' },
       { name: 'About', href: '/about' },
       { name: 'Services', href: '/services' },
-      { name: 'Events', href: '/events' },
       { name: 'Contact', href: '/contact' },
-      { name: 'Donate', href: '/donate' },
     ] as FooterLink[],
   },
   {
     title: 'Resources',
     links: [
+      { name: 'Donate', href: '/donate' },
       { name: 'Blog', href: '/blog' },
+      { name: 'Events', href: '/events' },
       { name: 'News', href: '/news' },
-      { name: 'Resources', href: '/resources' },
-      { name: 'FAQs', href: '/faqs' },
-      { name: 'Contact', href: '/contact' },
-      { name: 'Privacy', href: '/privacy' },
     ] as FooterLink[],
   },
   {
