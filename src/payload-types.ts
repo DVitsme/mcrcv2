@@ -75,9 +75,9 @@ export interface Config {
     events: Event;
     cases: Case;
     redirects: Redirect;
+    search: Search;
     forms: Form;
     'form-submissions': FormSubmission;
-    search: Search;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -93,9 +93,9 @@ export interface Config {
     events: EventsSelect<false> | EventsSelect<true>;
     cases: CasesSelect<false> | CasesSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
+    search: SearchSelect<false> | SearchSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
-    search: SearchSelect<false> | SearchSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -198,10 +198,6 @@ export interface Page {
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
     title?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -261,10 +257,6 @@ export interface Post {
   meta?: {
     title?: string | null;
     description?: string | null;
-    /**
-     * Recommended size: 1200x630px.
-     */
-    image?: (number | null) | Media;
   };
   updatedAt: string;
   createdAt: string;
@@ -736,7 +728,12 @@ export interface Form {
     [k: string]: unknown;
   } | null;
   redirect?: {
-    url: string;
+    type?: ('reference' | 'custom') | null;
+    reference?: {
+      relationTo: 'pages';
+      value: number | Page;
+    } | null;
+    url?: string | null;
   };
   /**
    * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
@@ -780,11 +777,12 @@ export interface Form {
 export interface Event {
   id: number;
   name: string;
-  status: 'draft' | 'published' | 'completed' | 'cancelled' | 'archived';
-  /**
-   * A short label, e.g., "Workshop", "Networking", "Training".
-   */
-  eventType?: string | null;
+  meta: {
+    status: 'draft' | 'published' | 'completed' | 'cancelled' | 'archived';
+    eventType?: string | null;
+    slug?: string | null;
+  };
+  summary?: string | null;
   eventStartTime: string;
   eventEndTime?: string | null;
   modality?: ('in_person' | 'online' | 'hybrid') | null;
@@ -796,27 +794,46 @@ export interface Event {
     url?: string | null;
     details?: string | null;
   };
-  /**
-   * A short summary for event cards and SEO.
-   */
-  summary?: string | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
   featuredImage?: (number | null) | Media;
-  supportingImage?: (number | null) | Media;
+  content?:
+    | (
+        | {
+            text?: {
+              root: {
+                type: string;
+                children: {
+                  type: string;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textBlock';
+          }
+        | {
+            image?: (number | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageBlock';
+          }
+      )[]
+    | null;
+  speakers?:
+    | {
+        speakerName: string;
+        speakerTitle?: string | null;
+        speakerBio?: string | null;
+        speakerAvatar?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   isFree?: boolean | null;
   cost?: {
     amount?: number | null;
@@ -826,19 +843,6 @@ export interface Event {
   isRegistrationRequired?: boolean | null;
   externalRegistrationLink?: string | null;
   registrationDeadline?: string | null;
-  contact?: {
-    name?: string | null;
-    email?: string | null;
-    phone?: string | null;
-  };
-  createdBy?: (number | null) | User;
-  additionalNotes?:
-    | {
-        item?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -941,23 +945,6 @@ export interface Redirect {
   createdAt: string;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "form-submissions".
- */
-export interface FormSubmission {
-  id: number;
-  form: number | Form;
-  submissionData?:
-    | {
-        field: string;
-        value: string;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This is a collection of automatically created search results. These results are used by the global site search and will be updated automatically as documents in the CMS are created or updated.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -982,6 +969,23 @@ export interface Search {
         relationTo?: string | null;
         categoryID?: string | null;
         title?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: number;
+  form: number | Form;
+  submissionData?:
+    | {
+        field: string;
+        value: string;
         id?: string | null;
       }[]
     | null;
@@ -1120,16 +1124,16 @@ export interface PayloadLockedDocument {
         value: number | Redirect;
       } | null)
     | ({
+        relationTo: 'search';
+        value: number | Search;
+      } | null)
+    | ({
         relationTo: 'forms';
         value: number | Form;
       } | null)
     | ({
         relationTo: 'form-submissions';
         value: number | FormSubmission;
-      } | null)
-    | ({
-        relationTo: 'search';
-        value: number | Search;
       } | null)
     | ({
         relationTo: 'payload-jobs';
@@ -1218,7 +1222,6 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         title?: T;
-        image?: T;
         description?: T;
       };
   publishedAt?: T;
@@ -1340,7 +1343,6 @@ export interface PostsSelect<T extends boolean = true> {
     | {
         title?: T;
         description?: T;
-        image?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1512,8 +1514,14 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface EventsSelect<T extends boolean = true> {
   name?: T;
-  status?: T;
-  eventType?: T;
+  meta?:
+    | T
+    | {
+        status?: T;
+        eventType?: T;
+        slug?: T;
+      };
+  summary?: T;
   eventStartTime?: T;
   eventEndTime?: T;
   modality?: T;
@@ -1529,10 +1537,34 @@ export interface EventsSelect<T extends boolean = true> {
         url?: T;
         details?: T;
       };
-  summary?: T;
-  description?: T;
   featuredImage?: T;
-  supportingImage?: T;
+  content?:
+    | T
+    | {
+        textBlock?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+              blockName?: T;
+            };
+        imageBlock?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  speakers?:
+    | T
+    | {
+        speakerName?: T;
+        speakerTitle?: T;
+        speakerBio?: T;
+        speakerAvatar?: T;
+        id?: T;
+      };
   isFree?: T;
   cost?:
     | T
@@ -1544,21 +1576,6 @@ export interface EventsSelect<T extends boolean = true> {
   isRegistrationRequired?: T;
   externalRegistrationLink?: T;
   registrationDeadline?: T;
-  contact?:
-    | T
-    | {
-        name?: T;
-        email?: T;
-        phone?: T;
-      };
-  createdBy?: T;
-  additionalNotes?:
-    | T
-    | {
-        item?: T;
-        id?: T;
-      };
-  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1629,6 +1646,33 @@ export interface RedirectsSelect<T extends boolean = true> {
         type?: T;
         reference?: T;
         url?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search_select".
+ */
+export interface SearchSelect<T extends boolean = true> {
+  title?: T;
+  priority?: T;
+  doc?: T;
+  slug?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  categories?:
+    | T
+    | {
+        relationTo?: T;
+        categoryID?: T;
+        title?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1749,6 +1793,8 @@ export interface FormsSelect<T extends boolean = true> {
   redirect?:
     | T
     | {
+        type?: T;
+        reference?: T;
         url?: T;
       };
   emails?:
@@ -1777,33 +1823,6 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
     | {
         field?: T;
         value?: T;
-        id?: T;
-      };
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "search_select".
- */
-export interface SearchSelect<T extends boolean = true> {
-  title?: T;
-  priority?: T;
-  doc?: T;
-  slug?: T;
-  meta?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        image?: T;
-      };
-  categories?:
-    | T
-    | {
-        relationTo?: T;
-        categoryID?: T;
-        title?: T;
         id?: T;
       };
   updatedAt?: T;

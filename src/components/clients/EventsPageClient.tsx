@@ -1,155 +1,151 @@
 'use client'
 
-import { FileText } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
-import Link from 'next/link'
-import { Badge } from '@/components/ui/badge'
+import { useState } from 'react'
 import Image from 'next/image'
-import type { Event } from '@/payload-types'
-import { useState, useTransition } from 'react'
+import Link from 'next/link'
+import { Calendar, MapPin, CircleDollarSign } from 'lucide-react'
 
-/**
- * EventsPageClient Component
- *
- * This is a Client Component that handles the interactive UI for the events page.
- * It receives pre-fetched data from the server component and manages:
- *
- * 1. Event filtering by type badges
- * 2. Client-side state for selected filters
- * 3. Interactive UI elements and transitions
- * 4. Responsive layout and styling
- *
- * The component uses React's useTransition for smooth filter changes
- * and maintains a consistent UI during data updates.
- */
-export function EventsPageClient({ events, badges }: { events: Event[]; badges: string[] }) {
-  // State for the currently selected event type filter
-  const [selectedBadge, setSelectedBadge] = useState<string>('all')
-  // Use transition for smooth filter changes
-  const [isPending, startTransition] = useTransition()
+import { cn } from '@/utilities/ui'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import type { Event, Media } from '@/payload-types'
 
-  // Filter events based on selected badge
-  const filteredEvents =
-    selectedBadge === 'all' ? events : events.filter((event) => event.eventType === selectedBadge)
+interface EventsPageClientProps {
+  events: Event[]
+  badges: string[]
+}
 
-  /**
-   * EmptyState Component
-   *
-   * Displays a message when no events match the current filter criteria
-   */
-  function EmptyState() {
-    return (
-      <div className="col-span-full flex flex-col items-center justify-center mt-32 py-12 text-center">
-        <FileText className="mb-4 h-12 w-12 text-muted-foreground" strokeWidth={1} />
-        <h3 className="text-xl font-semibold">No events found</h3>
-        <p className="mt-2 text-muted-foreground">
-          There are no events matching your current filter. Try selecting a different category.
-        </p>
-      </div>
-    )
+export function EventsPageClient({ events, badges }: EventsPageClientProps) {
+  const [selectedBadge, setSelectedBadge] = useState<string | null>(null)
+
+  const filteredEvents = selectedBadge
+    ? events.filter((event) => event.meta.eventType === selectedBadge)
+    : events
+
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return ''
+    return new Date(dateString).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    })
   }
 
   return (
-    <section className="bg-muted/60 mt-32 py-16">
-      <div className="center-container">
-        <div className="relative mx-auto flex max-w-screen-xl flex-col gap-20 lg:flex-row">
-          {/* Left sidebar with filters */}
-          <header className="top-10 flex h-fit flex-col items-center gap-5 text-center lg:sticky lg:max-w-80 lg:items-start lg:gap-8 lg:text-left">
-            <FileText className="h-full w-14" strokeWidth={1} />
-            <h1 className="text-4xl font-extrabold lg:text-5xl">Our Events</h1>
-            <p className="text-muted-foreground lg:text-xl">
-              Join our in-person and online workshops to build mediation skills, strengthen
-              connections, and turn conflict into community.
-            </p>
-            <Separator />
-            {/* Filter buttons */}
-            <nav
-              className="flex flex-wrap items-center justify-center gap-2 lg:flex-col lg:items-start lg:gap-2 mt-2"
-              aria-label="Event filters"
+    <section className="py-16 md:py-24">
+      <div className="container mx-auto max-w-7xl">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 text-center">
+          <h1 className="text-3xl font-bold text-pretty lg:text-5xl">Upcoming Events</h1>
+          <p className="text-muted-foreground lg:text-lg">
+            Join our in-person and online workshops to build mediation skills, strengthen
+            connections, and turn conflict into community.
+          </p>
+        </div>
+
+        {/* Filter badges */}
+        {badges.length > 0 && (
+          <div className="mx-auto mt-12 flex max-w-4xl flex-wrap justify-center gap-2">
+            <Button
+              variant={selectedBadge === null ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSelectedBadge(null)}
             >
-              <button
-                className={`font-medium px-3 py-1 rounded-full transition-colors ${
-                  selectedBadge === 'all'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-primary'
-                }`}
-                onClick={() => setSelectedBadge('all')}
-                disabled={isPending}
-                aria-pressed={selectedBadge === 'all'}
+              All Events
+            </Button>
+            {badges.map((badge) => (
+              <Button
+                key={badge}
+                variant={selectedBadge === badge ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedBadge(badge)}
               >
-                All
-              </button>
-              {badges.map((badge) => (
-                <button
-                  key={badge}
-                  className={`px-3 py-1 rounded-full transition-colors ${
-                    selectedBadge === badge
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-primary'
-                  }`}
-                  onClick={() => startTransition(() => setSelectedBadge(badge))}
-                  disabled={isPending}
-                  aria-pressed={selectedBadge === badge}
-                >
-                  {badge}
-                </button>
-              ))}
-            </nav>
-          </header>
-          {/* Event grid */}
-          <div className="w-full grid justify-items-stretch grid-cols-1 gap-4 md:grid-cols-2">
-            {filteredEvents.length === 0 ? (
-              <EmptyState />
-            ) : (
-              filteredEvents.map((event) => (
-                <Link
-                  href={`/events/${event.slug}`}
-                  key={event.id}
-                  className="w-full group relative isolate h-80 rounded-lg bg-background"
-                >
-                  <div className="z-10 flex h-full flex-col justify-between p-6">
-                    <div className="flex justify-between">
-                      <time
-                        dateTime={event.eventStartTime || ''}
-                        className="text-muted-foreground transition-colors duration-500 group-hover:text-background"
-                      >
-                        {event.eventStartTime
-                          ? new Date(event.eventStartTime).toLocaleDateString(undefined, {
-                              dateStyle: 'medium',
-                            })
-                          : ''}
-                      </time>
-                      <Badge variant={event.modality === 'online' ? 'secondary' : 'default'}>
-                        {event.modality?.replace('_', ' ')}
-                      </Badge>
+                {badge}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        {/* Events grid */}
+        <div className="mx-auto mt-12 grid max-w-6xl gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {filteredEvents.map((event) => {
+            const featuredImage = event.featuredImage as Media
+            return (
+              <article
+                key={event.id}
+                className="group rounded-lg border bg-card transition-all hover:shadow-lg"
+              >
+                {featuredImage?.url && (
+                  <div className="aspect-video overflow-hidden rounded-t-lg">
+                    <Image
+                      src={featuredImage.url}
+                      alt={featuredImage.alt || event.name}
+                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      width={400}
+                      height={225}
+                    />
+                  </div>
+                )}
+
+                <div className="p-6">
+                  {event.meta.eventType && (
+                    <Badge variant="secondary" className="mb-3">
+                      {event.meta.eventType}
+                    </Badge>
+                  )}
+
+                  <h3 className="mb-2 text-xl font-semibold line-clamp-2">
+                    <Link
+                      href={`/events/${event.meta.slug || event.id}`}
+                      className="hover:text-primary"
+                    >
+                      {event.name}
+                    </Link>
+                  </h3>
+
+                  {event.summary && (
+                    <p className="mb-4 text-sm text-muted-foreground line-clamp-3">
+                      {event.summary}
+                    </p>
+                  )}
+
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      <span>{formatDate(event.eventStartTime)}</span>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <h2 className="line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background">
-                        {event.name}
-                      </h2>
+
+                    {(event.location?.venueName || event.onlineMeeting?.url) && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>
+                          {event.modality === 'online' ? 'Online Event' : event.location?.venueName}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                      <CircleDollarSign className="h-4 w-4" />
+                      <span>
+                        {event.isFree
+                          ? 'Free'
+                          : `$${event.cost?.amount} ${event.cost?.description || ''}`}
+                      </span>
                     </div>
                   </div>
-                  <Image
-                    src={
-                      typeof event.featuredImage === 'object' && event.featuredImage?.url
-                        ? event.featuredImage.url
-                        : '/images/event-placeholder.jpg'
-                    }
-                    alt={
-                      typeof event.featuredImage === 'object' && event.featuredImage?.alt
-                        ? event.featuredImage.alt
-                        : event.name
-                    }
-                    loading="lazy"
-                    className="absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-custom-bezier [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]"
-                    width={1000}
-                    height={1000}
-                  />
-                </Link>
-              ))
-            )}
-          </div>
+
+                  <Button asChild className="mt-4 w-full">
+                    <Link href={`/events/${event.meta.slug || event.id}`}>Learn More</Link>
+                  </Button>
+                </div>
+              </article>
+            )
+          })}
         </div>
+
+        {filteredEvents.length === 0 && (
+          <div className="mx-auto mt-12 text-center">
+            <p className="text-muted-foreground">No events found matching your criteria.</p>
+          </div>
+        )}
       </div>
     </section>
   )

@@ -162,40 +162,6 @@ export const Posts: CollectionConfig = {
       ],
     },
     ...slugField(),
-    {
-      name: 'meta',
-      label: 'SEO',
-      type: 'group',
-      fields: [
-        {
-          name: 'title',
-          label: 'Meta Title',
-          type: 'text',
-        },
-        {
-          name: 'description',
-          label: 'Meta Description',
-          type: 'textarea',
-        },
-        {
-          name: 'image',
-          label: 'Meta Image',
-          type: 'upload',
-          relationTo: 'media',
-          admin: {
-            description: 'Recommended size: 1200x630px.',
-          },
-        },
-      ],
-    },
-    // --- CORRECTED ---
-    // The manual '_status' field has been removed.
-    // The `versions` property above handles this automatically.
-    // To make it queryable, we just need to ensure its 'index' property is set,
-    // which Payload will do if we just add it by name to the fields array.
-    // However, for maximum compatibility and to avoid regeneration issues,
-    // we let Payload handle this implicitly for now. If you need to query by status and it fails,
-    // we would add an index to the _posts_v table manually.
   ],
   timestamps: true,
 }

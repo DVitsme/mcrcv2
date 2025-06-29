@@ -111,8 +111,7 @@ const Services = () => {
                     src={feature.image}
                     alt={feature.title}
                     className="w-full object-cover object-center"
-                    width={100}
-                    height={100}
+                    fill
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-background/95 via-background/70 to-transparent px-4 py-5">
                     <div className="flex items-center gap-3">

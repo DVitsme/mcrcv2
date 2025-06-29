@@ -1,19 +1,16 @@
+// src/payload.config.ts
+
 import path from 'path'
 import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
-
-// Load environment variables from .env file
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-dotenv.config({
-  path: path.resolve(__dirname, '../.env'),
-})
-
-import { postgresAdapter } from '@payloadcms/db-postgres'
-import sharp from 'sharp' // sharp-import
 import { buildConfig, PayloadRequest } from 'payload'
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import sharp from 'sharp'
 import { resendAdapter } from '@payloadcms/email-resend'
 import { s3Storage } from '@payloadcms/storage-s3'
 
+// Import all your collections and globals
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -27,12 +24,25 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 
+// Correctly load .env file
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-let connectionString: string | undefined
+dotenv.config({
+  path: path.resolve(dirname, '../.env'),
+})
 
-if (process.env.NODE_ENV === 'production') {
+// Determine which connection string to use
+let connectionString: string | undefined
+const isProduction = process.env.NODE_ENV === 'production'
+
+// --- DEBUGGING ---
+console.log(`--- [DEBUG] Payload Config Initialization ---`)
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`)
+console.log(`Is Production?: ${isProduction}`)
+// --- END DEBUGGING ---
+
+if (isProduction) {
   connectionString = process.env.DATABASE_PROD_URL
   if (!connectionString) {
     throw new Error('DATABASE_PROD_URL environment variable is not set for production environment!')
@@ -48,71 +58,72 @@ if (process.env.NODE_ENV === 'production') {
   console.log('Using DEVELOPMENT database.')
 }
 
+// --- DEBUGGING ---
+console.log(`Final Connection String: ${connectionString}`)
+console.log(`-------------------------------------------`)
+// --- END DEBUGGING ---
+
 if (!process.env.RESEND_API) {
   throw new Error('RESEND_API environment variable is not set!')
 }
 
-const s3Bucket = process.env.S3_BUCKET
-const s3Endpoint = process.env.S3_ENDPOINT
-const s3Region = process.env.S3_REGION
-const s3AccessKeyId = process.env.S3_ACCESS_KEY_ID
-const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY
-
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
   admin: {
-    components: {
-      beforeLogin: ['@/components/BeforeLogin'],
-      beforeDashboard: ['@/components/BeforeDashboard'],
-    },
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
+    // ... your admin config
     user: Users.slug,
-    livePreview: {
-      breakpoints: [
-        { label: 'Mobile', name: 'mobile', width: 375, height: 667 },
-        { label: 'Tablet', name: 'tablet', width: 768, height: 1024 },
-        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
-      ],
-    },
   },
   editor: defaultLexical,
+
+  // --- DATABASE CONFIG WITH DEBUGGING ---
   db: postgresAdapter({
     pool: {
       connectionString,
-      ssl: { rejectUnauthorized: false }, // Important for cloud DBs
+      // Conditionally apply SSL settings ONLY in production.
+      // For development, we spread an empty object, so the `ssl` key is omitted entirely.
+      ...(isProduction
+        ? {
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          }
+        : {}),
     },
   }),
+
   email: resendAdapter({
     apiKey: process.env.RESEND_API!,
     defaultFromAddress: 'noreply@mcrc.org',
     defaultFromName: 'MCRC',
   }),
+
   collections: [Pages, Posts, Media, Categories, Users, Events, Cases],
-  cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
+
   plugins: [
-    ...plugins, // Your other custom plugins from './plugins'
+    ...plugins,
+    formBuilderPlugin({
+      redirectRelationships: ['pages'],
+    }),
     s3Storage({
       collections: {
         media: {
           prefix: 'media-assets',
         },
       },
-      // Use the variables we defined above for debugging
-      bucket: s3Bucket!,
+      bucket: process.env.S3_BUCKET!,
       config: {
-        endpoint: s3Endpoint!,
-        region: s3Region!,
+        endpoint: process.env.S3_ENDPOINT!,
+        region: process.env.S3_REGION!,
         credentials: {
-          accessKeyId: s3AccessKeyId!,
-          secretAccessKey: s3SecretAccessKey!,
+          accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
         },
       },
     }),
   ],
-  secret: process.env.PAYLOAD_SECRET,
+
+  secret: process.env.PAYLOAD_SECRET!,
   sharp,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

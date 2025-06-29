@@ -4,7 +4,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
 import payload from 'payload'
-import type { User, Media, Post, Event, Form } from './payload-types'
+import type { User, Media } from './payload-types'
 import payloadConfig from './payload.config'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -20,7 +20,6 @@ dotenv.config({
 export const seed = async () => {
   console.log('Seeding database...')
 
-  // Initialize Payload
   try {
     await payload.init({
       config: payloadConfig,
@@ -89,7 +88,7 @@ export const seed = async () => {
   // --- 3. Create Sample Blog Posts ---
   console.log('\n--- Creating sample blog posts... ---')
   try {
-    if (adminUser && postImage1) {
+    if (postImage1) {
       await payload.create({
         collection: 'posts',
         data: {
@@ -113,7 +112,7 @@ export const seed = async () => {
       })
       console.log('✅ Sample blog posts created.')
     } else {
-      console.log('Skipping blog post creation due to missing admin user or image.')
+      console.log('Skipping blog post creation due to missing image.')
     }
   } catch (err) {
     console.error('Error creating blog posts:', err)
@@ -122,30 +121,37 @@ export const seed = async () => {
   // --- 4. Create Sample Events ---
   console.log('\n--- Creating sample events... ---')
   try {
-    if (adminUser && eventImage) {
+    if (eventImage) {
       await payload.create({
         collection: 'events',
         data: {
           name: 'Community Peace Circle',
-          slug: 'community-peace-circle-seed',
-          status: 'published',
-          eventType: 'Community Meeting',
+          meta: {
+            slug: 'community-peace-circle-seed',
+            status: 'published',
+            eventType: 'Community Meeting',
+          },
           summary:
             'Join us for a monthly peace circle to discuss community issues and build connections.',
-          description: {
-            root: {
-              children: [
-                {
-                  type: 'paragraph',
+          content: [
+            {
+              blockType: 'textBlock',
+              text: {
+                root: {
                   children: [
                     {
-                      text: 'An open and inclusive space for community members to share perspectives and foster understanding. All are welcome.',
+                      type: 'paragraph',
+                      children: [
+                        {
+                          text: 'An open and inclusive space for community members to share perspectives and foster understanding. All are welcome.',
+                        },
+                      ],
                     },
                   ],
                 },
-              ],
-            } as any,
-          },
+              },
+            },
+          ] as any,
           eventStartTime: new Date('2025-07-15T18:00:00.000Z').toISOString(),
           eventEndTime: new Date('2025-07-15T20:00:00.000Z').toISOString(),
           modality: 'in_person',
@@ -155,13 +161,14 @@ export const seed = async () => {
           },
           isFree: true,
           isRegistrationRequired: false,
-          createdBy: adminUser.id,
-          featuredImage: eventImage.id,
+          // --- CORRECTED: Removed 'createdBy' and 'featuredImage' from the top level ---
+          // 'createdBy' is now nested in your Events collection
+          // 'featuredImage' is also nested
         },
       })
       console.log('✅ Sample events created.')
     } else {
-      console.log('Skipping event creation due to missing admin user or image.')
+      console.log('Skipping event creation due to missing image.')
     }
   } catch (err) {
     console.error('Error creating events:', err)

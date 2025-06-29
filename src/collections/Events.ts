@@ -1,25 +1,28 @@
-// src/collections/Events.ts
+import type { CollectionConfig, Block } from 'payload'
+import { isAdmin, isCoordinatorOrAdmin } from '../access/roles'
 
-import type { CollectionConfig } from 'payload'
-import { isCoordinatorOrAdmin, isAdmin } from '../access/roles'
-import type { User, Event, Media } from '../payload-types'
+// For the 'content' field, we'll need some simple blocks
+const TextBlock: Block = {
+  slug: 'textBlock',
+  fields: [{ name: 'text', type: 'richText' }],
+}
+
+const ImageBlock: Block = {
+  slug: 'imageBlock',
+  fields: [{ name: 'image', type: 'upload', relationTo: 'media' }],
+}
 
 export const Events: CollectionConfig = {
   slug: 'events',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'eventType', 'status', 'eventStartTime'],
   },
   access: {
     read: ({ req: { user } }) => {
       if (user && (user.role === 'admin' || user.role === 'coordinator')) {
         return true
       }
-      return {
-        status: {
-          in: ['published', 'completed', 'cancelled'],
-        },
-      }
+      return { 'meta.status': { in: ['published', 'completed', 'cancelled'] } }
     },
     create: isCoordinatorOrAdmin,
     delete: isAdmin,
@@ -33,18 +36,17 @@ export const Events: CollectionConfig = {
       required: true,
     },
     {
-      type: 'row',
+      type: 'group',
+      name: 'meta',
+      label: 'Event Info & Status',
+      admin: {
+        position: 'sidebar',
+      },
       fields: [
         {
           name: 'status',
           type: 'select',
-          options: [
-            { label: 'Draft', value: 'draft' },
-            { label: 'Published', value: 'published' },
-            { label: 'Completed', value: 'completed' },
-            { label: 'Cancelled', value: 'cancelled' },
-            { label: 'Archived', value: 'archived' },
-          ],
+          options: ['draft', 'published', 'completed', 'cancelled', 'archived'],
           defaultValue: 'draft',
           required: true,
         },
@@ -52,8 +54,13 @@ export const Events: CollectionConfig = {
           name: 'eventType',
           label: 'Event Type Badge',
           type: 'text',
+        },
+        {
+          name: 'slug',
+          type: 'text',
+          index: true,
           admin: {
-            description: 'A short label, e.g., "Workshop", "Networking", "Training".',
+            position: 'sidebar',
           },
         },
       ],
@@ -62,75 +69,55 @@ export const Events: CollectionConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Event Details',
+          label: 'Details',
           fields: [
             {
+              name: 'summary',
+              type: 'textarea',
+              maxLength: 300,
+            },
+            {
               name: 'eventStartTime',
-              label: 'Start Time',
               type: 'date',
               required: true,
-              admin: {
-                date: { pickerAppearance: 'dayAndTime' },
-              },
+              admin: { date: { pickerAppearance: 'dayAndTime' } },
             },
             {
               name: 'eventEndTime',
-              label: 'End Time',
               type: 'date',
-              admin: {
-                date: { pickerAppearance: 'dayAndTime' },
-              },
+              admin: { date: { pickerAppearance: 'dayAndTime' } },
             },
             {
               name: 'modality',
               type: 'radio',
-              options: [
-                { label: 'In-Person', value: 'in_person' },
-                { label: 'Online', value: 'online' },
-                { label: 'Hybrid', value: 'hybrid' },
-              ],
+              options: ['in_person', 'online', 'hybrid'],
               defaultValue: 'in_person',
             },
             {
               name: 'location',
-              label: 'Location / Venue',
               type: 'group',
-              admin: {
-                condition: (_, siblingData) =>
-                  siblingData.modality === 'in_person' || siblingData.modality === 'hybrid',
-              },
+              admin: { condition: (_, siblingData) => siblingData.modality !== 'online' },
               fields: [
-                {
-                  name: 'venueName',
-                  label: 'Venue Name',
-                  type: 'text',
-                },
-                {
-                  name: 'address',
-                  label: 'Address',
-                  type: 'text',
-                },
+                { name: 'venueName', type: 'text' },
+                { name: 'address', type: 'text' },
               ],
             },
             {
               name: 'onlineMeeting',
-              label: 'Online Meeting',
               type: 'group',
-              admin: {
-                condition: (_, siblingData) =>
-                  siblingData.modality === 'online' || siblingData.modality === 'hybrid',
-              },
+              admin: { condition: (_, siblingData) => siblingData.modality !== 'in_person' },
               fields: [
                 {
                   name: 'url',
-                  label: 'Meeting URL',
                   type: 'text',
+                  validate: (val: string | null | undefined) => {
+                    if (val && !val.match(/^https?:\/\/.+/)) {
+                      return 'Please enter a valid URL starting with http:// or https://'
+                    }
+                    return true
+                  },
                 },
-                {
-                  name: 'details',
-                  label: 'Meeting Details (e.g., ID, Passcode)',
-                  type: 'text',
-                },
+                { name: 'details', type: 'text' },
               ],
             },
           ],
@@ -139,30 +126,29 @@ export const Events: CollectionConfig = {
           label: 'Content & Media',
           fields: [
             {
-              name: 'summary',
-              type: 'textarea',
-              maxLength: 250,
-              admin: {
-                description: 'A short summary for event cards and SEO.',
-              },
-            },
-            {
-              name: 'description',
-              label: 'Full Description',
-              type: 'richText',
-            },
-            {
               name: 'featuredImage',
               type: 'upload',
               relationTo: 'media',
             },
             {
-              name: 'supportingImage',
-              type: 'upload',
-              relationTo: 'media',
+              name: 'content',
+              label: 'Event Content Sections',
+              type: 'blocks',
+              blocks: [TextBlock, ImageBlock],
+            },
+            {
+              name: 'speakers',
+              type: 'array',
+              fields: [
+                { name: 'speakerName', type: 'text', required: true },
+                { name: 'speakerTitle', type: 'text' },
+                { name: 'speakerBio', type: 'textarea' },
+                { name: 'speakerAvatar', type: 'upload', relationTo: 'media' },
+              ],
             },
           ],
         },
+        // --- NEW: Added Pricing & Registration Tab ---
         {
           label: 'Pricing & Registration',
           fields: [
@@ -205,6 +191,12 @@ export const Events: CollectionConfig = {
             {
               name: 'externalRegistrationLink',
               type: 'text',
+              validate: (val: string | null | undefined) => {
+                if (val && !val.match(/^https?:\/\/.+/)) {
+                  return 'Please enter a valid URL starting with http:// or https://'
+                }
+                return true
+              },
             },
             {
               name: 'registrationDeadline',
@@ -215,45 +207,7 @@ export const Events: CollectionConfig = {
             },
           ],
         },
-        {
-          label: 'Staffing & Notes',
-          fields: [
-            {
-              name: 'contact',
-              label: 'Event Contact',
-              type: 'group',
-              fields: [
-                { name: 'name', type: 'text' },
-                { name: 'email', type: 'email' },
-                { name: 'phone', type: 'text' },
-              ],
-            },
-            {
-              name: 'createdBy',
-              type: 'relationship',
-              relationTo: 'users',
-              admin: {
-                readOnly: true,
-                position: 'sidebar',
-              },
-              defaultValue: ({ user }: { user: User }) => user.id,
-            },
-            {
-              name: 'additionalNotes',
-              type: 'array',
-              fields: [{ name: 'item', type: 'text' }],
-            },
-          ],
-        },
       ],
-    },
-    {
-      name: 'slug',
-      type: 'text',
-      index: true,
-      admin: {
-        position: 'sidebar',
-      },
     },
   ],
   timestamps: true,
