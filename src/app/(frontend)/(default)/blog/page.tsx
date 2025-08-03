@@ -1,220 +1,590 @@
-import { Suspense } from 'react'
+'use client'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ArrowRight, Slash } from 'lucide-react'
+import { Fragment, useCallback, useMemo, useState } from 'react'
+import { ControllerRenderProps, useForm } from 'react-hook-form'
 import Image from 'next/image'
-import Link from 'next/link'
-import { ArrowRight, CalendarDays, Clock, User as UserIcon } from 'lucide-react'
+import { z } from 'zod'
+
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Badge } from '@/components/ui/badge'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 import { Button } from '@/components/ui/button'
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { fetchPosts, fetchFeaturedPost, fetchCategories } from '@/lib/payload-api-blog'
-import type { Post, Category, User } from '@/payload-types'
+import { Card, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
-// Helper function to format dates
-function formatDate(dateString?: string): string {
-  if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+interface BreadcrumbItem {
+  label: string
+  link: string
+}
+
+interface Post {
+  category: string
+  title: string
+  summary: string
+  link: string
+  cta: string
+  thumbnail: string
+}
+
+interface Category {
+  label: string
+  value: string
+}
+
+interface FilterFormProps {
+  categories: Array<Category>
+  onCategoryChange: (selectedCategories: string[]) => void
+}
+
+interface BlogsResultProps {
+  posts: Array<Post>
+  categories: Array<Category>
+}
+
+interface BreadcrumbBlogProps {
+  breadcrumb: Array<BreadcrumbItem>
+}
+
+const POSTS_PER_PAGE = 6
+
+const BREADCRUMB: Array<BreadcrumbItem> = [
+  {
+    label: 'Resources',
+    link: '#',
+  },
+  {
+    label: 'Reports',
+    link: '#',
+  },
+]
+
+const CATEGORIES: Array<Category> = [
+  {
+    label: 'All',
+    value: 'all',
+  },
+  {
+    label: 'Productivity',
+    value: 'productivity',
+  },
+  {
+    label: 'Accessibility',
+    value: 'accessibility',
+  },
+  {
+    label: 'Performance',
+    value: 'performance',
+  },
+]
+
+const PRIMARY_POST: Post = {
+  category: 'Innovation Spotlight',
+  title: 'How AI is Transforming Frontend Development',
+  summary:
+    'Explore how tools like GitHub Copilot, AI design generators, and code assistants are changing the way developers build UIs and ship features faster.',
+  link: '#',
+  cta: 'Discover the Future',
+  thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+}
+
+const POSTS: Array<Post> = [
+  {
+    category: 'Productivity',
+    title: '5 VS Code Extensions That Will Save You Hours',
+    summary:
+      'Discover must-have extensions to boost your coding efficiency and streamline your workflow.',
+    link: '#',
+    cta: 'Boost Your Editor',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Productivity',
+    title: 'Time Management for Developers: What Really Works',
+    summary:
+      'Learn proven strategies to avoid burnout and stay on top of your tasks without stress.',
+    link: '#',
+    cta: 'Manage Your Time',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Productivity',
+    title: 'Automate Your Workflow with Task Runners',
+    summary:
+      'Use tools like Gulp, npm scripts, and GitHub Actions to automate repetitive development tasks.',
+    link: '#',
+    cta: 'Automate Now',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Productivity',
+    title: 'Effective Daily Routines for Developers',
+    summary:
+      'Discover routines that top developers follow to stay productive, creative, and focused.',
+    link: '#',
+    cta: 'Find Your Flow',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Productivity',
+    title: 'Master Git Like a Pro with These Shortcuts',
+    summary: 'Speed up your version control workflow with powerful Git aliases and tips.',
+    link: '#',
+    cta: 'Speed Up Git',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Productivity',
+    title: 'Reducing Context Switching as a Developer',
+    summary: 'Minimize distractions and deep-dive into your code with focused work practices.',
+    link: '#',
+    cta: 'Stay Focused',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Productivity',
+    title: 'Remote Work Setup: Tools for a Distraction-Free Environment',
+    summary:
+      'Set up your space and software stack for maximum productivity when working from home.',
+    link: '#',
+    cta: 'Upgrade Your Setup',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Productivity',
+    title: 'Pomodoro for Coders: Does It Really Work?',
+    summary:
+      'A practical review of the Pomodoro technique and its effectiveness for software development.',
+    link: '#',
+    cta: 'Try the Method',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: 'Why Accessibility Should Be Part of Your MVP',
+    summary: 'Making your product inclusive from day one improves usability and reach.',
+    link: '#',
+    cta: 'Learn Why',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: 'Using ARIA Roles Correctly in Your Web App',
+    summary: 'Understand how to enhance screen reader support using ARIA roles and landmarks.',
+    link: '#',
+    cta: 'Improve Semantics',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: 'Color Contrast Tips for Better Readability',
+    summary: 'Learn how to choose accessible color combinations that meet WCAG standards.',
+    link: '#',
+    cta: 'Fix Your Colors',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: 'Keyboard Navigation: The Overlooked User Experience',
+    summary:
+      'Ensure your website is fully usable with just a keyboard, for accessibility and speed.',
+    link: '#',
+    cta: 'Test Navigation',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: 'Accessible Forms: Labels, Errors & Feedback',
+    summary:
+      'Improve the usability of your forms by ensuring screen readers and users receive clear instructions.',
+    link: '#',
+    cta: 'Fix Your Forms',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: "Screen Reader Testing: A Beginner's Guide",
+    summary: 'How to test your site with popular screen readers and what to listen for.',
+    link: '#',
+    cta: 'Start Testing',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: 'Inclusive Design Thinking in UI Development',
+    summary: 'Design interfaces that consider users of all abilities from the start.',
+    link: '#',
+    cta: 'Design for All',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Accessibility',
+    title: 'Accessibility Audits: Tools and Checklists',
+    summary:
+      'Perform thorough accessibility audits with tools like Axe, Lighthouse, and manual checklists.',
+    link: '#',
+    cta: 'Audit Now',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Lazy Loading Images with Modern HTML',
+    summary: 'Improve load times by using native lazy-loading and fallback strategies for images.',
+    link: '#',
+    cta: 'Optimize Images',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Minifying JavaScript Without Breaking Your App',
+    summary: 'Best practices for minifying and tree-shaking your JS bundles to boost speed.',
+    link: '#',
+    cta: 'Shrink Your Code',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Web Vitals Explained: CLS, LCP, FID',
+    summary: 'Learn how to measure and improve Core Web Vitals for a better user experience.',
+    link: '#',
+    cta: 'Improve Vitals',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Server-Side Rendering vs Client-Side: Which is Faster?',
+    summary: 'Compare SSR and CSR strategies and when to use each for better performance.',
+    link: '#',
+    cta: 'Explore Options',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Optimizing Fonts for Faster Page Loads',
+    summary:
+      'Learn techniques for loading fonts without blocking rendering or causing layout shifts.',
+    link: '#',
+    cta: 'Speed Up Fonts',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Reduce JavaScript Bundle Size with Code Splitting',
+    summary: 'Use dynamic imports and route-based chunking to reduce initial load time.',
+    link: '#',
+    cta: 'Split It Up',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Caching Strategies for Modern Web Apps',
+    summary:
+      'Leverage HTTP caching, service workers, and CDNs to improve speed and offline support.',
+    link: '#',
+    cta: 'Cache Smarter',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+  {
+    category: 'Performance',
+    title: 'Analyzing Performance Bottlenecks with Chrome DevTools',
+    summary:
+      'Use the Performance tab in DevTools to track down and fix runtime issues in your app.',
+    link: '#',
+    cta: 'Analyze Now',
+    thumbnail: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg',
+  },
+]
+
+const FilterFormSchema = z.object({
+  items: z.array(z.string()).refine((value) => value.length > 0, {
+    message: 'At least one category should be selected.',
+  }),
+})
+
+const FilterForm = ({ categories, onCategoryChange }: FilterFormProps) => {
+  const form = useForm<z.infer<typeof FilterFormSchema>>({
+    resolver: zodResolver(FilterFormSchema),
+    defaultValues: {
+      items: [CATEGORIES[0]?.value],
+    },
   })
-}
 
-// Helper to get the author's name
-function getAuthorName(authors: Post['authors']): string {
-  if (!authors || authors.length === 0) return 'MCRC Staff'
-  const firstAuthor = authors[0]
-  return typeof firstAuthor === 'object' ? firstAuthor.name : 'MCRC Staff'
-}
+  const handleCheckboxChange = useCallback(
+    (
+      checked: boolean | string,
+      categoryValue: string,
+      field: ControllerRenderProps<z.infer<typeof FilterFormSchema>, 'items'>,
+    ) => {
+      let updatedValues = checked
+        ? [...field.value, categoryValue]
+        : field.value.filter((value: string) => value !== categoryValue)
 
-export default async function BlogPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ tag?: string | undefined }>
-}) {
-  const categorySlug = (await searchParams).tag
+      // If no categories are checked, add "all"
+      if (updatedValues.length === 0) {
+        form.setValue('items', ['all'])
+        onCategoryChange(['all'])
+        return
+      }
 
-  // Fetch data in parallel using the new functions
-  const [featuredPost, allPosts, categories] = await Promise.all([
-    fetchFeaturedPost(),
-    fetchPosts(categorySlug), // Pass the category slug to filter posts
-    fetchCategories(),
-  ])
+      // Remove "all" if specific category is checked
+      if (updatedValues.includes('all')) {
+        updatedValues = updatedValues.filter((v: string) => v !== 'all')
+      }
+
+      // Avoid unnecessary updates
+      if (JSON.stringify(field.value) !== JSON.stringify(updatedValues)) {
+        form.setValue('items', updatedValues)
+        onCategoryChange(updatedValues)
+      }
+    },
+    [form, onCategoryChange],
+  )
 
   return (
-    <div className="container mx-auto px-4 mt-32 py-12">
-      {/* Hero Section with Featured Post */}
-      {featuredPost &&
-        !categorySlug && ( // Only show hero on the main "All" page
-          <section className="mb-16">
-            <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-              <div className="order-2 flex flex-col justify-center lg:order-1">
-                {featuredPost.categories &&
-                  Array.isArray(featuredPost.categories) &&
-                  featuredPost.categories.length > 0 && (
-                    <Badge className={`mb-4 inline-flex w-fit`}>
-                      {(featuredPost.categories[0] as Category).title}
-                    </Badge>
-                  )}
-                <h1 className="mb-4 text-3xl font-bold lg:text-4xl xl:text-5xl">
-                  {featuredPost.title}
-                </h1>
-                <p className="mb-6 text-lg text-muted-foreground">
-                  {featuredPost.meta?.description}
-                </p>
-                <div className="mb-6 flex flex-wrap items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <UserIcon className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">{getAuthorName(featuredPost.authors)}</p>
-                    </div>
-                  </div>
-                  <Separator orientation="vertical" className="h-6" />
-                  <div className="flex items-center gap-1">
-                    <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      {formatDate(featuredPost.publishedAt || featuredPost.createdAt)}
-                    </span>
-                  </div>
-                </div>
-                <Button asChild className="w-fit">
-                  <Link href={`/blog/${featuredPost.slug}`}>
-                    Read Full Article
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-              <div className="order-1 lg:order-2">
-                <div className="overflow-hidden rounded-xl">
-                  <Link href={`/blog/${featuredPost.slug}`}>
-                    {typeof featuredPost.heroImage === 'object' && featuredPost.heroImage?.url && (
-                      <Image
-                        src={featuredPost.heroImage.url}
-                        alt={featuredPost.heroImage.alt || featuredPost.title}
-                        width={800}
-                        height={500}
-                        className="aspect-[16/10] h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                    )}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </section>
+    <Form {...form}>
+      <form>
+        <FormField
+          control={form.control}
+          name="items"
+          render={({ field }) => (
+            <FormItem className="flex w-full flex-wrap items-center gap-2.5">
+              {categories.map((category) => {
+                const isChecked = field.value?.includes(category.value)
+                return (
+                  <FormItem
+                    key={category.value}
+                    className="flex flex-row items-start space-x-3 space-y-0"
+                  >
+                    <FormControl>
+                      <Label className="bg-muted flex cursor-pointer items-center gap-2.5 rounded-full px-2.5 py-1.5">
+                        <div>{category.label}</div>
+                        <Checkbox
+                          checked={isChecked}
+                          onCheckedChange={(checked) =>
+                            handleCheckboxChange(checked, category.value, field)
+                          }
+                        />
+                      </Label>
+                    </FormControl>
+                  </FormItem>
+                )
+              })}
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
+  )
+}
+
+const ResourcesResult = ({ posts, categories }: BlogsResultProps) => {
+  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([
+    CATEGORIES[0]?.value || '',
+  ])
+  const handleCategoryChange = useCallback((selected: string[]) => {
+    setSelectedCategories(selected)
+    setVisibleCount(POSTS_PER_PAGE)
+  }, [])
+
+  const handleLoadMore = useCallback(() => {
+    setVisibleCount((prev) => prev + POSTS_PER_PAGE)
+  }, [])
+  const filteredPosts = useMemo(() => {
+    return posts.filter(
+      (post) =>
+        selectedCategories.includes(post.category.toLowerCase()) ||
+        selectedCategories.includes('all'),
+    )
+  }, [posts, selectedCategories])
+
+  const postsToDisplay = filteredPosts.length > 0 ? filteredPosts : posts
+
+  const hasMore = visibleCount < postsToDisplay.length
+
+  return (
+    <div>
+      <FilterForm categories={categories} onCategoryChange={handleCategoryChange} />
+      <div className="flex w-full flex-col gap-4 py-8">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+          {postsToDisplay.slice(0, visibleCount).map((post) => (
+            <ResourcesCard key={post.title} {...post} />
+          ))}
+        </div>
+        {hasMore && (
+          <Button className="w-full" variant="secondary" onClick={handleLoadMore}>
+            Load More
+          </Button>
         )}
-
-      {/* Category Filter */}
-      <section className="mb-12">
-        <div className="overflow-x-auto pb-2">
-          <Tabs defaultValue={categorySlug || 'all'} className="w-full">
-            <TabsList className="mb-8 flex w-full justify-start space-x-2 bg-transparent p-0">
-              <TabsTrigger
-                value="all"
-                className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                asChild
-              >
-                <Link href="/blog">All</Link>
-              </TabsTrigger>
-              {categories.map((category) => (
-                <TabsTrigger
-                  key={category.id}
-                  value={category.slug!}
-                  className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  asChild
-                >
-                  <Link href={`/blog?tag=${category.slug}`}>{category.title}</Link>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            <TabsContent value={categorySlug || 'all'} className="mt-0">
-              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                <Suspense fallback={<p>Loading blog posts...</p>}>
-                  {allPosts.map((post) => (
-                    <BlogPostCard key={post.id} post={post} />
-                  ))}
-                </Suspense>
-              </div>
-              {allPosts.length === 0 && (
-                <div className="py-12 text-center">
-                  <p className="text-muted-foreground">
-                    No posts in this category yet. Check back soon!
-                  </p>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
-
-      {/* Newsletter Subscription */}
-      <section className="mt-16 rounded-2xl bg-muted p-8 md:p-12">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-bold md:text-3xl">Subscribe to Our Newsletter</h2>
-          <p className="mt-4 text-muted-foreground">
-            Stay updated with the latest insights, tips, and news about mediation and conflict
-            resolution.
-          </p>
-          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="rounded-md border px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-72"
-            />
-            <Button>Subscribe</Button>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   )
 }
 
-function BlogPostCard({ post }: { post: Post }) {
-  const primaryCategory =
-    post.categories && Array.isArray(post.categories) && post.categories.length > 0
-      ? (post.categories[0] as Category)
-      : null
-
+const BreadcrumbBlog = ({ breadcrumb }: BreadcrumbBlogProps) => {
   return (
-    <Card className="flex flex-col overflow-hidden border-0 shadow-none">
-      <div className="overflow-hidden rounded-xl">
-        <Link href={`/blog/${post.slug}`} className="block">
-          <div className="aspect-[16/9] w-full overflow-hidden">
-            {typeof post.heroImage === 'object' && post.heroImage?.url && (
-              <Image
-                src={post.heroImage.url}
-                alt={post.heroImage.alt || post.title}
-                width={600}
-                height={340}
-                className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-              />
-            )}
-          </div>
-        </Link>
-      </div>
-      <CardHeader className="px-0 pt-4">
-        <div className="flex items-center gap-2">
-          {primaryCategory && <Badge className={`font-medium`}>{primaryCategory.title}</Badge>}
-        </div>
-        <CardTitle className="mt-2 line-clamp-2">
-          <Link href={`/blog/${post.slug}`} className="hover:text-primary">
-            {post.title}
-          </Link>
-        </CardTitle>
-        <CardDescription className="line-clamp-2 mt-2 text-base">
-          {post.meta?.description}
-        </CardDescription>
-      </CardHeader>
-      <CardFooter className="mt-auto flex items-center justify-between px-0 pt-4">
-        <div className="flex items-center gap-2">
-          <UserIcon className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm">{getAuthorName(post.authors)}</span>
-        </div>
-        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-          <CalendarDays className="h-4 w-4" />
-          <span>{formatDate(post.publishedAt || post.createdAt)}</span>
-        </div>
-      </CardFooter>
-    </Card>
+    <Breadcrumb>
+      <BreadcrumbList>
+        {breadcrumb.map((item, i) => {
+          return (
+            <Fragment key={`${item.label}`}>
+              <BreadcrumbItem>
+                <BreadcrumbLink href={item.link}>{item.label}</BreadcrumbLink>
+              </BreadcrumbItem>
+              {i < breadcrumb.length - 1 ? (
+                <BreadcrumbSeparator>
+                  <Slash />
+                </BreadcrumbSeparator>
+              ) : null}
+            </Fragment>
+          )
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
   )
 }
+
+const EmailFormSchema = z
+  .object({
+    email: z.string().email({
+      message: 'Invalid email address',
+    }),
+  })
+  .required({ email: true })
+
+const EmailForm = () => {
+  const form = useForm<z.infer<typeof EmailFormSchema>>({
+    resolver: zodResolver(EmailFormSchema),
+    defaultValues: {
+      email: '',
+    },
+  })
+
+  function onSubmit(values: z.infer<typeof EmailFormSchema>) {
+    console.log(values)
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className="w-full">
+                  <div className="relative flex w-full flex-col gap-2 lg:block">
+                    <Input
+                      {...field}
+                      type="email"
+                      id="emailInput"
+                      placeholder="What's your work email?"
+                      className="bg-background h-fit py-4 pl-5 pr-5 lg:pr-[13.75rem]"
+                    />
+                    <div className="right-2.5 top-1/2 lg:absolute lg:-translate-y-1/2">
+                      <Button type="submit" className="w-full rounded-full lg:w-fit">
+                        See Company in action
+                        <ArrowRight />
+                      </Button>
+                    </div>
+                  </div>
+                  <FormMessage className="py-1" />
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
+  )
+}
+
+const ResourcesCard = ({ category, title, thumbnail, summary, link, cta }: Post) => {
+  return (
+    <a href={link} className="block h-full w-full">
+      <Card className="size-full border py-0">
+        <CardContent className="p-0">
+          <div className="text-muted-foreground border-b p-2.5 text-sm font-medium leading-[1.2]">
+            {category}
+          </div>
+          <AspectRatio ratio={1.520833333} className="overflow-hidden">
+            <Image
+              src={thumbnail}
+              alt={title}
+              className="block size-full object-cover object-center"
+              width={500}
+              height={500}
+            />
+          </AspectRatio>
+          <div className="flex w-full flex-col gap-5 p-5">
+            <h2 className="text-lg font-bold leading-none md:text-2xl">{title}</h2>
+            <div className="w-full max-w-[20rem]">
+              <p className="text-foreground text-sm font-medium leading-[1.4]">{summary}</p>
+            </div>
+            <div>
+              <Badge className="rounded-full">
+                {cta}
+                <ArrowRight />
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </a>
+  )
+}
+
+const BlogPage = () => {
+  return (
+    <section className="pb-32">
+      <div className="bg-muted bg-[url('https://deifkwefumgah.cloudfront.net/shadcnblocks/block/patterns/dot-pattern-2.svg')] bg-[length:3.125rem_3.125rem] bg-repeat">
+        <div className="container flex flex-col items-start justify-start gap-16 pt-32 pb-20 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex w-full flex-col justify-between gap-12">
+            <div className="flex w-full max-w-[36rem] flex-col gap-8">
+              <BreadcrumbBlog breadcrumb={BREADCRUMB} />
+              <div className="flex w-full flex-col gap-5">
+                <h1 className="text-[2.5rem] font-semibold leading-[1.2] md:text-5xl lg:text-6xl">
+                  Explore Reports
+                </h1>
+                <p className="text-foreground text-xl font-semibold leading-[1.4]">
+                  The best Reports is one that captivates readers with engaging, well-researched
+                  content presented in a clear and relatable way.
+                </p>
+              </div>
+              <div className="max-w-[30rem]">
+                <EmailForm />
+              </div>
+            </div>
+          </div>
+          <div className="w-full max-w-[27.5rem]">
+            <ResourcesCard {...PRIMARY_POST} />
+          </div>
+        </div>
+      </div>
+      <div className="py-20">
+        <div className="container flex flex-col gap-8">
+          <h2 className="text-[1.75rem] font-medium leading-none md:text-[2.25rem] lg:text-[2rem]">
+            All Reports
+          </h2>
+          <div>
+            <ResourcesResult posts={POSTS} categories={CATEGORIES} />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export { BlogPage }
+
+export default BlogPage

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 
 import Image from 'next/image'
+import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 
@@ -87,8 +88,15 @@ const EventPageClient = ({ event }: EventPageClientProps) => {
 
             <div>
               <p className="text-sm font-medium">
-                {new Date(eventStartTime || '').toString()} -{' '}
-                {new Date(eventEndTime || '').toLocaleDateString()}
+                {new Date(eventStartTime || '').toLocaleString('en-US', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}{' '}
+                -{' '}
+                {new Date(eventEndTime || '').toLocaleString('en-US', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}
               </p>
               <p className="text-muted-foreground text-sm">
                 {location?.venueName} - {location?.address}
@@ -108,53 +116,7 @@ const EventPageClient = ({ event }: EventPageClientProps) => {
           )}
         </div>
         <div className="relative mx-auto mt-12 grid max-w-6xl gap-8 lg:grid-cols-4">
-          <div className="sticky top-8 hidden h-fit lg:block">
-            <span className="mb-6 text-lg">Content</span>
-            <nav className="mt-2">
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#section1"
-                    className={cn(
-                      'block py-1 transition-colors duration-200',
-                      activeSection === 'section1'
-                        ? 'text-primary font-medium'
-                        : 'text-muted-foreground hover:text-primary',
-                    )}
-                  >
-                    How the Tax System Works
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#section2"
-                    className={cn(
-                      'block py-1 transition-colors duration-200',
-                      activeSection === 'section2'
-                        ? 'text-primary font-medium'
-                        : 'text-muted-foreground hover:text-primary',
-                    )}
-                  >
-                    The People&apos;s Rebellion
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#section3"
-                    className={cn(
-                      'block py-1 transition-colors duration-200',
-                      activeSection === 'section3'
-                        ? 'text-primary font-medium'
-                        : 'text-muted-foreground hover:text-primary',
-                    )}
-                  >
-                    The King&apos;s Plan
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
             <div className="lg:col-span-2">
               <div>
                 <h1 className="text-3xl font-extrabold">The Great Joke Tax</h1>
@@ -261,16 +223,30 @@ const EventPageClient = ({ event }: EventPageClientProps) => {
               </section>
             </div>
           </div>
-          <div className="prose dark:prose-invert sticky top-8 hidden h-fit rounded-lg border p-6 lg:block">
-            <h5 className="text-xl font-semibold">Get Started with Our Solution</h5>
-            <ul className="my-6 text-sm [&>li]:pl-0">
-              <li>Save 40% time with task automation</li>
-              <li>Real-time team collaboration</li>
-              <li>Easy drag-and-drop workflows</li>
-            </ul>
+          <div className="prose dark:prose-invert sticky top-28 hidden h-fit rounded-lg border p-6 lg:block">
+            <h5 className="text-xl font-semibold">Event Details</h5>
+            <p className="my-6 flex text-sm [&>li]:pl-0">
+              <FaMapMarkerAlt className="size-4" />
+              {location?.venueName}
+              <br />
+              {location?.address}
+            </p>
+            <p className="my-6 text-sm [&>li]:pl-0">
+              Date:{' '}
+              {new Date(eventStartTime || '').toLocaleString('en-US', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            </p>
             <div className="flex flex-col gap-2">
-              <Button>Get started</Button>
-              <Button variant="outline">Learn more</Button>
+              <Button>Register</Button>
+              {externalRegistrationLink && (
+                <Button variant="secondary" asChild>
+                  <Link href={externalRegistrationLink} target="_blank" rel="noopener noreferrer">
+                    Sign up on Eventbrite
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>
