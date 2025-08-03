@@ -585,6 +585,4 @@ const BlogPage = () => {
   )
 }
 
-export { BlogPage }
-
 export default BlogPage
