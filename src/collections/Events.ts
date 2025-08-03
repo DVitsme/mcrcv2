@@ -1,27 +1,20 @@
-import type { CollectionConfig, Block } from 'payload'
+import type { CollectionConfig } from 'payload'
 import { isAdmin, isCoordinatorOrAdmin } from '../access/roles'
-
-// For the 'content' field, we'll need some simple blocks
-const TextBlock: Block = {
-  slug: 'textBlock',
-  fields: [{ name: 'text', type: 'richText' }],
-}
-
-const ImageBlock: Block = {
-  slug: 'imageBlock',
-  fields: [{ name: 'image', type: 'upload', relationTo: 'media' }],
-}
+import { TextBlock } from '../blocks/TextBlock'
+import { ImageBlock } from '../blocks/ImageBlock'
 
 export const Events: CollectionConfig = {
   slug: 'events',
   admin: {
     useAsTitle: 'name',
+    defaultColumns: ['name', 'meta.eventType', 'meta.status', 'eventStartTime'],
   },
   access: {
     read: ({ req: { user } }) => {
       if (user && (user.role === 'admin' || user.role === 'coordinator')) {
         return true
       }
+      // Query the nested status field
       return { 'meta.status': { in: ['published', 'completed', 'cancelled'] } }
     },
     create: isCoordinatorOrAdmin,
@@ -49,11 +42,13 @@ export const Events: CollectionConfig = {
           options: ['draft', 'published', 'completed', 'cancelled', 'archived'],
           defaultValue: 'draft',
           required: true,
+          index: true, // <-- THIS IS THE FIX FOR THE API ERROR
         },
         {
           name: 'eventType',
           label: 'Event Type Badge',
           type: 'text',
+          index: true, // Also make this queryable for filtering
         },
         {
           name: 'slug',
@@ -71,11 +66,7 @@ export const Events: CollectionConfig = {
         {
           label: 'Details',
           fields: [
-            {
-              name: 'summary',
-              type: 'textarea',
-              maxLength: 300,
-            },
+            { name: 'summary', type: 'textarea', maxLength: 300 },
             {
               name: 'eventStartTime',
               type: 'date',
@@ -107,16 +98,7 @@ export const Events: CollectionConfig = {
               type: 'group',
               admin: { condition: (_, siblingData) => siblingData.modality !== 'in_person' },
               fields: [
-                {
-                  name: 'url',
-                  type: 'text',
-                  validate: (val: string | null | undefined) => {
-                    if (val && !val.match(/^https?:\/\/.+/)) {
-                      return 'Please enter a valid URL starting with http:// or https://'
-                    }
-                    return true
-                  },
-                },
+                { name: 'url', type: 'text' },
                 { name: 'details', type: 'text' },
               ],
             },
@@ -125,11 +107,7 @@ export const Events: CollectionConfig = {
         {
           label: 'Content & Media',
           fields: [
-            {
-              name: 'featuredImage',
-              type: 'upload',
-              relationTo: 'media',
-            },
+            { name: 'featuredImage', type: 'upload', relationTo: 'media' },
             {
               name: 'content',
               label: 'Event Content Sections',
@@ -148,33 +126,18 @@ export const Events: CollectionConfig = {
             },
           ],
         },
-        // --- NEW: Added Pricing & Registration Tab ---
         {
           label: 'Pricing & Registration',
           fields: [
-            {
-              name: 'isFree',
-              type: 'checkbox',
-              label: 'This event is free',
-              defaultValue: true,
-            },
+            { name: 'isFree', type: 'checkbox', label: 'This event is free', defaultValue: true },
             {
               name: 'cost',
               label: 'Cost Details',
               type: 'group',
-              admin: {
-                condition: (_, siblingData) => !siblingData.isFree,
-              },
+              admin: { condition: (_, siblingData) => !siblingData.isFree },
               fields: [
-                {
-                  name: 'amount',
-                  type: 'number',
-                },
-                {
-                  name: 'currency',
-                  type: 'text',
-                  defaultValue: 'USD',
-                },
+                { name: 'amount', type: 'number' },
+                { name: 'currency', type: 'text', defaultValue: 'USD' },
                 {
                   name: 'description',
                   type: 'text',
@@ -188,22 +151,11 @@ export const Events: CollectionConfig = {
               label: 'Registration is required',
               defaultValue: true,
             },
-            {
-              name: 'externalRegistrationLink',
-              type: 'text',
-              validate: (val: string | null | undefined) => {
-                if (val && !val.match(/^https?:\/\/.+/)) {
-                  return 'Please enter a valid URL starting with http:// or https://'
-                }
-                return true
-              },
-            },
+            { name: 'externalRegistrationLink', type: 'text' },
             {
               name: 'registrationDeadline',
               type: 'date',
-              admin: {
-                date: { pickerAppearance: 'dayAndTime' },
-              },
+              admin: { date: { pickerAppearance: 'dayAndTime' } },
             },
           ],
         },

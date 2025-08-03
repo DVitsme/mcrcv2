@@ -818,7 +818,8 @@ export interface Event {
             blockType: 'textBlock';
           }
         | {
-            image?: (number | null) | Media;
+            image: number | Media;
+            caption?: string | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'imageBlock';
@@ -1552,6 +1553,7 @@ export interface EventsSelect<T extends boolean = true> {
           | T
           | {
               image?: T;
+              caption?: T;
               id?: T;
               blockName?: T;
             };

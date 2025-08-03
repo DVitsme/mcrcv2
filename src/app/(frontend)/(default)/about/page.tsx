@@ -50,7 +50,7 @@ const AboutPage = () => {
         <div className="mt-32 container mx-auto max-w-7xl">
           <OptimizedVideoPlayer
             resource="/videos/howard-county/OldEllicottCityMarylandHowardCountyCourthouse.mp4"
-            poster="/images/about/about-video-poster.jpg"
+            poster="/images/howard-county/corner-church.jpg"
             className="mx-auto max-h-[700px] w-full max-w-7xl rounded-t-lg object-cover shadow-lg"
           />
         </div>

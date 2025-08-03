@@ -22,7 +22,7 @@ const AboutPreview = ({ data }: AboutPreviewProps) => {
   const { header, description, subheader, image, imageAlt, buttonText, buttonLink, dataList } = data
   return (
     <section className="relative py-32 bg-blue">
-      <div className="pointer-events-none absolute inset-0 z-10 bg-[50%_0] bg-[url('/images/block/shadow-overlay.png')] bg-no-repeat"></div>
+      <div className="pointer-events-none absolute inset-0 z-10 bg-[50%_0] bg-no-repeat"></div>
       <div className="container p-6 md:p-16">
         <div className="grid gap-12 lg:grid-cols-3">
           <div className="flex flex-col justify-between gap-8">

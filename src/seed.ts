@@ -67,17 +67,27 @@ export const seed = async () => {
   console.log('\n--- Uploading placeholder media... ---')
   let eventImage: Media | undefined
   let postImage1: Media | undefined
+  let rjImage: Media | undefined // New variable for the RJ image
   try {
-    ;[eventImage, postImage1] = await Promise.all([
+    ;[eventImage, postImage1, rjImage] = await Promise.all([
       payload.create({
         collection: 'media',
         data: { alt: 'Placeholder for events' },
-        filePath: path.resolve(dirname, 'seed-media/event-placeholder.jpg'),
+        filePath: '/images/restorative-justice/restorative-justice-couch.jpg',
       }),
       payload.create({
         collection: 'media',
         data: { alt: 'Placeholder for blog posts' },
         filePath: path.resolve(dirname, 'seed-media/post-placeholder-1.jpg'),
+      }),
+      // --- NEW: Upload the restorative justice image ---
+      payload.create({
+        collection: 'media',
+        data: { alt: 'People in a restorative dialogue' },
+        filePath: path.resolve(
+          dirname,
+          '../public/images/restorative-justice/restorative-dialogues.jpg',
+        ),
       }),
     ])
     console.log('✅ Placeholder media uploaded.')
@@ -121,7 +131,8 @@ export const seed = async () => {
   // --- 4. Create Sample Events ---
   console.log('\n--- Creating sample events... ---')
   try {
-    if (eventImage) {
+    if (eventImage && rjImage) {
+      // Event 1
       await payload.create({
         collection: 'events',
         data: {
@@ -161,14 +172,143 @@ export const seed = async () => {
           },
           isFree: true,
           isRegistrationRequired: false,
-          // --- CORRECTED: Removed 'createdBy' and 'featuredImage' from the top level ---
-          // 'createdBy' is now nested in your Events collection
-          // 'featuredImage' is also nested
+          featuredImage: eventImage.id,
         },
       })
+
+      // --- NEW: Event 2 ---
+      await payload.create({
+        collection: 'events',
+        data: {
+          name: 'Introduction to Mediation (Online)',
+          meta: {
+            slug: 'intro-to-mediation-online',
+            status: 'published',
+            eventType: 'Workshop',
+          },
+          summary:
+            'A beginner-friendly online workshop covering the fundamental skills and principles of mediation.',
+          content: [
+            {
+              blockType: 'textBlock',
+              text: {
+                root: {
+                  children: [
+                    {
+                      type: 'paragraph',
+                      children: [
+                        {
+                          text: 'This interactive workshop will equip you with the basic understanding and techniques used in mediation.',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          ] as any,
+          eventStartTime: new Date('2025-08-05T19:00:00.000Z').toISOString(),
+          eventEndTime: new Date('2025-08-05T21:00:00.000Z').toISOString(),
+          modality: 'online',
+          onlineMeeting: {
+            url: 'https://zoom.us/j/123456789',
+            details: 'Link will be sent upon registration.',
+          },
+          isFree: false,
+          cost: { amount: 25, currency: 'USD', description: 'per person' },
+          isRegistrationRequired: true,
+          featuredImage: rjImage.id,
+        },
+      })
+
+      // --- NEW: Event 3 ---
+      await payload.create({
+        collection: 'events',
+        data: {
+          name: 'Restorative Dialogue Training',
+          meta: {
+            slug: 'restorative-dialogue-training',
+            status: 'published',
+            eventType: 'Training',
+          },
+          summary:
+            'A deep-dive training session for those interested in facilitating restorative dialogues.',
+          content: [
+            {
+              blockType: 'textBlock',
+              text: {
+                root: {
+                  children: [
+                    {
+                      type: 'paragraph',
+                      children: [
+                        {
+                          text: 'Learn the core principles and practices of restorative dialogue to help repair harm and rebuild community.',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          ] as any,
+          eventStartTime: new Date('2025-08-20T09:00:00.000Z').toISOString(),
+          eventEndTime: new Date('2025-08-20T16:00:00.000Z').toISOString(),
+          modality: 'in_person',
+          location: { venueName: 'MCRC Training Center', address: '123 Main Street, Columbia, MD' },
+          isFree: false,
+          cost: { amount: 150, currency: 'USD', description: 'Includes materials and lunch.' },
+          isRegistrationRequired: true,
+          featuredImage: rjImage.id,
+        },
+      })
+
+      // --- NEW: Event 4 ---
+      await payload.create({
+        collection: 'events',
+        data: {
+          name: 'Volunteer Information Session',
+          meta: {
+            slug: 'volunteer-info-session',
+            status: 'published',
+            eventType: 'Information Session',
+          },
+          summary:
+            'Learn more about how you can contribute to our mission by becoming a volunteer mediator or community member.',
+          content: [
+            {
+              blockType: 'textBlock',
+              text: {
+                root: {
+                  children: [
+                    {
+                      type: 'paragraph',
+                      children: [
+                        {
+                          text: 'Join us for this informal session to meet our team, ask questions, and learn about the application process.',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          ] as any,
+          eventStartTime: new Date('2025-09-10T18:30:00.000Z').toISOString(),
+          eventEndTime: new Date('2025-09-10T19:30:00.000Z').toISOString(),
+          modality: 'hybrid',
+          location: { venueName: 'MCRC Office', address: '123 Main Street, Columbia, MD' },
+          onlineMeeting: { url: 'https://zoom.us/j/987654321' },
+          isFree: true,
+          isRegistrationRequired: true,
+          externalRegistrationLink: 'https://example.com/volunteer-signup',
+          featuredImage: rjImage.id,
+        },
+      })
+
       console.log('✅ Sample events created.')
     } else {
-      console.log('Skipping event creation due to missing image.')
+      console.log('Skipping event creation due to missing images.')
     }
   } catch (err) {
     console.error('Error creating events:', err)

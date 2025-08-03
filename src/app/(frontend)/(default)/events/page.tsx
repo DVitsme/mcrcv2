@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { fetchPublishedEvents, fetchEventTypeBadges } from '@/lib/payload-api'
+import { fetchPublishedEvents, fetchEventTypeBadges } from '@/lib/payload-api-events'
 import { EventsPageClient } from '@/components/clients/EventsPageClient'
 
 export const metadata: Metadata = {

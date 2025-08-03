@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { fetchEventBySlug } from '@/lib/payload-api-events'
-import { EventPageClient } from '@/components/clients/EventPageClient' // Import from the correct file
+import { EventPageClient } from '@/components/clients/EventPageClient' // Corrected import path
 
 type Props = {
   params: { slug: string }

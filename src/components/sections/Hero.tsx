@@ -17,9 +17,9 @@ const Hero = () => {
             playsInline
           >
             <source src="/videos/mediation/mediation1.mp4" type="video/mp4" />
-          </video>{' '}
+          </video>
           {/* Fallback Image */}
-          <div className="absolute inset-0 bg-[url(/images/block/full-width-backgrounds/andrew-kliatskyi-MaVm_A0xhKk-unsplash.jpg)] bg-cover bg-center bg-no-repeat" />
+          {/* <div className="absolute inset-0 bg-[url(/images/mediation/hero1.jpeg)] bg-cover bg-center bg-no-repeat" /> */}
           {/* Overlay */}
           <div className="absolute inset-0 bg-zinc-950/50" />
         </div>

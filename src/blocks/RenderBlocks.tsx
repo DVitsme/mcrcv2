@@ -1,26 +1,39 @@
-import React, { Fragment } from 'react'
+import React, { ComponentType, Fragment } from 'react'
 
-import type { Page } from '@/payload-types'
+// Import all possible block types from your payload-types.ts
+import type {
+  Page,
+  Event, // Add the Event type
+} from '@/payload-types'
 
+// Import all block components
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
+// Import your new block components
+import { TextBlock } from '@/blocks/TextBlock'
+import { ImageBlockComponent } from '@/blocks/ImageBlock'
 
-const blockComponents = {
+// A map of block slugs to their corresponding React components
+const blockComponents: Record<string, ComponentType<any>> = {
   archive: ArchiveBlock,
   content: ContentBlock,
   cta: CallToActionBlock,
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
+  textBlock: TextBlock as unknown as ComponentType<any>,
+  imageBlock: ImageBlockComponent,
 }
 
+type Block = Page['layout'][number] | NonNullable<Event['content']>[number]
+
 export const RenderBlocks: React.FC<{
-  blocks: Page['layout'][0][]
+  blocks: Block[] | null | undefined
 }> = (props) => {
   const { blocks } = props
-
+  console.log(blocks)
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
 
   if (hasBlocks) {
@@ -30,13 +43,12 @@ export const RenderBlocks: React.FC<{
           const { blockType } = block
 
           if (blockType && blockType in blockComponents) {
-            const Block = blockComponents[blockType]
+            const BlockComponent = blockComponents[blockType as keyof typeof blockComponents]
 
-            if (Block) {
+            if (BlockComponent) {
               return (
-                <div className="my-16" key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
+                <div key={index}>
+                  <BlockComponent {...block} />
                 </div>
               )
             }

@@ -1,228 +1,282 @@
 'use client'
 
+import { Lightbulb } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
-import { Calendar, MapPin, CircleDollarSign } from 'lucide-react'
+import { FaMapMarkerAlt } from 'react-icons/fa'
 
-import { cn } from '@/utilities/ui'
+import Image from 'next/image'
+
+import { cn } from '@/lib/utils'
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { Event, Media } from '@/payload-types'
+import { Event } from '@/payload-types'
 
 interface EventPageClientProps {
   event: Event
 }
 
-export function EventPageClient({ event }: EventPageClientProps) {
-  const [activeSection, setActiveSection] = useState<string | null>('overview')
+const EventPageClient = ({ event }: EventPageClientProps) => {
+  const {
+    name,
+    summary,
+    featuredImage,
+    modality,
+    createdAt,
+    location,
+    eventStartTime,
+    eventEndTime,
+    content,
+    speakers,
+    isFree,
+    cost,
+    isRegistrationRequired,
+    externalRegistrationLink,
+    registrationDeadline,
+  } = event
+  console.log('event', event)
+  const [activeSection, setActiveSection] = useState<string | null>(null)
   const sectionRefs = useRef<Record<string, HTMLElement>>({})
 
   useEffect(() => {
     const sections = Object.keys(sectionRefs.current)
-    if (sections.length === 0) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
-          }
-        })
-      },
-      { rootMargin: '-30% 0px -70% 0px' },
-    )
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id)
+        }
+      })
+    }
+
+    let observer: IntersectionObserver | null = new IntersectionObserver(observerCallback, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1,
+    })
 
     sections.forEach((sectionId) => {
       const element = sectionRefs.current[sectionId]
-      if (element) observer.observe(element)
+      if (element) {
+        observer?.observe(element)
+      }
     })
 
     return () => {
-      sections.forEach((sectionId) => {
-        const element = sectionRefs.current[sectionId]
-        if (element) observer.unobserve(element)
-      })
+      observer?.disconnect()
+      observer = null
     }
-  }, [event.id])
+  }, [])
 
-  const addSectionRef = (id: string) => (ref: HTMLElement | null) => {
-    if (ref) sectionRefs.current[id] = ref
+  const addSectionRef = (id: string, ref: HTMLElement | null) => {
+    if (ref) {
+      sectionRefs.current[id] = ref
+    }
   }
-
-  const featuredImage = event.featuredImage as Media
-
-  const formatDate = (dateString?: string): string => {
-    if (!dateString) return ''
-    return new Date(dateString).toLocaleString('en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    })
-  }
-
   return (
-    <section className="py-16 md:py-24 mt-32">
-      <div className="container mx-auto max-w-7xl">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 text-center">
-          {event.meta.eventType && <Badge variant="secondary">{event.meta.eventType}</Badge>}
-          <h1 className="text-3xl font-bold text-pretty lg:text-5xl">{event.name}</h1>
-          {event.summary && <p className="text-muted-foreground lg:text-lg">{event.summary}</p>}
-        </div>
+    <section className="py-32">
+      <div className="container">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-5">
+          <Badge variant="secondary">{modality}</Badge>
+          <h1 className="text-pretty text-center text-3xl font-medium lg:text-5xl">{name}</h1>
+          <p className="text-muted-foreground text-center lg:text-lg">{summary}</p>
+          <div className="mt-6 flex items-center gap-4">
+            <FaMapMarkerAlt className="size-12 text-primary" />
 
-        {featuredImage?.url && (
-          <div className="mx-auto mt-12 max-w-6xl rounded-lg border bg-card p-2">
-            <Image
-              src={featuredImage.url}
-              alt={featuredImage.alt || event.name}
-              className="aspect-video w-full rounded-lg object-cover"
-              width={1200}
-              height={675}
-            />
+            <div>
+              <p className="text-sm font-medium">
+                {new Date(eventStartTime || '').toString()} -{' '}
+                {new Date(eventEndTime || '').toLocaleDateString()}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {location?.venueName} - {location?.address}
+              </p>
+            </div>
           </div>
-        )}
-
+        </div>
+        <div className="mx-auto mt-12 max-w-6xl rounded-lg border p-2">
+          {featuredImage && typeof featuredImage === 'object' && 'url' in featuredImage && (
+            <Image
+              src={featuredImage?.url || ''}
+              alt={featuredImage?.alt || ''}
+              className="aspect-video rounded-lg object-cover"
+              width={1152}
+              height={648}
+            />
+          )}
+        </div>
         <div className="relative mx-auto mt-12 grid max-w-6xl gap-8 lg:grid-cols-4">
-          <aside className="sticky top-24 hidden h-fit lg:block">
-            <span className="mb-6 text-lg font-semibold">On this page</span>
-            <nav className="mt-4">
+          <div className="sticky top-8 hidden h-fit lg:block">
+            <span className="mb-6 text-lg">Content</span>
+            <nav className="mt-2">
               <ul className="space-y-2">
                 <li>
                   <a
-                    href="#overview"
+                    href="#section1"
                     className={cn(
-                      'block py-1',
-                      activeSection === 'overview'
-                        ? 'font-medium text-primary'
+                      'block py-1 transition-colors duration-200',
+                      activeSection === 'section1'
+                        ? 'text-primary font-medium'
                         : 'text-muted-foreground hover:text-primary',
                     )}
                   >
-                    Overview
+                    How the Tax System Works
                   </a>
                 </li>
-                {event.speakers && event.speakers.length > 0 && (
-                  <li>
-                    <a
-                      href="#speakers"
-                      className={cn(
-                        'block py-1',
-                        activeSection === 'speakers'
-                          ? 'font-medium text-primary'
-                          : 'text-muted-foreground hover:text-primary',
-                      )}
-                    >
-                      Speakers
-                    </a>
-                  </li>
-                )}
+                <li>
+                  <a
+                    href="#section2"
+                    className={cn(
+                      'block py-1 transition-colors duration-200',
+                      activeSection === 'section2'
+                        ? 'text-primary font-medium'
+                        : 'text-muted-foreground hover:text-primary',
+                    )}
+                  >
+                    The People&apos;s Rebellion
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#section3"
+                    className={cn(
+                      'block py-1 transition-colors duration-200',
+                      activeSection === 'section3'
+                        ? 'text-primary font-medium'
+                        : 'text-muted-foreground hover:text-primary',
+                    )}
+                  >
+                    The King&apos;s Plan
+                  </a>
+                </li>
               </ul>
             </nav>
-          </aside>
-
-          <main className="lg:col-span-2">
-            <section
-              id="overview"
-              ref={addSectionRef('overview')}
-              className="prose dark:prose-invert max-w-none mb-12"
-            >
-              {/* --- CORRECTED: Simple content rendering for Event blocks --- */}
-              {event.content && event.content.length > 0 && (
-                <div>
-                  {event.content.map((block, index) => {
-                    if (block.blockType === 'textBlock' && block.text) {
-                      return (
-                        <div key={index} className="mb-6">
-                          <div dangerouslySetInnerHTML={{ __html: block.text }} />
-                        </div>
-                      )
-                    }
-                    if (block.blockType === 'imageBlock' && block.image) {
-                      const image = block.image as Media
-                      return (
-                        <div key={index} className="mb-6">
-                          {image.url && (
-                            <Image
-                              src={image.url}
-                              alt={image.alt || 'Event image'}
-                              width={800}
-                              height={600}
-                              className="rounded-lg"
-                            />
-                          )}
-                        </div>
-                      )
-                    }
-                    return null
-                  })}
-                </div>
-              )}
-            </section>
-
-            {event.speakers && event.speakers.length > 0 && (
-              <section id="speakers" ref={addSectionRef('speakers')} className="mb-12">
-                <h2 className="text-2xl font-bold mb-6 border-b pb-2">Meet the Speakers</h2>
-                <div className="grid gap-8">
-                  {event.speakers.map((speaker, index) => {
-                    const speakerAvatar = speaker.speakerAvatar as Media
-                    return (
-                      <div key={index} className="flex items-start gap-4">
-                        {speakerAvatar?.url && (
-                          <Avatar className="h-16 w-16">
-                            <AvatarImage
-                              src={speakerAvatar.url}
-                              alt={speaker.speakerName || 'Speaker'}
-                            />
-                          </Avatar>
-                        )}
-                        <div>
-                          <h3 className="font-semibold">{speaker.speakerName}</h3>
-                          <p className="text-sm text-muted-foreground">{speaker.speakerTitle}</p>
-                          <p className="mt-2 text-sm">{speaker.speakerBio}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+          </div>
+          <div className="lg:col-span-2">
+            <div className="lg:col-span-2">
+              <div>
+                <h1 className="text-3xl font-extrabold">The Great Joke Tax</h1>
+                <p className="text-muted-foreground mt-2 text-lg">
+                  In a kingdom far away, where laughter once flowed freely, a peculiar tale unfolded
+                  about a king who decided to tax the very essence of joy itself - jokes and jest.
+                </p>
+                <img
+                  src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg"
+                  alt="placeholder"
+                  className="my-8 aspect-video w-full rounded-md object-cover"
+                />
+              </div>
+              <section
+                id="section1"
+                ref={(ref) => addSectionRef('section1', ref)}
+                className="prose dark:prose-invert mb-8"
+              >
+                <h2>How the Tax System Works</h2>
+                <p>
+                  The king, seeing how much happier his subjects were, realized the error of his
+                  ways and repealed the joke tax. Jokester was declared a hero, and the kingdom
+                  lived happily ever after.
+                </p>
+                <Alert>
+                  <Lightbulb className="h-4 w-4" />
+                  <AlertTitle>Royal Decree!</AlertTitle>
+                  <AlertDescription>
+                    Remember, all jokes must be registered at the Royal Jest Office before telling
+                    them
+                  </AlertDescription>
+                </Alert>
               </section>
-            )}
-          </main>
 
-          <aside className="sticky top-24 prose hidden h-fit rounded-lg border bg-card p-6 lg:block">
-            <h3 className="text-xl font-semibold mt-0">Event Details</h3>
-            <ul className="my-6 space-y-4 text-sm [&>li]:pl-0">
-              <li className="flex items-start gap-3 border-t pt-4">
-                <Calendar className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                <span>{formatDate(event.eventStartTime)}</span>
-              </li>
-              {(event.location?.venueName || event.onlineMeeting?.url) && (
-                <li className="flex items-start gap-3 border-t pt-4">
-                  <MapPin className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                  <span>
-                    {event.modality === 'online' ? 'Online Event' : event.location?.venueName}
-                    {event.modality !== 'online' && event.location?.address && (
-                      <div className="text-xs text-muted-foreground">{event.location.address}</div>
-                    )}
-                  </span>
-                </li>
-              )}
-              <li className="flex items-start gap-3 border-t pt-4">
-                <CircleDollarSign className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                <span>
-                  {event.isFree
-                    ? 'Free'
-                    : `$${event.cost?.amount} ${event.cost?.description || ''}`}
-                </span>
-              </li>
+              <section
+                id="section2"
+                ref={(ref) => addSectionRef('section2', ref)}
+                className="prose dark:prose-invert mb-8"
+              >
+                <h2>The People&apos;s Rebellion</h2>
+                <p>
+                  The people of the kingdom, feeling uplifted by the laughter, started to tell jokes
+                  and puns again, and soon the entire kingdom was in on the joke.
+                </p>
+                <div>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>King&apos;s Treasury</th>
+                        <th>People&apos;s happiness</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Empty</td>
+                        <td>Overflowing</td>
+                      </tr>
+                      <tr className="even:bg-muted m-0 border-t p-0">
+                        <td>Modest</td>
+                        <td>Satisfied</td>
+                      </tr>
+                      <tr className="even:bg-muted m-0 border-t p-0">
+                        <td>Full</td>
+                        <td>Ecstatic</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  The king, seeing how much happier his subjects were, realized the error of his
+                  ways and repealed the joke tax. Jokester was declared a hero, and the kingdom
+                  lived happily ever after.
+                </p>
+              </section>
+
+              <section
+                id="section3"
+                ref={(ref) => addSectionRef('section3', ref)}
+                className="prose dark:prose-invert mb-8"
+              >
+                <h2>The King&apos;s Plan</h2>
+                <p>
+                  The king thought long and hard, and finally came up with{' '}
+                  <a href="#">a brilliant plan</a>: he would tax the jokes in the kingdom.
+                </p>
+                <blockquote>
+                  &ldquo;After all,&rdquo; he said, &ldquo;everyone enjoys a good joke, so it&apos;s
+                  only fair that they should pay for the privilege.&rdquo;
+                </blockquote>
+                <p>
+                  The king&apos;s subjects were not amused. They grumbled and complained, but the
+                  king was firm:
+                </p>
+                <ul>
+                  <li>1st level of puns: 5 gold coins</li>
+                  <li>2nd level of jokes: 10 gold coins</li>
+                  <li>3rd level of one-liners : 20 gold coins</li>
+                </ul>
+                <p>
+                  As a result, people stopped telling jokes, and the kingdom fell into a gloom. But
+                  there was one person who refused to let the king&apos;s foolishness get him down:
+                  a court jester named Jokester.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div className="prose dark:prose-invert sticky top-8 hidden h-fit rounded-lg border p-6 lg:block">
+            <h5 className="text-xl font-semibold">Get Started with Our Solution</h5>
+            <ul className="my-6 text-sm [&>li]:pl-0">
+              <li>Save 40% time with task automation</li>
+              <li>Real-time team collaboration</li>
+              <li>Easy drag-and-drop workflows</li>
             </ul>
-            {event.isRegistrationRequired && event.externalRegistrationLink && (
-              <Button asChild className="w-full">
-                <a href={event.externalRegistrationLink} target="_blank" rel="noopener noreferrer">
-                  Register Here
-                </a>
-              </Button>
-            )}
-          </aside>
+            <div className="flex flex-col gap-2">
+              <Button>Get started</Button>
+              <Button variant="outline">Learn more</Button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   )
 }
+
+export { EventPageClient }
