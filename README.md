@@ -38,3 +38,16 @@ Generate Migration Files: As you develop, create migration files for your schema
 Apply Migrations to Production: Run the migrate command and force it to use your production environment variables. This safely updates the schema of your Neon database without deleting any data.
 
 > > cross-env NODE_ENV=production pnpm payload migrate
+
+46 | </div>
+47 |
+
+> 48 | <CollectionArchive posts={posts.docs} />
+
+     |                          ^
+
+49 |
+50 | <div className="container">
+51 | {posts.totalPages > 1 && posts.page && (
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

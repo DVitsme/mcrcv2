@@ -24,7 +24,14 @@ export const generateMeta = async (args: {
 }): Promise<Metadata> => {
   const { doc } = args
 
-  const ogImage = getImageURL(doc?.meta?.image)
+  // Handle different meta structures for Page vs Post
+  const ogImage = getImageURL(
+    doc && 'meta' in doc && doc.meta && 'image' in doc.meta
+      ? (doc.meta as { image?: Media | number | null }).image
+      : doc && 'heroImage' in doc
+        ? (doc as { heroImage?: Media | number | null }).heroImage
+        : null,
+  )
 
   const title = doc?.meta?.title
     ? doc?.meta?.title + ' | Payload Website Template'
