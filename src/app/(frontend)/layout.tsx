@@ -11,6 +11,7 @@ import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import { Providers } from '@/providers'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { Toaster } from 'sonner'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
@@ -30,6 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }}
           />
           {children}
+          <Toaster position="top-right" richColors />
         </Providers>
       </body>
     </html>
