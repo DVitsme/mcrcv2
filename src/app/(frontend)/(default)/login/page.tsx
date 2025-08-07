@@ -1,47 +1,128 @@
-// src/app/(frontend)/(cms)/layout.tsx
+// src/app/(frontend)/(cms)/login/page.tsx
 
-import React from 'react'
-import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+'use client'
 
-import type { User } from '@/payload-types'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-/**
- * This is a Server Component that acts as a security gatekeeper for the entire CMS.
- * It fetches the current user on the server and checks their role.
- * If the user is not an admin or coordinator, they are redirected to the login page.
- */
-export default async function CmsLayout({ children }: { children: React.ReactNode }) {
-  const nextCookies = await cookies()
-  const token = nextCookies.get('payload-token')?.value
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { toast } from 'sonner'
 
-  let user: User | null = null
+// 1. Define the form schema with Zod for validation
+const formSchema = z.object({
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  password: z.string().min(1, { message: 'Please enter your password.' }),
+})
 
-  try {
-    // 1. Fetch the currently logged-in user
-    const userReq = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`, {
-      headers: {
-        Authorization: `JWT ${token}`,
-      },
-      // --- THE FIX ---
-      // This tells Next.js to never cache the result of this fetch call.
-      // It ensures we always get the real-time authentication status.
-      cache: 'no-store',
-    })
+export default function LoginPage() {
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
 
-    if (userReq.ok) {
-      user = await userReq.json()
+  // 2. Initialize react-hook-form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  // 3. Handle the form submission
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setError(null) // Reset error state on new submission
+
+    try {
+      const response = await fetch('/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Invalid email or password. Please try again.')
+      }
+
+      const data = await response.json()
+
+      // Check if the user has the correct role
+      if (data.user && (data.user.role === 'admin' || data.user.role === 'coordinator')) {
+        toast.success('Login Successful')
+        // On successful login, redirect to the CMS dashboard
+        router.push('/dashboard')
+        router.refresh()
+      } else {
+        // If the user is valid but not an admin/coordinator
+        toast.error('You do not have permission to access this area.')
+        throw new Error('You do not have permission to access this area.')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An unexpected error occurred.')
+      setError(err.message || 'An unexpected error occurred.')
     }
-  } catch (error) {
-    console.error('Error fetching user in CMS layout:', error)
   }
 
-  // 2. Perform the security check
-  // If no user is logged in, or if their role is not admin/coordinator, redirect to login
-  if (!user || (user.role !== 'admin' && user.role !== 'coordinator')) {
-    return redirect('/login')
-  }
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-muted/40">
+      <div className="w-full max-w-md space-y-6 rounded-lg border bg-card p-8 shadow-sm">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">Staff Login</h1>
+          <p className="text-muted-foreground">Enter your credentials to access the CMS.</p>
+        </div>
 
-  // 3. If the check passes, render the requested page
-  return <>{children}</>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="you@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="••••••••" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {error && <div className="text-sm font-medium text-destructive">{error}</div>}
+
+            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Logging in...' : 'Log In'}
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
+  )
 }

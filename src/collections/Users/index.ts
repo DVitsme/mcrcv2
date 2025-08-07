@@ -11,7 +11,13 @@ import {
 
 export const Users: CollectionConfig = {
   slug: 'users',
-  auth: true,
+  auth: {
+    // enable login with email/password
+    // optional: lockout / password expires, etc.
+    // maxLoginAttempts: 5,
+    // lockTime: 60 * 15,
+    // expires: 60 * 60 * 24,
+  },
   admin: {
     useAsTitle: 'name', // Use 'name' as it's more user-friendly than email
     defaultColumns: ['name', 'email', 'role', 'updatedAt'],
