@@ -1,5 +1,3 @@
-// src/app/(frontend)/(cms)/login/page.tsx
-
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -7,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,7 +17,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 
-// 1. Define the form schema with Zod for validation
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   password: z.string().min(1, { message: 'Please enter your password.' }),
@@ -30,51 +26,45 @@ export default function LoginPage() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
 
-  // 2. Initialize react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   })
 
-  // 3. Handle the form submission
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setError(null) // Reset error state on new submission
-
+    console.log('--- [CLIENT] Login Page ---')
+    console.log('[CLIENT] onSubmit triggered with values:', values)
+    setError(null)
     try {
-      const response = await fetch('/api/users/login', {
+      console.log('[CLIENT] Sending POST request to /api/auth/login...')
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
       })
+      console.log(`[CLIENT] Received response with status: ${response.status}`)
 
       if (!response.ok) {
-        throw new Error('Invalid email or password. Please try again.')
+        const errorData = await response.json()
+        console.error('[CLIENT] Login request failed:', errorData)
+        throw new Error(errorData.message || 'Invalid email or password.')
       }
 
-      const data = await response.json()
+      const { user } = await response.json()
+      console.log('[CLIENT] Login request successful. User:', user)
 
-      // Check if the user has the correct role
-      if (data.user && (data.user.role === 'admin' || data.user.role === 'coordinator')) {
+      if (user && (user.role === 'admin' || user.role === 'coordinator')) {
         toast.success('Login Successful')
-        // On successful login, redirect to the CMS dashboard
+        console.log('[CLIENT] User is authorized. Redirecting to /dashboard...')
         router.push('/dashboard')
         router.refresh()
       } else {
-        // If the user is valid but not an admin/coordinator
-        toast.error('You do not have permission to access this area.')
         throw new Error('You do not have permission to access this area.')
       }
     } catch (err: any) {
-      toast.error(err.message || 'An unexpected error occurred.')
-      setError(err.message || 'An unexpected error occurred.')
+      console.error('[CLIENT] Error in onSubmit:', err)
+      toast.error(err.message)
+      setError(err.message)
     }
   }
 
@@ -85,7 +75,6 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold">Staff Login</h1>
           <p className="text-muted-foreground">Enter your credentials to access the CMS.</p>
         </div>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -114,9 +103,7 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-
             {error && <div className="text-sm font-medium text-destructive">{error}</div>}
-
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? 'Logging in...' : 'Log In'}
             </Button>

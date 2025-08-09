@@ -1,15 +1,15 @@
 import { getPayload } from 'payload'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import config from '@/payload.config'
 
 export async function POST(request: NextRequest) {
+  console.log('\n--- [API] /api/auth/login ---')
   const payload = await getPayload({ config })
   const body = await request.json()
+  console.log(`[API] Received login attempt for: ${body.email}`)
 
   try {
-    // Use the built-in payload.login() operation
-    // This will authenticate the user and set the cookie based on your config
+    // payload.login() returns the user and the JWT token
     const { user, token } = await payload.login({
       collection: 'users',
       data: {
@@ -18,11 +18,27 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // The cookie is set automatically by Payload, so we just return the user
-    return NextResponse.json({ user, token })
+    console.log('[API] Payload login successful. User found:', user.email)
+
+    // --- THE FIX ---
+    // Manually create the response and set the cookie.
+    const response = NextResponse.json({ user })
+
+    response.cookies.set({
+      name: 'payload-token',
+      value: token || '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    })
+
+    console.log('[API] Manually set "payload-token" cookie in the response.')
+    return response
   } catch (error) {
-    // Handle authentication errors (e.g., invalid credentials)
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.'
+    console.error('[API] Payload login failed:', errorMessage)
     return NextResponse.json({ message: errorMessage }, { status: 401 })
   }
 }

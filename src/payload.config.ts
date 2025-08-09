@@ -75,6 +75,12 @@ export default buildConfig({
   },
   editor: defaultLexical,
 
+  // --- Auth configuration for cookies ---
+  auth: {
+    // Use the Users collection for authentication
+    jwtOrder: ['cookie', 'Bearer'],
+  },
+
   // --- DATABASE CONFIG WITH DEBUGGING ---
   db: postgresAdapter({
     pool: {

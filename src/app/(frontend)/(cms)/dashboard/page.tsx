@@ -1,3 +1,5 @@
+// src/app/(frontend)/(cms)/dashboard/page.tsx
+
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import { BookOpen, Calendar, Edit } from 'lucide-react'
@@ -7,33 +9,34 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { Event, Post, User } from '@/payload-types'
 
-// --- Data Fetching Functions ---
-// In a real application, these would live in a dedicated API library file.
+// Stability on Vercel
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
-async function getCurrentUser(token: string | undefined): Promise<User | null> {
-  if (!token) {
-    console.log('no token')
-    return null
-  }
+// --- Data Fetching Functions ---
+
+async function getCurrentUser(token: string): Promise<User | null> {
   try {
-    const userReq = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`, {
-      headers: { Authorization: `JWT ${token}` },
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`, {
+      headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
     })
-    if (userReq.ok) return userReq.json()
+    if (res.ok) {
+      const data = await res.json()
+      return (data?.user ?? data) as User
+    }
   } catch (error) {
     console.error('Error fetching current user:', error)
   }
   return null
 }
 
-async function getRecentPosts(token: string | undefined): Promise<Post[]> {
-  if (!token) return []
+async function getRecentPosts(token: string): Promise<Post[]> {
   try {
     const postsReq = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?sort=-updatedAt&limit=3&depth=0`,
       {
-        headers: { Authorization: `JWT ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
         cache: 'no-store',
       },
     )
@@ -47,14 +50,14 @@ async function getRecentPosts(token: string | undefined): Promise<Post[]> {
   return []
 }
 
-async function getUpcomingEvents(token: string | undefined): Promise<Event[]> {
-  if (!token) return []
+async function getUpcomingEvents(token: string): Promise<Event[]> {
   try {
     const now = new Date().toISOString()
+    // --- CORRECTED: The query now uses the top-level `eventStartTime` field ---
     const eventsReq = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/api/events?where[eventStartTime][greater_than]=${now}&sort=eventStartTime&limit=3&depth=0`,
       {
-        headers: { Authorization: `JWT ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
         cache: 'no-store',
       },
     )
@@ -70,11 +73,9 @@ async function getUpcomingEvents(token: string | undefined): Promise<Event[]> {
 
 // --- Main Dashboard Page Component ---
 export default async function Dashboard() {
-  const nextCookies = await cookies()
-  const token = nextCookies.get('payload-token')?.value
+  const cookieStore = await cookies()
+  const token = cookieStore.get('payload-token')?.value || ''
 
-  console.log('token', token)
-  // Fetch all necessary data in parallel for performance
   const [user, recentPosts, upcomingEvents] = await Promise.all([
     getCurrentUser(token),
     getRecentPosts(token),
@@ -191,12 +192,12 @@ export default async function Dashboard() {
                     </div>
                     <Badge
                       className={
-                        event.meta?.status === 'published'
+                        event.meta.status === 'published'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-gray-100 text-gray-800'
                       }
                     >
-                      {event.meta?.status}
+                      {event.meta.status}
                     </Badge>
                     <Button asChild variant="ghost" size="icon" className="ml-2">
                       <Link href={`/events/${event.id}`}>
