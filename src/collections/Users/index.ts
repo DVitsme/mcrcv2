@@ -90,7 +90,7 @@ export const Users: CollectionConfig = {
               type: 'textarea',
             },
             {
-              name: 'phone_number',
+              name: 'phoneNumber',
               label: 'Phone Number',
               type: 'text',
             },

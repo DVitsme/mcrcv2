@@ -8,35 +8,111 @@ import { slugField } from '@/fields/slug'
 import { Banner } from '../../blocks/Banner/config'
 import { BlocksFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
+/**
+ * Helpers
+ */
+const requireOnPublish =
+  (label: string, isEmpty?: (v: any) => boolean) =>
+  (value: any, { siblingData, data }: { siblingData?: any; data?: any }) => {
+    const status = siblingData?._status ?? data?._status
+    if (status === 'published') {
+      const empty =
+        typeof isEmpty === 'function'
+          ? isEmpty(value)
+          : value === null ||
+            value === undefined ||
+            (typeof value === 'string' && value.trim() === '')
+      if (empty) return `${label} is required when publishing.`
+    }
+    return true
+  }
+
+// A very light check for Lexical rich text "emptiness"
+const isRichTextEmpty = (val: any) => {
+  if (!val) return true
+  const nodes = val?.root?.children
+  if (Array.isArray(nodes)) return nodes.length === 0
+  return false
+}
+
 export const Posts: CollectionConfig = {
   slug: 'posts',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
   },
-  hooks: {
-    afterChange: [revalidatePost],
-    afterRead: [populateAuthors],
-    afterDelete: [revalidateDelete],
-  },
-  // By enabling versions, Payload automatically adds and manages the _status field.
+
+  /**
+   * Drafts enabled -> adds `_status`
+   */
   versions: {
     drafts: {
       autosave: true,
     },
     maxPerDoc: 10,
   },
+
   access: {
     read: () => true,
     create: isCoordinatorOrAdmin,
     update: isCoordinatorOrAdmin,
     delete: isAdmin,
   },
+
+  hooks: {
+    /**
+     * Ensure only one post is `featured` at a time.
+     * If this doc is featured, unset `featured` on all other posts.
+     */
+    afterChange: [
+      async ({ req, doc, operation }) => {
+        if (
+          (operation === 'create' || operation === 'update') &&
+          doc.featured &&
+          !req.context?.skipFeaturedSync
+        ) {
+          const payload = req.payload
+          // Find other featured posts
+          const others = await payload.find({
+            collection: 'posts',
+            where: {
+              and: [{ featured: { equals: true } }, { id: { not_equals: doc.id } }],
+            },
+            limit: 1000,
+            depth: 0,
+          })
+
+          if (others?.docs?.length) {
+            await Promise.all(
+              others.docs.map((other) =>
+                payload.update({
+                  collection: 'posts',
+                  id: other.id,
+                  data: { featured: false },
+                  overrideAccess: true,
+                  // Prevent this hook from cascading infinitely
+                  context: { skipFeaturedSync: true },
+                }),
+              ),
+            )
+          }
+        }
+
+        return doc
+      },
+      revalidatePost,
+    ],
+
+    afterRead: [populateAuthors],
+    afterDelete: [revalidateDelete],
+  },
+
   fields: [
     {
       name: 'title',
       type: 'text',
-      required: true,
+      // Only required when publishing
+      validate: requireOnPublish('Title'),
     },
     {
       name: 'excerpt',
@@ -51,7 +127,8 @@ export const Posts: CollectionConfig = {
       label: 'Hero Image',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      // Only required when publishing
+      validate: requireOnPublish('Hero image'),
     },
     {
       name: 'content',
@@ -64,6 +141,8 @@ export const Posts: CollectionConfig = {
           }),
         ],
       }),
+      // Only required when publishing
+      validate: requireOnPublish('Content', isRichTextEmpty),
     },
     {
       name: 'categories',
@@ -71,23 +150,18 @@ export const Posts: CollectionConfig = {
       type: 'relationship',
       relationTo: 'categories',
       hasMany: true,
-      admin: {
-        position: 'sidebar',
-      },
+      admin: { position: 'sidebar' },
     },
     {
       name: 'authors',
       type: 'relationship',
       relationTo: 'users',
       hasMany: true,
-      admin: {
-        position: 'sidebar',
-      },
-      filterOptions: {
-        role: {
-          in: ['admin', 'coordinator'],
-        },
-      },
+      admin: { position: 'sidebar' },
+      // Use a function form for clarity/future-proofing
+      filterOptions: () => ({
+        role: { in: ['admin', 'coordinator'] },
+      }),
     },
     {
       name: 'readTimeMinutes',
@@ -135,13 +209,9 @@ export const Posts: CollectionConfig = {
       type: 'relationship',
       relationTo: 'posts',
       hasMany: true,
-      filterOptions: ({ id }) => {
-        return {
-          id: {
-            not_equals: id,
-          },
-        }
-      },
+      filterOptions: ({ id }) => ({
+        id: { not_equals: id },
+      }),
     },
     {
       name: 'populatedAuthors',
@@ -163,5 +233,6 @@ export const Posts: CollectionConfig = {
     },
     ...slugField(),
   ],
+
   timestamps: true,
 }

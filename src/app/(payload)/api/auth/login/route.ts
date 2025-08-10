@@ -18,6 +18,14 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Block non-active users
+    if (user.userStatus !== 'active') {
+      return NextResponse.json(
+        { message: 'Your account is not active. Please contact a coordinator.' },
+        { status: 403 },
+      )
+    }
+
     console.log('[API] Payload login successful. User found:', user.email)
 
     // --- THE FIX ---

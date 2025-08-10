@@ -213,12 +213,12 @@ export interface Page {
  */
 export interface Post {
   id: number;
-  title: string;
+  title?: string | null;
   /**
    * A short summary of the post for display on card views and for SEO.
    */
   excerpt?: string | null;
-  heroImage: number | Media;
+  heroImage?: (number | null) | Media;
   content?: {
     root: {
       type: string;
@@ -390,7 +390,7 @@ export interface User {
   userStatus?: ('pending' | 'active' | 'rejected') | null;
   avatar?: (number | null) | Media;
   bio?: string | null;
-  phone_number?: string | null;
+  phoneNumber?: string | null;
   skills?:
     | {
         skill?: string | null;
@@ -1473,7 +1473,7 @@ export interface UsersSelect<T extends boolean = true> {
   userStatus?: T;
   avatar?: T;
   bio?: T;
-  phone_number?: T;
+  phoneNumber?: T;
   skills?:
     | T
     | {

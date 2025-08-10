@@ -28,11 +28,18 @@ type NodeTypes =
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
-  if (typeof value !== 'object') {
-    throw new Error('Expected value to be an object')
+  if (typeof value !== 'object') return '#'
+  const slug = (value as any).slug
+
+  switch (relationTo) {
+    case 'posts':
+      return `/blog/${slug}`
+    case 'events':
+      return `/events/${slug}`
+    case 'pages':
+    default:
+      return `/${slug}`
   }
-  const slug = value.slug
-  return relationTo === 'posts' ? `/posts/${slug}` : `/${slug}`
 }
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({

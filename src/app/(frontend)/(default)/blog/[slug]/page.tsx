@@ -1,142 +1,260 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { CalendarDays, Clock, User as UserIcon } from 'lucide-react'
+import type { Metadata } from 'next'
+import { Linkedin, Twitter } from 'lucide-react'
+
+import { fetchPostBySlug } from '@/lib/payload-api-blog'
+import type { Category as CategoryType } from '@/payload-types'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { BlogPostCard } from '@/components/cards/BlogPostCard'
+import { Button } from '@/components/ui/button'
 import RichText from '@/components/RichText'
-import { fetchPostBySlug, fetchRelatedPosts } from '@/lib/payload-api-blog'
-import type { Post, Category, User } from '@/payload-types'
-import { Metadata } from 'next'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
+import { formatDateTime } from '@/utilities/formatDateTime'
+import { getServerSideURL } from '@/utilities/getURL'
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}): Promise<Metadata> {
-  const slug = await params
-  const post = await fetchPostBySlug(slug.slug)
+type Params = { params: { slug: string } }
 
+// --- SEO ---
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const post = await fetchPostBySlug(params.slug)
   if (!post) {
-    return { title: 'Post Not Found' }
+    return {
+      title: 'Post not found',
+      robots: { index: false },
+    }
   }
 
+  const siteURL = getServerSideURL()
+  const canonical = `${siteURL}/blog/${encodeURIComponent(params.slug)}`
+  const title = post.title ?? 'Blog post'
+  const description = post.excerpt ?? 'Read the latest update from our blog.'
+  const hero =
+    typeof post.heroImage === 'object' && post.heroImage
+      ? getMediaUrl(post.heroImage.url ?? '')
+      : undefined
+
   return {
-    title: post.meta?.title || post.title,
-    description: post.meta?.description || '',
+    title,
+    description,
+    alternates: { canonical },
     openGraph: {
-      title: post.meta?.title || post.title,
-      description: post.meta?.description || '',
-      images:
-        post.heroImage && typeof post.heroImage === 'object' ? [{ url: post.heroImage.url! }] : [],
+      title,
+      description,
+      url: canonical,
       type: 'article',
-      publishedTime: post.publishedAt || post.createdAt,
-      authors: (post.authors || [])
-        .map((a) => (typeof a === 'object' ? a.name : null))
-        .filter(Boolean) as string[],
+      images: hero ? [{ url: hero, width: 1200, height: 630 }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: hero ? [hero] : undefined,
     },
   }
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const slug = await params
-  const post = await fetchPostBySlug(slug.slug)
+export default async function BlogPostPage({ params }: Params) {
+  const { slug } = params
+  const post = await fetchPostBySlug(slug)
+  if (!post) return notFound()
 
-  if (!post) {
-    notFound()
-  }
+  // Meta bits
+  const published = post.publishedAt ? formatDateTime(post.publishedAt) : null
+  const readTime = post.readTimeMinutes ? `${post.readTimeMinutes} min read` : null
+  const hero =
+    typeof post.heroImage === 'object' && post.heroImage
+      ? getMediaUrl(post.heroImage.url ?? '')
+      : undefined
 
-  // --- Get category IDs for related posts lookup ---
-  const categoryIds = ((post.categories || []) as Category[]).map((c) => c.id)
-  const relatedPosts = await fetchRelatedPosts(post.id, categoryIds)
+  // Share links
+  const siteURL = getServerSideURL()
+  const canonical = `${siteURL}/blog/${encodeURIComponent(slug)}`
+  const twitterShare = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+    canonical,
+  )}&text=${encodeURIComponent(post.title ?? '')}`
+  const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+    canonical,
+  )}`
 
-  // --- Helper functions ---
-  const getAuthorName = (authors: Post['authors']): string => {
-    if (!authors || authors.length === 0) return 'MCRC Staff'
-    const firstAuthor = authors[0] as User
-    return firstAuthor.name || 'MCRC Staff'
-  }
+  // Categories
+  const categories =
+    (Array.isArray(post.categories) ? (post.categories as CategoryType[]) : []) || []
 
-  const formatDate = (dateString?: string): string => {
-    if (!dateString) return ''
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  }
+  // Authors: prefer populatedAuthors (hook), fallback to authors relation names
+  const populated = Array.isArray((post as any).populatedAuthors)
+    ? (post as any).populatedAuthors
+    : []
+  const authors =
+    populated.length > 0
+      ? populated.map((a: any) => a.name).filter(Boolean)
+      : Array.isArray(post.authors)
+        ? (post.authors as any[]).map((a) => a?.name).filter(Boolean)
+        : []
 
   return (
-    <div className="container mx-auto px-4 mt-32 py-12">
-      <div className="mb-8">
-        <Link href="/blog" className="text-sm text-primary hover:underline">
-          &larr; Back to Blog
-        </Link>
+    <section className="pb-32">
+      {/* Hero / Header */}
+      <div className="bg-muted bg-[url('https://deifkwefumgah.cloudfront.net/shadcnblocks/block/patterns/dot-pattern-2.svg')] bg-[length:3.125rem_3.125rem] bg-repeat py-20">
+        <div className="container flex flex-col items-start justify-start gap-10 py-10">
+          {/* Breadcrumb */}
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{post.title}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          {/* Title + Meta */}
+          <div className="flex w-full flex-col items-center gap-5 text-center">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 text-sm text-muted-foreground">
+              {readTime ? <div>{readTime}</div> : null}
+              {readTime && published ? <div>|</div> : null}
+              {published ? <div>{published}</div> : null}
+            </div>
+
+            <h1 className="max-w-3xl text-balance text-[2.5rem] font-semibold leading-[1.2] md:text-5xl lg:text-6xl">
+              {post.title}
+            </h1>
+
+            {post.excerpt ? (
+              <p className="max-w-3xl text-foreground text-xl font-semibold leading-[1.4]">
+                {post.excerpt}
+              </p>
+            ) : null}
+
+            {/* Categories */}
+            {categories.length > 0 ? (
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+                {categories.map((c) => (
+                  <Badge key={String(c.id)} variant="secondary" className="rounded-full">
+                    {c.title ?? c.slug ?? 'Category'}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+
+            {/* Share buttons */}
+            <div className="mt-3 flex items-center justify-center gap-2.5">
+              <Button asChild size="icon" variant="outline" aria-label="Share on Twitter">
+                <a href={twitterShare} target="_blank" rel="noopener noreferrer">
+                  <Twitter />
+                </a>
+              </Button>
+              <Button asChild size="icon" variant="outline" aria-label="Share on LinkedIn">
+                <a href={linkedinShare} target="_blank" rel="noopener noreferrer">
+                  <Linkedin />
+                </a>
+              </Button>
+            </div>
+          </div>
+
+          {/* Hero Image */}
+          {hero ? (
+            <div className="mx-auto w-full max-w-5xl overflow-hidden rounded-xl">
+              <Image
+                src={hero}
+                alt={post.title ?? ''}
+                width={1600}
+                height={900}
+                className="h-auto w-full object-cover"
+                priority
+              />
+            </div>
+          ) : null}
+        </div>
       </div>
 
-      <article className="mx-auto max-w-4xl">
-        <header className="mb-8">
-          {post.categories && (post.categories as Category[]).length > 0 && (
-            <Badge className="mb-4 inline-flex w-fit">
-              {(post.categories[0] as Category).title}
-            </Badge>
-          )}
-          <h1 className="mb-6 text-3xl font-bold lg:text-4xl xl:text-5xl">{post.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <UserIcon className="h-5 w-5" />
-              <span>{getAuthorName(post.authors)}</span>
+      {/* Body */}
+      <div className="container pt-16">
+        <div className="mx-auto w-full max-w-5xl">
+          {/* Author strip */}
+          {authors.length > 0 ? (
+            <div className="mb-8 flex flex-wrap items-center gap-4">
+              {authors.map((name: string) => (
+                <Author
+                  key={name}
+                  author={{ name, job: '', image: undefined, description: '', socials: [] }}
+                />
+              ))}
             </div>
-            <Separator orientation="vertical" className="hidden h-6 sm:block" />
-            <div className="flex items-center gap-1">
-              <CalendarDays className="h-4 w-4" />
-              <span>{formatDate(post.publishedAt || post.createdAt)}</span>
-            </div>
-            <Separator orientation="vertical" className="hidden h-6 sm:block" />
-            <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              <span>    {post.readTimeMinutes ? `${post.readTimeMinutes} min read` : '5 min read'}</span>
-            </div>
-          </div>
-        </header>
+          ) : null}
 
-        {typeof post.heroImage === 'object' && post.heroImage?.url && (
-          <div className="mb-10 overflow-hidden rounded-xl">
-            <Image
-              src={post.heroImage.url}
-              alt={post.heroImage.alt || post.title}
-              width={1200}
-              height={600}
-              className="aspect-[21/9] w-full object-cover"
-            />
-          </div>
-        )}
+          {/* Rich content */}
+          <article className="prose max-w-none dark:prose-invert">
+            <RichText data={post.content as any} className="prose dark:prose-invert" />
+          </article>
 
-        <div className="prose prose-lg max-w-none dark:prose-invert">
-          <RichText data={post.content} />
+          {/* Footer author card (optional) */}
+          {authors.length > 0 ? (
+            <div className="mt-10 rounded-lg bg-muted p-5">
+              <div className="flex flex-wrap items-center gap-4">
+                {authors.map((name: string) => (
+                  <Author
+                    key={`${name}-footer`}
+                    author={{ name, job: '', image: undefined, description: '', socials: [] }}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
+      </div>
+    </section>
+  )
+}
 
-        {post.authors && (post.authors as User[]).length > 0 && (
-          <div className="mt-16 rounded-xl bg-muted p-6">
-            <h3 className="mb-2 text-lg font-semibold">About the Author</h3>
-            <p className="text-muted-foreground">
-              {(post.authors[0] as User).name} is a vital part of the MCRC team.
-            </p>
+/** Lightweight author chip */
+function Author({
+  author,
+}: {
+  author: {
+    image?: string
+    name: string
+    job?: string
+    description?: string
+    socials?: { url: string }[]
+  }
+}) {
+  const initials =
+    author.name
+      ?.trim()
+      ?.split(/\s+/)
+      ?.map((s) => s[0]?.toUpperCase())
+      .slice(0, 2)
+      .join('') || 'A'
+  return (
+    <div className="flex items-center gap-2.5">
+      <Avatar className="size-12 border">
+        {author.image ? <AvatarImage src={author.image} alt={author.name} /> : null}
+        <AvatarFallback>{initials}</AvatarFallback>
+      </Avatar>
+      <div>
+        <div className="text-sm font-normal leading-normal">{author.name}</div>
+        {author.job ? (
+          <div className="text-muted-foreground text-sm font-normal leading-normal">
+            {author.job}
           </div>
-        )}
-      </article>
-
-      {relatedPosts.length > 0 && (
-        <aside className="mt-20">
-          <h2 className="mb-8 text-2xl font-bold">Related Articles</h2>
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {relatedPosts.map((relatedPost: Post) => (
-              <BlogPostCard key={relatedPost.id} post={relatedPost} />
-            ))}
-          </div>
-        </aside>
-      )}
+        ) : null}
+      </div>
     </div>
   )
 }

@@ -19,7 +19,6 @@ export const getClientSideURL = () => {
     const protocol = window.location.protocol
     const domain = window.location.hostname
     const port = window.location.port
-
     return `${protocol}//${domain}${port ? `:${port}` : ''}`
   }
 
@@ -29,3 +28,9 @@ export const getClientSideURL = () => {
 
   return process.env.NEXT_PUBLIC_SERVER_URL || ''
 }
+
+/** Convenience: choose the right origin based on environment */
+export const getURL = () => (canUseDOM ? getClientSideURL() : getServerSideURL())
+
+// optional: also export default for convenience
+export default getURL
