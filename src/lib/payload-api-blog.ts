@@ -6,7 +6,7 @@ import type { Post, Category } from '@/payload-types'
  */
 export async function fetchPosts(categorySlug?: string): Promise<Post[]> {
   try {
-    let whereClause = `where[and][0][status][equals]=published`
+    let whereClause = `where[and][0][_status][equals]=published`
 
     // If a category slug is provided, we need to find its ID first
     if (categorySlug) {
@@ -52,7 +52,7 @@ export async function fetchFeaturedPost(): Promise<Post | null> {
   try {
     // For a more robust solution, consider adding a "featured" checkbox to your Posts collection
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?where[status][equals]=published&sort=-publishedAt&limit=1&depth=2`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?where[_status][equals]=published&sort=-publishedAt&limit=1&depth=2`,
       { next: { revalidate: 60 } },
     )
     if (!response.ok) throw new Error('Failed to fetch featured post.')
