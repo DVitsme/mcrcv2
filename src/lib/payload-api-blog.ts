@@ -91,12 +91,13 @@ export async function fetchCategories(): Promise<Category[]> {
 export async function fetchPostBySlug(slug: string): Promise<Post | null> {
   try {
     const response = await fetch(
-      // We use depth=2 to populate authors and categories fully.
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?where[slug][equals]=${slug}&limit=1&depth=2`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts` +
+        `?where[and][0][slug][equals]=${encodeURIComponent(slug)}` +
+        `&where[and][1][_status][equals]=published` + // ensure published
+        `&limit=1&depth=2`,
       { next: { revalidate: 60 } },
     )
     if (!response.ok) throw new Error(`Failed to fetch post with slug ${slug}`)
-
     const data = await response.json()
     return data.docs[0] || null
   } catch (error) {
@@ -114,20 +115,21 @@ export async function fetchRelatedPosts(
   currentPostId: number | string,
   categoryIds: (number | string)[],
 ): Promise<Post[]> {
-  if (!categoryIds || categoryIds.length === 0) return []
-
+  if (!categoryIds?.length) return []
   try {
     const response = await fetch(
-      // Find posts where categories has at least one of the IDs, AND the ID is not the current post's ID.
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?where[and][0][categories][in]=${categoryIds.join(',')}&where[and][1][id][not_equals]=${currentPostId}&limit=3&depth=1`,
-      { next: { revalidate: 3600 } }, // Cache for an hour
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts` +
+        `?where[and][0][categories][in]=${categoryIds.join(',')}` +
+        `&where[and][1][id][not_equals]=${currentPostId}` +
+        `&where[and][2][_status][equals]=published` + // <- add this
+        `&limit=3&depth=1`,
+      { next: { revalidate: 3600 } },
     )
     if (!response.ok) throw new Error('Failed to fetch related posts.')
-
     const data = await response.json()
     return data.docs || []
-  } catch (error) {
-    console.error('Error fetching related posts:', error)
+  } catch (e) {
+    console.error('Error fetching related posts:', e)
     return []
   }
 }

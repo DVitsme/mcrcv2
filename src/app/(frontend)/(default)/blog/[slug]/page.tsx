@@ -258,3 +258,16 @@ function Author({
     </div>
   )
 }
+
+// page-level revalidate to keep things fresh but cached
+export const revalidate = 60
+
+// generateStaticParams to pre-render all blog posts
+export async function generateStaticParams() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?where[_status][equals]=published&limit=1000&select=slug`,
+    { next: { revalidate: 60 } },
+  )
+  const data = await res.json()
+  return (data.docs ?? []).map((p: { slug: string }) => ({ slug: p.slug }))
+}
