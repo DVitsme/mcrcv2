@@ -4,6 +4,8 @@ import PostForm from '@/components/Dashboard/posts/PostForm'
 
 const API = process.env.NEXT_PUBLIC_SERVER_URL!
 
+type PageProps = { params: Promise<{ id: string }> }
+
 async function fetchPost(id: string) {
   const cookieStore = await cookies()
   const token = cookieStore.get('payload-token')?.value
@@ -25,8 +27,9 @@ async function fetchCategories() {
   return data.docs ?? []
 }
 
-export default async function EditPostPage({ params }: { params: { id: string } }) {
-  const [post, categories] = await Promise.all([fetchPost(params.id), fetchCategories()])
+export default async function EditPostPage({ params }: PageProps) {
+  const { id } = await params
+  const [post, categories] = await Promise.all([fetchPost(id), fetchCategories()])
   if (!post) return <div className="p-4">Post not found</div>
   return <PostForm mode="edit" post={post} categories={categories} />
 }
