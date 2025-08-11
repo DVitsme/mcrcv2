@@ -1,3 +1,4 @@
+// src/app/(frontend)/(default)/blog/[slug]/page.tsx
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -22,15 +23,11 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { getServerSideURL } from '@/utilities/getURL'
 
-type RouteParams = { slug: string }
+type PageProps = { params: { slug: string } }
 
 // --- SEO ---
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<RouteParams>
-}): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = params
   const post = await fetchPostBySlug(slug)
   if (!post) {
     return { title: 'Post not found', robots: { index: false } }
@@ -60,8 +57,8 @@ export async function generateMetadata({
   }
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<RouteParams> }) {
-  const { slug } = await params
+export default async function BlogPostPage({ params }: PageProps) {
+  const { slug } = params
   const post = await fetchPostBySlug(slug)
   if (!post) return notFound()
 
@@ -211,7 +208,6 @@ export default async function BlogPostPage({ params }: { params: Promise<RoutePa
   )
 }
 
-/** Lightweight author chip */
 function Author({
   author,
 }: {
@@ -248,14 +244,26 @@ function Author({
   )
 }
 
-// page-level revalidate to keep things fresh but cached
+// keep ISR caching
 export const revalidate = 60
 
 export async function generateStaticParams() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?where[_status][equals]=published&limit=1000&select=slug`,
-    { next: { revalidate: 60 } },
-  )
-  const data = await res.json()
-  return (data.docs ?? []).map((p: { slug: string }) => ({ slug: p.slug }))
+  const base = getServerSideURL() // uses VERCEL_PROJECT_PRODUCTION_URL in prod
+  try {
+    const res = await fetch(
+      `${base}/api/posts?where[_status][equals]=published&limit=1000&select=slug`,
+      { next: { revalidate: 60 } },
+    )
+    if (!res.ok) return []
+
+    const data = await res.json()
+    const slugs: string[] = Array.isArray(data?.docs)
+      ? data.docs.map((p: any) => p?.slug).filter((s: any) => typeof s === 'string' && s.length > 0)
+      : []
+
+    return slugs.map((slug) => ({ slug }))
+  } catch {
+    // On any build-time fetch failure, skip pre-rendering. Pages will be generated on-demand.
+    return []
+  }
 }
