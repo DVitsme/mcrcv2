@@ -22,6 +22,10 @@ const nextConfig = {
         hostname: 'shadcnblocks.com',
         protocol: 'https',
       },
+      {
+        hostname: 'mcrchoward.org',
+        protocol: 'https',
+      },
     ],
   },
   reactStrictMode: true,

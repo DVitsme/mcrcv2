@@ -22,20 +22,22 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { getServerSideURL } from '@/utilities/getURL'
 
-type Params = { params: { slug: string } }
+type RouteParams = { slug: string }
 
 // --- SEO ---
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const post = await fetchPostBySlug(params.slug)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<RouteParams>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const post = await fetchPostBySlug(slug)
   if (!post) {
-    return {
-      title: 'Post not found',
-      robots: { index: false },
-    }
+    return { title: 'Post not found', robots: { index: false } }
   }
 
   const siteURL = getServerSideURL()
-  const canonical = `${siteURL}/blog/${encodeURIComponent(params.slug)}`
+  const canonical = `${siteURL}/blog/${encodeURIComponent(slug)}`
   const title = post.title ?? 'Blog post'
   const description = post.excerpt ?? 'Read the latest update from our blog.'
   const hero =
@@ -54,21 +56,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       type: 'article',
       images: hero ? [{ url: hero, width: 1200, height: 630 }] : undefined,
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: hero ? [hero] : undefined,
-    },
+    twitter: { card: 'summary_large_image', title, description, images: hero ? [hero] : undefined },
   }
 }
 
-export default async function BlogPostPage({ params }: Params) {
-  const { slug } = params
+export default async function BlogPostPage({ params }: { params: Promise<RouteParams> }) {
+  const { slug } = await params
   const post = await fetchPostBySlug(slug)
   if (!post) return notFound()
 
-  // Meta bits
   const published = post.publishedAt ? formatDateTime(post.publishedAt) : null
   const readTime = post.readTimeMinutes ? `${post.readTimeMinutes} min read` : null
   const hero =
@@ -76,21 +72,14 @@ export default async function BlogPostPage({ params }: Params) {
       ? getMediaUrl(post.heroImage.url ?? '')
       : undefined
 
-  // Share links
   const siteURL = getServerSideURL()
   const canonical = `${siteURL}/blog/${encodeURIComponent(slug)}`
-  const twitterShare = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-    canonical,
-  )}&text=${encodeURIComponent(post.title ?? '')}`
-  const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-    canonical,
-  )}`
+  const twitterShare = `https://twitter.com/intent/tweet?url=${encodeURIComponent(canonical)}&text=${encodeURIComponent(post.title ?? '')}`
+  const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonical)}`
 
-  // Categories
   const categories =
     (Array.isArray(post.categories) ? (post.categories as CategoryType[]) : []) || []
 
-  // Authors: prefer populatedAuthors (hook), fallback to authors relation names
   const populated = Array.isArray((post as any).populatedAuthors)
     ? (post as any).populatedAuthors
     : []
@@ -262,7 +251,6 @@ function Author({
 // page-level revalidate to keep things fresh but cached
 export const revalidate = 60
 
-// generateStaticParams to pre-render all blog posts
 export async function generateStaticParams() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_URL}/api/posts?where[_status][equals]=published&limit=1000&select=slug`,

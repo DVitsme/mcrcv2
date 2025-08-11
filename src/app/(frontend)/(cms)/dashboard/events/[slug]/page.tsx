@@ -1,5 +1,5 @@
 import React from 'react'
 
-export const CreateEventPage = () => {
-  return <div>CreateEventPage</div>
+export default function EventPage() {
+  return <div>Event Page</div>
 }

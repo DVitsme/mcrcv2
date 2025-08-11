@@ -63,15 +63,21 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
 })
 
 type Props = {
-  data: DefaultTypedEditorState
+  /** Allow null/undefined because Payload may store empty content */
+  data?: DefaultTypedEditorState | null
   enableGutter?: boolean
   enableProse?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
 export default function RichText(props: Props) {
-  const { className, enableProse = true, enableGutter = true, ...rest } = props
+  const { data, className, enableProse = true, enableGutter = true, ...rest } = props
+
+  // If there’s no content, render nothing (or return a placeholder if you prefer)
+  if (!data) return null
+
   return (
     <ConvertRichText
+      data={data}
       converters={jsxConverters}
       className={cn(
         'payload-richtext',
