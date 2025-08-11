@@ -23,11 +23,11 @@ import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { getServerSideURL } from '@/utilities/getURL'
 
-type PageProps = { params: { slug: string } }
+type RouteParams = Promise<{ slug: string }>
 
 // --- SEO ---
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = params
+export async function generateMetadata({ params }: { params: RouteParams }): Promise<Metadata> {
+  const { slug } = await params
   const post = await fetchPostBySlug(slug)
   if (!post) {
     return { title: 'Post not found', robots: { index: false } }
@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function BlogPostPage({ params }: PageProps) {
-  const { slug } = params
+export default async function BlogPostPage({ params }: { params: RouteParams }) {
+  const { slug } = await params
   const post = await fetchPostBySlug(slug)
   if (!post) return notFound()
 
