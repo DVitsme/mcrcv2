@@ -215,33 +215,37 @@ export interface Post {
   id: number;
   title?: string | null;
   /**
-   * A short summary of the post for display on card views and for SEO.
+   * Short summary for cards and SEO.
    */
   excerpt?: string | null;
   heroImage?: (number | null) | Media;
-  content?: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  /**
+   * Filled by the dashboard editor; stored as HTML. If using the admin UI, you can paste HTML here.
+   */
+  contentHtml?: string | null;
   categories?: (number | Category)[] | null;
+  /**
+   * Optional table of contents. Type a section title; the anchor is generated automatically.
+   */
+  sections?:
+    | {
+        title: string;
+        contentHtml?: string | null;
+        image?: (number | null) | Media;
+        /**
+         * Auto-generated from title.
+         */
+        anchor?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   authors?: (number | User)[] | null;
   /**
-   * Estimated time to read the article in minutes.
+   * Estimated time to read the article.
    */
   readTimeMinutes?: number | null;
   /**
-   * Check this to display this post in the main hero section of the blog page.
+   * Show this post in the main hero on the blog page.
    */
   featured?: boolean | null;
   publishedAt?: string | null;
@@ -1324,8 +1328,17 @@ export interface PostsSelect<T extends boolean = true> {
   title?: T;
   excerpt?: T;
   heroImage?: T;
-  content?: T;
+  contentHtml?: T;
   categories?: T;
+  sections?:
+    | T
+    | {
+        title?: T;
+        contentHtml?: T;
+        image?: T;
+        anchor?: T;
+        id?: T;
+      };
   authors?: T;
   readTimeMinutes?: T;
   featured?: T;
@@ -2013,31 +2026,6 @@ export interface TaskSchedulePublish {
     user?: (number | null) | User;
   };
   output?: unknown;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "BannerBlock".
- */
-export interface BannerBlock {
-  style: 'info' | 'warning' | 'error' | 'success';
-  content: {
-    root: {
-      type: string;
-      children: {
-        type: string;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  };
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'banner';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,5 +1,3 @@
-// src/collections/Media.ts
-
 import type { CollectionConfig } from 'payload'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -21,21 +19,17 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
-      required: true, // It's a best practice for accessibility to require alt text.
+      required: true,
     },
     {
       name: 'caption',
       type: 'richText',
-      // The richText editor config is not needed here as it will inherit from your payload.config.ts `editor` property
     },
   ],
   upload: {
     // This path is used as a fallback if the S3 adapter is disabled, but won't be used in production.
     staticDir: path.resolve(dirname, '../../media'),
 
-    // --- RECOMMENDED FIX ---
-    // This is CRITICAL for cloud storage. It prevents Payload from saving a local copy
-    // of the file on the server, which is essential for ephemeral filesystems like Vercel.
     disableLocalStorage: true,
 
     adminThumbnail: 'thumbnail',

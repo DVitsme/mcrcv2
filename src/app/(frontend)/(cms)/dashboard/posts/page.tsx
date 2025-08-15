@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import DeletePostButton from '@/components/Dashboard/posts/DeletePostButton'
+
+import { deletePost } from './actions'
 
 const API = process.env.NEXT_PUBLIC_SERVER_URL!
 
@@ -9,7 +12,7 @@ async function fetchPosts() {
   const cookieStore = await cookies()
   const token = cookieStore.get('payload-token')?.value
   const res = await fetch(`${API}/api/posts?sort=-updatedAt&limit=20&depth=1`, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     cache: 'no-store',
   })
   if (!res.ok) return { docs: [] }
@@ -30,7 +33,7 @@ export default async function PostsPage() {
 
       <div className="grid gap-3">
         {docs.map((p: any) => (
-          <div key={p.id} className="rounded-lg border p-3 flex items-center justify-between">
+          <div key={p.id} className="flex items-center justify-between rounded-lg border p-3">
             <div>
               <div className="font-medium">{p.title ?? '(untitled)'}</div>
               <div className="text-sm text-muted-foreground">
@@ -38,10 +41,17 @@ export default async function PostsPage() {
                 {p.updatedAt?.slice(0, 10)}
               </div>
             </div>
+
             <div className="flex gap-2">
               <Button variant="outline" asChild>
                 <Link href={`/dashboard/posts/${p.id}/edit`}>Edit</Link>
               </Button>
+
+              {/* Delete: bind the id so the server action receives it */}
+              <DeletePostButton
+                action={deletePost.bind(null, p.id)}
+                title={p.title ?? p.slug ?? 'this post'}
+              />
             </div>
           </div>
         ))}

@@ -3,7 +3,8 @@
 import { FileText } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useTransition } from 'react'
+import { useMemo, useState, useTransition, useEffect, useCallback } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -15,17 +16,76 @@ interface EventsPageClientProps {
 }
 
 export function EventsPageClient({ events, badges }: EventsPageClientProps) {
-  const [selectedBadge, setSelectedBadge] = useState<string>('all')
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
+  // Normalize helpers
+  const getType = (e: Event) => (e as any).eventType ?? e.meta?.eventType ?? null
+  const getSlug = (e: Event) => (e as any).slug ?? e.meta?.slug ?? String(e.id)
+
+  // Valid types set
+  const validTypes = useMemo(() => new Set(badges), [badges])
+
+  // Read current type from URL; default 'all'
+  const selectedFromURL = useMemo(() => {
+    const t = searchParams.get('type')
+    if (!t) return 'all'
+    return validTypes.has(t) ? t : 'all'
+  }, [searchParams, validTypes])
+
+  // Controlled state, initialized from URL
+  const [selectedBadge, setSelectedBadge] = useState<string>(selectedFromURL)
+
+  // Keep state in sync with URL (back/forward)
+  useEffect(() => {
+    setSelectedBadge(selectedFromURL)
+  }, [selectedFromURL])
+
+  const replaceUrl = useCallback(
+    (type: string) => {
+      const sp = new URLSearchParams(searchParams.toString())
+      if (type === 'all') sp.delete('type')
+      else sp.set('type', type)
+      router.replace(`?${sp.toString()}`, { scroll: false })
+    },
+    [router, searchParams],
+  )
+
+  const selectType = useCallback(
+    (type: string) => {
+      startTransition(() => {
+        setSelectedBadge(type)
+        replaceUrl(type)
+        // smooth scroll to the grid
+        requestAnimationFrame(() => {
+          document.querySelector('[data-events-grid]')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          })
+        })
+      })
+    },
+    [replaceUrl],
+  )
+
+  // Badge counts (optional UX)
+  const counts = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const e of events) {
+      const t = getType(e)
+      if (!t) continue
+      map.set(t, (map.get(t) ?? 0) + 1)
+    }
+    return map
+  }, [events])
+
   const filteredEvents =
-    selectedBadge === 'all'
-      ? events
-      : events.filter((event) => event.meta?.eventType === selectedBadge)
+    selectedBadge === 'all' ? events : events.filter((e) => getType(e) === selectedBadge)
 
   function EmptyState() {
     return (
-      <div className="col-span-full flex flex-col items-center justify-center mt-32 py-12 text-center">
+      <div className="col-span-full mt-32 flex flex-col items-center justify-center py-12 text-center">
         <FileText className="mb-4 h-12 w-12 text-muted-foreground" strokeWidth={1} />
         <h3 className="text-xl font-semibold">No events found</h3>
         <p className="mt-2 text-muted-foreground">
@@ -36,10 +96,10 @@ export function EventsPageClient({ events, badges }: EventsPageClientProps) {
   }
 
   return (
-    <section className="bg-muted/60 mt-32 py-16">
+    <section className="mt-32 bg-muted/60 py-16">
       <div className="container mx-auto">
         <div className="relative mx-auto flex max-w-screen-xl flex-col gap-12 lg:flex-row lg:gap-20">
-          {/* Left sidebar with filters */}
+          {/* Filters */}
           <header className="top-24 flex h-fit flex-col items-center gap-5 text-center lg:sticky lg:max-w-xs lg:items-start lg:gap-8 lg:text-left">
             <FileText className="h-14 w-14" strokeWidth={1} />
             <h1 className="text-4xl font-extrabold lg:text-5xl">Our Events</h1>
@@ -48,58 +108,66 @@ export function EventsPageClient({ events, badges }: EventsPageClientProps) {
               connections, and turn conflict into community.
             </p>
             <Separator />
-            {/* Filter buttons */}
+
             <nav
-              className="flex flex-wrap items-center justify-center gap-2 lg:flex-col lg:items-start lg:gap-2 mt-2"
+              className="mt-2 flex flex-wrap items-center justify-center gap-2 lg:flex-col lg:items-start lg:gap-2"
               aria-label="Event filters"
+              role="radiogroup"
             >
               <button
-                className={`font-medium px-3 py-1 rounded-full transition-colors ${
+                role="radio"
+                aria-checked={selectedBadge === 'all'}
+                className={`rounded-full px-3 py-1 font-medium transition-colors ${
                   selectedBadge === 'all'
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:text-primary'
                 }`}
-                onClick={() => setSelectedBadge('all')}
+                onClick={() => selectType('all')}
                 disabled={isPending}
-                aria-pressed={selectedBadge === 'all'}
               >
-                All
+                All {events.length ? `(${events.length})` : ''}
               </button>
+
               {badges.map((badge) => (
                 <button
                   key={badge}
-                  className={`px-3 py-1 rounded-full transition-colors capitalize ${
+                  role="radio"
+                  aria-checked={selectedBadge === badge}
+                  className={`rounded-full px-3 py-1 capitalize transition-colors ${
                     selectedBadge === badge
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:text-primary'
                   }`}
-                  onClick={() => startTransition(() => setSelectedBadge(badge))}
+                  onClick={() => selectType(badge)}
                   disabled={isPending}
-                  aria-pressed={selectedBadge === badge}
+                  title={badge.replace(/_/g, ' ')}
                 >
                   {badge.replace(/_/g, ' ')}
+                  {counts.get(badge) ? ` (${counts.get(badge)})` : ''}
                 </button>
               ))}
             </nav>
           </header>
 
           {/* Event grid */}
-          <div className="w-full grid justify-items-stretch grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2" data-events-grid>
             {filteredEvents.length === 0 ? (
               <EmptyState />
             ) : (
               filteredEvents.map((event) => {
-                const featuredImage = event.featuredImage as Media
+                const featuredImage = event.featuredImage as Media | null
+                const slug = getSlug(event)
+                const href = `/events/${encodeURIComponent(slug)}`
                 return (
                   <Link
-                    href={`/events/${event.meta?.slug}`}
+                    href={href}
                     key={event.id}
-                    className="w-full group relative isolate h-80 rounded-lg bg-background"
+                    className="group relative isolate h-80 w-full rounded-lg bg-background"
                   >
                     <div className="z-10 flex h-full flex-col justify-between p-6">
                       <div className="flex justify-between">
                         <time
-                          dateTime={event.eventStartTime || ''}
+                          dateTime={event.eventStartTime || undefined}
                           className="text-muted-foreground transition-colors duration-500 group-hover:text-background"
                         >
                           {event.eventStartTime
@@ -115,18 +183,22 @@ export function EventsPageClient({ events, badges }: EventsPageClientProps) {
                           {event.modality?.replace('_', ' ')}
                         </Badge>
                       </div>
+
                       <div className="flex flex-col gap-2">
                         <h2 className="line-clamp-2 text-xl font-medium transition-colors duration-500 group-hover:text-background">
                           {event.name}
                         </h2>
                       </div>
                     </div>
+
                     {featuredImage?.url && (
                       <Image
                         src={featuredImage.url}
                         alt={featuredImage.alt || event.name}
                         fill
+                        sizes="(min-width: 1024px) 50vw, 100vw"
                         className="absolute inset-0 -z-10 size-full rounded-lg object-cover brightness-50 transition-all duration-500 ease-custom-bezier [clip-path:inset(0_0_100%_0)] group-hover:[clip-path:inset(0_0_0%_0)]"
+                        priority={false}
                       />
                     )}
                   </Link>

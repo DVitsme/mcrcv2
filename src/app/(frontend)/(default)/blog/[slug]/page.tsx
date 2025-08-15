@@ -22,6 +22,7 @@ import RichText from '@/components/RichText'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import { getServerSideURL } from '@/utilities/getURL'
+import { PostSectionsNav } from '@/components/Dashboard/posts/PostSectionsNav'
 
 type RouteParams = Promise<{ slug: string }>
 
@@ -53,7 +54,6 @@ export async function generateMetadata({ params }: { params: RouteParams }): Pro
       type: 'article',
       images: hero ? [{ url: hero, width: 1200, height: 630 }] : undefined,
     },
-    twitter: { card: 'summary_large_image', title, description, images: hero ? [hero] : undefined },
   }
 }
 
@@ -71,12 +71,17 @@ export default async function BlogPostPage({ params }: { params: RouteParams }) 
 
   const siteURL = getServerSideURL()
   const canonical = `${siteURL}/blog/${encodeURIComponent(slug)}`
-  const twitterShare = `https://twitter.com/intent/tweet?url=${encodeURIComponent(canonical)}&text=${encodeURIComponent(post.title ?? '')}`
-  const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonical)}`
+  const twitterShare = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+    canonical,
+  )}&text=${encodeURIComponent(post.title ?? '')}`
+  const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+    canonical,
+  )}`
 
   const categories =
     (Array.isArray(post.categories) ? (post.categories as CategoryType[]) : []) || []
 
+  // Authors
   const populated = Array.isArray((post as any).populatedAuthors)
     ? (post as any).populatedAuthors
     : []
@@ -86,6 +91,23 @@ export default async function BlogPostPage({ params }: { params: RouteParams }) 
       : Array.isArray(post.authors)
         ? (post.authors as any[]).map((a) => a?.name).filter(Boolean)
         : []
+
+  // --- New schema support ---
+  const contentHtml: string | undefined = (post as any).contentHtml || undefined
+  const sections: Array<{
+    title?: string | null
+    anchor?: string | null
+    contentHtml?: string | null
+    image?: any
+  }> = Array.isArray((post as any).sections) ? (post as any).sections : []
+
+  // If section has an upload image, get its URL
+  const getSectionImageUrl = (s: any) => {
+    if (s && typeof s.image === 'object' && s.image?.url) {
+      return getMediaUrl(s.image.url)
+    }
+    return undefined
+  }
 
   return (
     <section className="pb-32">
@@ -184,10 +206,61 @@ export default async function BlogPostPage({ params }: { params: RouteParams }) 
             </div>
           ) : null}
 
-          {/* Rich content */}
-          <article className="prose max-w-none dark:prose-invert">
-            <RichText data={post.content as any} className="prose dark:prose-invert" />
-          </article>
+          {/* When we have sections, show a 2-col layout with sticky nav */}
+          {sections.length > 0 ? (
+            <div className="relative grid gap-10 lg:grid-cols-[220px_1fr]">
+              <aside className="top-24 hidden lg:sticky lg:block">
+                <PostSectionsNav
+                  sections={sections.map((s) => ({
+                    title: s.title ?? '',
+                    anchor: s.anchor ?? '',
+                  }))}
+                />
+              </aside>
+
+              <article className="prose max-w-none dark:prose-invert">
+                {sections.map((s, idx) => {
+                  const img = getSectionImageUrl(s)
+                  return (
+                    <section key={idx} id={s.anchor || undefined} className="mb-10">
+                      {s.title ? <h2>{s.title}</h2> : null}
+                      {img ? (
+                        <div className="my-4 overflow-hidden rounded-lg">
+                          <Image
+                            src={img}
+                            alt={s.title || ''}
+                            width={1200}
+                            height={675}
+                            className="h-auto w-full object-cover"
+                          />
+                        </div>
+                      ) : null}
+                      {s.contentHtml ? (
+                        <div dangerouslySetInnerHTML={{ __html: s.contentHtml }} />
+                      ) : null}
+                    </section>
+                  )
+                })}
+
+                {/* If there is a main contentHtml (the “conclusion”), render it at the end */}
+                {(contentHtml?.trim()?.length ?? 0) > 0 ? (
+                  <section className="mt-12">
+                    <div dangerouslySetInnerHTML={{ __html: contentHtml! }} />
+                  </section>
+                ) : null}
+              </article>
+            </div>
+          ) : (
+            // Legacy fallback: no sections — show main HTML if present,
+            // otherwise render old Lexical field with <RichText />
+            <article className="prose max-w-none dark:prose-invert">
+              {(contentHtml?.trim()?.length ?? 0) > 0 ? (
+                <div dangerouslySetInnerHTML={{ __html: contentHtml! }} />
+              ) : (
+                <RichText data={(post as any).content as any} className="prose dark:prose-invert" />
+              )}
+            </article>
+          )}
 
           {/* Footer author card (optional) */}
           {authors.length > 0 ? (

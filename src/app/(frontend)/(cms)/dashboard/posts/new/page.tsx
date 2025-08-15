@@ -17,5 +17,5 @@ async function fetchCategories() {
 
 export default async function NewPostPage() {
   const categories = await fetchCategories()
-  return <PostForm mode="create" categories={categories} />
+  return <PostForm mode="new" categories={categories} />
 }
