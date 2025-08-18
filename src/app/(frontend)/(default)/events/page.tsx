@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { fetchPublishedEvents, fetchEventTypeBadges } from '@/lib/payload-api-events'
 import { EventsPageClient } from '@/components/clients/EventsPageClient'
@@ -15,9 +16,11 @@ export const metadata: Metadata = {
 }
 
 export default async function EventsPage() {
-  // Fetch both events and event type badges concurrently using the new functions
   const [events, badges] = await Promise.all([fetchPublishedEvents(), fetchEventTypeBadges()])
 
-  // Pass the fetched data to the client component
-  return <EventsPageClient events={events} badges={badges} />
+  return (
+    <Suspense fallback={<div className="container mx-auto py-16">Loading events…</div>}>
+      <EventsPageClient events={events} badges={badges} />
+    </Suspense>
+  )
 }

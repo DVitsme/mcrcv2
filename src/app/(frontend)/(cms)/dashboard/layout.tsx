@@ -1,13 +1,5 @@
 // app/(frontend)/(cms)/dashboard/layout.tsx
-import { cookies } from 'next/headers'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
+
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import {
@@ -33,14 +25,11 @@ async function getCurrentUser(): Promise<User | null> {
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   // (cms)/layout.tsx already guards auth/role and redirects, so here we just read the user for UI.
-  const cookieStore = await cookies()
-  const hasToken = !!cookieStore.get('payload-token')?.value
-
   const user = await getCurrentUser()
 
   const sidebarUser = {
     name: user?.name ?? 'Staff User',
-    email: (user as any)?.email ?? 'staff@example.com',
+    email: user?.email ?? 'staff@example.com',
     avatar: undefined as string | undefined, // map real avatar url later if you want
   }
 

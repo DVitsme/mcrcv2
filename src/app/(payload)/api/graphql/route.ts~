@@ -1,4 +1,4 @@
-// Disabled GraphQL for static export builds.
+// This is disabled for static export builds.
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
@@ -8,3 +8,4 @@ export async function GET() {
 export async function POST() {
   return new Response('GraphQL endpoint is not available in this static build.', { status: 404 })
 }
+

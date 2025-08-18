@@ -25,7 +25,6 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  PaginationEllipsis,
 } from '@/components/ui/pagination'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -39,12 +38,6 @@ import Link from 'next/link'
 
 type Category = { label: string; value: string }
 type BreadcrumbItemType = { label: string; link: string }
-
-interface FilterFormProps {
-  categories: Array<Category>
-  selectedCategories: string[]
-  onCategoryChange: (selectedCategories: string[]) => void
-}
 
 interface BlogsResultProps {
   posts: Array<CardPost>
@@ -61,8 +54,6 @@ interface BlogPageClientProps {
   categories: Category[]
   breadcrumb: BreadcrumbItemType[]
 }
-
-const POSTS_PER_PAGE = 6
 
 const FilterFormSchema = z.object({
   items: z.array(z.string()).refine((value) => value.length > 0, {

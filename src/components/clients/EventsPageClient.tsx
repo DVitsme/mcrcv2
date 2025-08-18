@@ -21,8 +21,11 @@ export function EventsPageClient({ events, badges }: EventsPageClientProps) {
   const [isPending, startTransition] = useTransition()
 
   // Normalize helpers
-  const getType = (e: Event) => (e as any).eventType ?? e.meta?.eventType ?? null
-  const getSlug = (e: Event) => (e as any).slug ?? e.meta?.slug ?? String(e.id)
+  type MaybeMeta = { meta?: { eventType?: string | null; slug?: string | null } }
+  type MaybeTopLevel = { eventType?: string | null; slug?: string | null }
+
+  const getType = (e: Event & MaybeMeta & MaybeTopLevel) => e.eventType ?? e.meta?.eventType ?? null
+  const getSlug = (e: Event & MaybeMeta & MaybeTopLevel) => e.slug ?? e.meta?.slug ?? String(e.id)
 
   // Valid types set
   const validTypes = useMemo(() => new Set(badges), [badges])

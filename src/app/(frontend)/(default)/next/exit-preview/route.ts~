@@ -1,0 +1,12 @@
+// src/app/(frontend)/(default)/next/exit-preview/route.ts
+import { draftMode } from 'next/headers'
+import { redirect } from 'next/navigation'
+
+export async function GET() {
+  draftMode().disable()
+  redirect('/') // go wherever you want after turning off draft mode
+}
+
+// Make sure this never tries to be pre-rendered as static
+export const dynamic = 'force-dynamic'
+

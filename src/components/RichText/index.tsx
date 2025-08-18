@@ -1,3 +1,5 @@
+// src/components/RichText/index.tsx
+
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import {
   DefaultNodeTypes,
@@ -11,33 +13,19 @@ import {
   RichText as ConvertRichText,
 } from '@payloadcms/richtext-lexical/react'
 
-import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
-
-import type {
-  BannerBlock as BannerBlockProps,
-  CallToActionBlock as CTABlockProps,
-  MediaBlock as MediaBlockProps,
-} from '@/payload-types'
+import { CodeBlock, type CodeBlockProps } from '@/blocks/Code/Component'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 import { cn } from '@/utilities/ui'
+import type { HTMLAttributes } from 'react'
 
-type NodeTypes =
-  | DefaultNodeTypes
-  | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
-
-const slugify = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-    .slice(0, 80)
+// Keep CodeBlockProps strongly typed; loosen other block field types to `any`
+// to avoid depending on names from `@/payload-types`.
+type NodeTypes = DefaultNodeTypes | SerializedBlockNode<CodeBlockProps | any>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
-  if (typeof value !== 'object') return '#'
+  if (typeof value !== 'object' || !value) return '#'
   const slug = (value as any).slug
 
   switch (relationTo) {
@@ -49,13 +37,6 @@ const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
     default:
       return `/${slug}`
   }
-}
-
-function extractText(node: any): string {
-  if (!node) return ''
-  if (typeof node.text === 'string') return node.text
-  if (Array.isArray(node.children)) return node.children.map(extractText).join(' ')
-  return ''
 }
 
 const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) => ({
@@ -83,12 +64,11 @@ type Props = {
   data?: DefaultTypedEditorState | null
   enableGutter?: boolean
   enableProse?: boolean
-} & React.HTMLAttributes<HTMLDivElement>
+} & HTMLAttributes<HTMLDivElement>
 
 export default function RichText(props: Props) {
   const { data, className, enableProse = true, enableGutter = true, ...rest } = props
 
-  // If there’s no content, render nothing (or return a placeholder if you prefer)
   if (!data) return null
 
   return (

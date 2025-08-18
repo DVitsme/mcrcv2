@@ -9,7 +9,6 @@ import { AboutPreview } from '@/components/sections/AboutPreview'
 import { CallToAction } from '@/components/sections/CallToAction'
 import { GetInvolved } from '@/components/sections/GetInvolved'
 import { Stats } from '@/components/sections/Stats'
-import { BlogPreview } from '@/components/sections/BlogPreview'
 import { Volunteer } from '@/components/sections/Volunteer'
 import { CheckCircle, Edit, Timer, List, MessagesSquare } from 'lucide-react'
 

@@ -3,10 +3,8 @@
 
 import { cookies } from 'next/headers'
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { getPayloadHMR } from '@payloadcms/next/utilities'
+// ❌ removed: import { getPayloadHMR } from '@payloadcms/next/utilities'
 
-// IMPORTANT: your payload.config.ts default export
-// (the path here matches your repo structure)
 import { getPayload } from 'payload'
 const payload = await getPayload({ config: (await import('@/payload.config')).default })
 
@@ -18,10 +16,10 @@ const API = process.env.NEXT_PUBLIC_SERVER_URL!
 /* Utils & Auth                                                               */
 /* -------------------------------------------------------------------------- */
 
-function fileDebug(file: File | null) {
+type FileDebug = { name?: string; type?: string; size?: number } | null
+function fileDebug(file: File | null): FileDebug {
   if (!file) return null
-  const f: any = file
-  return { name: f?.name, type: f?.type, size: f?.size }
+  return { name: file.name, type: file.type, size: file.size }
 }
 
 async function authHeaders() {
@@ -34,12 +32,11 @@ async function authHeaders() {
 }
 
 function defaultAltFromFile(file: File) {
-  const base = ((file as any)?.name || 'image').replace(/\.[^.]+$/, '')
+  const base = (file.name || 'image').replace(/\.[^.]+$/, '')
   const cleaned = base.replace(/[-_]+/g, ' ').trim()
   return cleaned || 'Uploaded image'
 }
 
-// auto-fill a title when missing (derive it from the section HTML or fall back to “Section N”)
 function textFromHtml(html?: string): string {
   if (typeof html !== 'string') return ''
   return html
@@ -56,7 +53,7 @@ function coerceTitle(title: string | undefined, html: string | undefined, idx: n
   return fromBody || `Section ${idx + 1}`
 }
 
-async function readMaybeJSON(res: Response) {
+async function readMaybeJSON(res: Response): Promise<unknown> {
   const text = await res.text().catch(() => '')
   try {
     return JSON.parse(text)
@@ -68,15 +65,16 @@ async function readMaybeJSON(res: Response) {
 /* -------------------------------------------------------------------------- */
 /* Media upload: REST first, then Local API fallback                          */
 /* -------------------------------------------------------------------------- */
-export async function uploadMedia(file: File, alt?: string) {
+
+type UploadedMedia = { id: number | string; url?: string }
+
+export async function uploadMedia(file: File, alt?: string): Promise<UploadedMedia> {
   const trimmedAlt = (alt ?? defaultAltFromFile(file)).toString().trim() || 'Uploaded image'
 
   console.log('[uploadMedia] INIT', { file: fileDebug(file), alt: trimmedAlt })
 
   const form = new FormData()
-  // Let undici set multipart boundary automatically
-  form.append('file', file, (file as any)?.name ?? 'upload')
-  // Payload usually expects JSON under "data" …
+  form.append('file', file, file.name || 'upload')
   form.append('data', JSON.stringify({ alt: trimmedAlt }))
 
   const res = await fetch(`${API}/api/media`, {
@@ -93,51 +91,42 @@ export async function uploadMedia(file: File, alt?: string) {
     return await uploadMediaLocal(file, trimmedAlt)
   }
 
-  const json: any = await res.json().catch(() => ({}))
-  console.log('[uploadMedia] OK (REST):', { id: json?.doc?.id, url: json?.doc?.url })
-  return json?.doc ?? json
+  const json = (await res.json()) as { doc?: UploadedMedia } | UploadedMedia
+  const doc: UploadedMedia = 'doc' in json && json.doc ? json.doc : (json as UploadedMedia)
+  console.log('[uploadMedia] OK (REST):', { id: doc?.id, url: doc?.url })
+  return doc
 }
 
-async function uploadMediaLocal(file: File, alt: string) {
-  console.log('[uploadMediaLocal] INIT', {
-    name: (file as any)?.name,
-    type: (file as any)?.type,
-    size: (file as any)?.size,
-  })
+async function uploadMediaLocal(file: File, alt: string): Promise<UploadedMedia> {
+  console.log('[uploadMediaLocal] INIT', { name: file.name, type: file.type, size: file.size })
 
   const arrayBuffer = await file.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)
 
-  const name = (file as any)?.name ?? 'upload'
-  const type = (file as any)?.type ?? 'application/octet-stream'
-
-  // Build the exact shape Payload expects on the server
   const nodeFile: PayloadUploadFile = {
     data: buffer,
-    name: name,
-    mimetype: type, // NOTE: lower-case "mimetype"
+    name: file.name || 'upload',
+    mimetype: file.type || 'application/octet-stream',
     size: buffer.length,
   }
 
-  const doc = await payload
-    .create({
+  try {
+    const doc = (await payload.create({
       collection: 'media',
       data: { alt },
       file: nodeFile,
-    })
-    .catch((err: any) => {
-      console.error('[uploadMediaLocal] FAILED:', {
-        type: err?.type,
-        message: err?.message,
-        status: err?.status,
-        data: err?.data,
-        stack: err?.stack,
-      })
-      throw new Error('There was a problem while uploading the file (local API).')
-    })
+    })) as unknown as UploadedMedia
 
-  console.log('[uploadMediaLocal] OK (LOCAL):', { id: (doc as any)?.id, url: (doc as any)?.url })
-  return doc
+    console.log('[uploadMediaLocal] OK (LOCAL):', { id: doc?.id, url: doc?.url })
+    return doc
+  } catch (err: unknown) {
+    const msg =
+      typeof err === 'object' && err && 'message' in err
+        ? String((err as { message: unknown }).message)
+        : err
+    console.error('[uploadMediaLocal] FAILED:', msg)
+    throw new Error('There was a problem while uploading the file (local API).')
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -148,7 +137,7 @@ export type PostInput = {
   title: string
   slug?: string
   excerpt?: string
-  content?: any
+  content?: unknown
   categories?: (number | string)[]
   authors?: (number | string)[]
   _status?: 'draft' | 'published'
@@ -170,7 +159,6 @@ function mapInputToPayload(input: PostInput) {
     heroImage,
     metaImage,
   } = input
-
   return {
     title,
     slug,
@@ -198,8 +186,8 @@ export async function createPost(data: PostInput) {
     console.error('[createPost] FAILED:', res.status, res.statusText, body)
     throw new Error(`Create failed: ${res.status} ${res.statusText}`)
   }
-  const json = await res.json().catch(() => ({}))
-  console.log('[createPost] OK', { id: json?.id })
+  const json = (await res.json().catch(() => ({}))) as unknown
+  console.log('[createPost] OK')
   revalidatePath('/dashboard/posts')
   revalidateTag('posts')
   return json
@@ -218,8 +206,8 @@ export async function updatePost(id: number | string, data: PostInput) {
     console.error('[updatePost] FAILED:', res.status, res.statusText, body)
     throw new Error(`Update failed: ${res.status} ${res.statusText}`)
   }
-  const json = await res.json().catch(() => ({}))
-  console.log('[updatePost] OK', { id: json?.id })
+  const json = (await res.json().catch(() => ({}))) as unknown
+  console.log('[updatePost] OK')
   revalidatePath('/dashboard/posts')
   revalidateTag('posts')
   return json
@@ -246,8 +234,6 @@ export async function deletePost(id: string) {
 
 /* -------------------------------------------------------------------------- */
 /* FormData-based create / update (dashboard flow)                            */
-/* - Combines guided sections into `contentHtml`                              */
-/* - Uploads hero + up to 3 section images                                    */
 /* -------------------------------------------------------------------------- */
 
 function slugify(s: string) {
@@ -269,9 +255,18 @@ function escapeHtml(s: string) {
     .replaceAll("'", '&#039;')
 }
 
-function buildCombinedHTMLFromSections(data: any): string {
+type TinySection = { title?: string; content?: string }
+type SectionsPayload = {
+  sections?: TinySection[]
+  section1?: TinySection
+  section2?: TinySection
+  section3?: TinySection
+  conclusion?: string
+}
+
+function buildCombinedHTMLFromSections(data: SectionsPayload): string {
   const parts: string[] = []
-  const pushSection = (sec?: { title?: string; content?: string }) => {
+  const pushSection = (sec?: TinySection) => {
     if (!sec) return
     const t = (sec.title || '').trim()
     const c = (sec.content || '').trim()
@@ -296,6 +291,13 @@ function buildCombinedHTMLFromSections(data: any): string {
   return parts.join('\n\n').trim()
 }
 
+type SectionOut = {
+  title: string
+  contentHtml: string
+  image?: number | string | null
+  anchor: string
+}
+
 export async function createPostFromForm(fd: FormData) {
   console.log('[createPostFromForm] START')
 
@@ -303,7 +305,11 @@ export async function createPostFromForm(fd: FormData) {
 
   const raw = fd.get('data')
   if (!raw || typeof raw !== 'string') throw new Error('Missing form data payload')
-  const data = JSON.parse(raw)
+  const data = JSON.parse(raw) as SectionsPayload & {
+    title?: string
+    excerpt?: string
+    categoryIds?: Array<number | string>
+  }
   console.log('[createPostFromForm] Parsed data keys:', Object.keys(data))
 
   // HERO IMAGE
@@ -312,15 +318,13 @@ export async function createPostFromForm(fd: FormData) {
   let heroId: number | string | null = null
   if (hero && typeof hero === 'object') {
     console.log('[createPostFromForm] Uploading hero (REST)…', fileDebug(hero))
-    const up = await uploadMedia(hero, data.title || (hero as any)?.name)
-    heroId = (up as any)?.id ?? null
+    const up = await uploadMedia(hero, data.title || hero.name)
+    heroId = up.id ?? null
   }
 
   // SECTION IMAGES
-  const sectionsInput: Array<{ title?: string; content?: string }> = Array.isArray(data.sections)
-    ? data.sections
-    : []
-  const sectionImageDocs: Array<{ id: number | string } | null> = []
+  const sectionsInput: TinySection[] = Array.isArray(data.sections) ? data.sections : []
+  const sectionImageDocs: Array<UploadedMedia | null> = []
 
   for (let i = 0; i < 3; i++) {
     const f = fd.get(`sectionImage-${i}`) as File | null
@@ -329,7 +333,7 @@ export async function createPostFromForm(fd: FormData) {
       const alt = sectionsInput[i]?.title || `Section ${i + 1} image`
       console.log(`[createPostFromForm] Uploading section ${i + 1} (REST)…`, fileDebug(f))
       const up = await uploadMedia(f, alt)
-      sectionImageDocs[i] = up as any
+      sectionImageDocs[i] = up
     } else {
       sectionImageDocs[i] = null
     }
@@ -339,17 +343,25 @@ export async function createPostFromForm(fd: FormData) {
   const combinedHTML = buildCombinedHTMLFromSections(data)
   console.log('[createPostFromForm] combinedHTML length:', combinedHTML.length)
 
-  const sections = sectionsInput.map((s, i) => {
+  const sections: SectionOut[] = sectionsInput.map((s, i) => {
     const title = coerceTitle(s?.title, s?.content, i)
     return {
       title,
       contentHtml: s?.content ?? '',
-      image: sectionImageDocs[i]?.id,
+      image: sectionImageDocs[i]?.id ?? null,
       anchor: slugify(title),
     }
   })
 
-  const body = {
+  const body: {
+    title?: string
+    excerpt?: string
+    categories: Array<number | string>
+    contentHtml: string
+    sections: SectionOut[]
+    heroImage: number | string | null
+    _status: 'published'
+  } = {
     title: data.title,
     excerpt: data.excerpt,
     categories: data.categoryIds ?? [],
@@ -374,8 +386,8 @@ export async function createPostFromForm(fd: FormData) {
     throw new Error(`Create failed: ${res.status} ${res.statusText}`)
   }
 
-  const json = await res.json().catch(() => ({}))
-  console.log('[createPostFromForm] OK', { id: json?.id })
+  const json = (await res.json().catch(() => ({}))) as unknown
+  console.log('[createPostFromForm] OK')
   revalidatePath('/dashboard/posts')
   revalidateTag('posts')
   return json
@@ -388,7 +400,11 @@ export async function updatePostFromForm(id: string, fd: FormData) {
 
   const raw = fd.get('data')
   if (!raw || typeof raw !== 'string') throw new Error('Missing form data payload')
-  const data = JSON.parse(raw)
+  const data = JSON.parse(raw) as SectionsPayload & {
+    title?: string
+    excerpt?: string
+    categoryIds?: Array<number | string>
+  }
   console.log('[updatePostFromForm] Parsed data keys:', Object.keys(data))
 
   // Optional hero update
@@ -397,15 +413,13 @@ export async function updatePostFromForm(id: string, fd: FormData) {
   console.log('[updatePostFromForm] Hero file present:', Boolean(hero))
   if (hero && typeof hero === 'object') {
     console.log('[updatePostFromForm] Uploading hero (REST)…', fileDebug(hero))
-    const up = await uploadMedia(hero, data.title || (hero as any)?.name)
-    heroId = (up as any)?.id
+    const up = await uploadMedia(hero, data.title || hero.name)
+    heroId = up.id
   }
 
   // Optional section images
-  const sectionsInput: Array<{ title?: string; content?: string }> = Array.isArray(data.sections)
-    ? data.sections
-    : []
-  const sectionImageDocs: Array<{ id: number | string } | null> = []
+  const sectionsInput: TinySection[] = Array.isArray(data.sections) ? data.sections : []
+  const sectionImageDocs: Array<UploadedMedia | null> = []
 
   for (let i = 0; i < 3; i++) {
     const f = fd.get(`sectionImage-${i}`) as File | null
@@ -414,7 +428,7 @@ export async function updatePostFromForm(id: string, fd: FormData) {
       const alt = sectionsInput[i]?.title || `Section ${i + 1} image`
       console.log(`[updatePostFromForm] Uploading section ${i + 1} (REST)…`, fileDebug(f))
       const up = await uploadMedia(f, alt)
-      sectionImageDocs[i] = up as any
+      sectionImageDocs[i] = up
     } else {
       sectionImageDocs[i] = null
     }
@@ -423,17 +437,25 @@ export async function updatePostFromForm(id: string, fd: FormData) {
   const combinedHTML = buildCombinedHTMLFromSections(data)
   console.log('[updatePostFromForm] combinedHTML length:', combinedHTML.length)
 
-  const sections = sectionsInput.map((s, i) => {
+  const sections: SectionOut[] = sectionsInput.map((s, i) => {
     const title = coerceTitle(s?.title, s?.content, i)
     return {
       title,
       contentHtml: s?.content ?? '',
-      image: sectionImageDocs[i]?.id,
+      image: sectionImageDocs[i]?.id ?? null,
       anchor: slugify(title),
     }
   })
 
-  const body: any = {
+  const body: {
+    title?: string
+    excerpt?: string
+    categories: Array<number | string>
+    sections: SectionOut[]
+    _status: 'published'
+    contentHtml?: string
+    heroImage?: number | string | null
+  } = {
     title: data.title,
     excerpt: data.excerpt,
     categories: data.categoryIds ?? [],
@@ -459,8 +481,8 @@ export async function updatePostFromForm(id: string, fd: FormData) {
     throw new Error(`Update failed: ${res.status} ${res.statusText}`)
   }
 
-  const json = await res.json().catch(() => ({}))
-  console.log('[updatePostFromForm] OK', { id: json?.id })
+  const json = (await res.json().catch(() => ({}))) as unknown
+  console.log('[updatePostFromForm] OK')
   revalidatePath('/dashboard/posts')
   revalidateTag('posts')
   return json

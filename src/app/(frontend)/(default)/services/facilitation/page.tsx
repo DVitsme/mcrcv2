@@ -1,11 +1,11 @@
-'use client'
-
 import { PageHero } from '@/heros/PageHero'
 import { ScrollInViewTitleAndDescription } from '@/components/sections/ScrollInViewTitleAndDescription'
 import { ServicePageFooter } from '@/components/sections/ServicePageFooter'
 import { TwoColTitleCheckListImage } from '@/components/sections/TwoColTitleCheckListImage'
 import { TwoBoxes } from '@/components/TwoCol/TwoBoxes'
 import { FAQ } from '@/components/sections/FAQ'
+
+export const metadata = { title: 'Facilitation | MCRC' }
 
 export default function Facilitation() {
   return (
@@ -20,31 +20,27 @@ export default function Facilitation() {
         badge="Facilitation"
         color="darkbrown"
         buttons={{
-          primary: {
-            text: 'Get Started',
-            url: '/services/facilitation',
-          },
-          secondary: {
-            text: 'Learn More',
-            url: '/services/facilitation',
-          },
+          primary: { text: 'Get Started', url: '/services/facilitation' },
+          secondary: { text: 'Learn More', url: '/services/facilitation' },
         }}
       />
 
       <ScrollInViewTitleAndDescription title="At MCRC, we believe that stronger communities are built through open, honest, and structured conversations. Our group facilitation services create space for teams, organizations, and communities to work through challenges, strengthen relationships, and develop shared solutions.Whether you need support navigating internal conflicts, planning discussions, or community decision-making, our trained facilitators help guide the conversation with care, neutrality, and respect for all voices." />
+
       <TwoColTitleCheckListImage
         data={WhoWeWorkWith}
         imagePosition="left"
         imageSize={{ maxHeight: '300px', height: 300, width: 500 }}
       />
+
       <TwoColTitleCheckListImage
         data={HowOurFacilitationServicesCanHelp}
         imagePosition="right"
         imageSize={{ maxHeight: '300px', height: 300, width: 500 }}
       />
+
       <TwoBoxes data={TwoBoxesData} />
       <FAQ heading="How We Can Help" items={faqItems} />
-
       <ServicePageFooter cards={footerCards} />
     </main>
   )
@@ -57,6 +53,7 @@ const WhoWeWorkWith = {
   description:
     'We support neighborhood groups, nonprofits, schools, families, community colleges, and coalitions who are doing the work of building stronger communities. If your group is facing a big question, a shift in direction, or a time of tension or change, we’re here to help guide the conversation.',
 }
+
 const HowOurFacilitationServicesCanHelp = {
   imageUrl: '/images/mediation/mediation-group-tictactoe.jpg',
   imageAlt: 'Mediation',
@@ -99,7 +96,6 @@ const faqItems = [
       'Promote inclusive staff engagement',
     ],
   },
-
   {
     id: 'faq-2',
     question: 'Community Groups',
@@ -142,12 +138,7 @@ const faqItems = [
 ]
 
 const footerCards = [
-  {
-    title: 'Mediation',
-    subtitle: 'Service',
-    href: '/services/mediation',
-    color: 'blue',
-  },
+  { title: 'Mediation', subtitle: 'Service', href: '/services/mediation', color: 'blue' },
   {
     title: 'Restorative Justice',
     subtitle: 'Service',

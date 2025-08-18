@@ -1,31 +1,19 @@
-import { createLocalReq, getPayload } from 'payload'
-import { seed } from '@/endpoints/seed'
-import config from '@payload-config'
-import { headers } from 'next/headers'
+// Disabled in static builds (demo/preview).
+// If you need seeding locally, keep a separate route file only for dev.
 
-export const maxDuration = 60 // This function can run for a maximum of 60 seconds
+import { NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
 
-export async function POST(): Promise<Response> {
-  const payload = await getPayload({ config })
-  const requestHeaders = await headers()
+export async function GET() {
+  return NextResponse.json(
+    { ok: false, error: 'Seeding route is disabled in this build.' },
+    { status: 404 },
+  )
+}
 
-  // Authenticate by passing request headers
-  const { user } = await payload.auth({ headers: requestHeaders })
-
-  if (!user) {
-    return new Response('Action forbidden.', { status: 403 })
-  }
-
-  try {
-    // Create a Payload request object to pass to the Local API for transactions
-    // At this point you should pass in a user, locale, and any other context you need for the Local API
-    const payloadReq = await createLocalReq({ user }, payload)
-
-    await seed({ payload, req: payloadReq })
-
-    return Response.json({ success: true })
-  } catch (e) {
-    payload.logger.error({ err: e, message: 'Error seeding data' })
-    return new Response('Error seeding data.', { status: 500 })
-  }
+export async function POST() {
+  return NextResponse.json(
+    { ok: false, error: 'Seeding route is disabled in this build.' },
+    { status: 404 },
+  )
 }

@@ -4,13 +4,10 @@ import { PageHero } from '@/heros/PageHero'
 import { ScrollInViewTitleAndDescription } from '@/components/sections/ScrollInViewTitleAndDescription'
 import { ServicePageFooter } from '@/components/sections/ServicePageFooter'
 import { TwoColTitleCheckListImage } from '@/components/sections/TwoColTitleCheckListImage'
-import { TwoBoxes } from '@/components/TwoCol/TwoBoxes'
-import { FAQ } from '@/components/sections/FAQ'
 import { CtaTitleFullWidth } from '@/components/sections/CtaTitleFullWidth'
 import { BiggerBlockCards } from '@/components/ScrollingCards/BiggerBlockCards'
 import { BadgeCheck } from 'lucide-react'
 import { Users } from 'lucide-react'
-import { ThreeColTitleBoxes } from '@/components/sections/ThreeColTitleBoxes'
 import { CTAChecks } from '@/components/CTA/CTAChecks'
 
 export default function Training() {
