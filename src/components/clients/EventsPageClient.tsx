@@ -20,12 +20,18 @@ export function EventsPageClient({ events, badges }: EventsPageClientProps) {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
 
-  // Normalize helpers
   type MaybeMeta = { meta?: { eventType?: string | null; slug?: string | null } }
   type MaybeTopLevel = { eventType?: string | null; slug?: string | null }
 
-  const getType = (e: Event & MaybeMeta & MaybeTopLevel) => e.eventType ?? e.meta?.eventType ?? null
-  const getSlug = (e: Event & MaybeMeta & MaybeTopLevel) => e.slug ?? e.meta?.slug ?? String(e.id)
+  const getType = useCallback(
+    (e: Event & MaybeMeta & MaybeTopLevel) => e.eventType ?? e.meta?.eventType ?? null,
+    [],
+  )
+
+  const getSlug = useCallback(
+    (e: Event & MaybeMeta & MaybeTopLevel) => e.slug ?? e.meta?.slug ?? String(e.id),
+    [],
+  )
 
   // Valid types set
   const validTypes = useMemo(() => new Set(badges), [badges])
@@ -72,7 +78,6 @@ export function EventsPageClient({ events, badges }: EventsPageClientProps) {
     [replaceUrl],
   )
 
-  // Badge counts (optional UX)
   const counts = useMemo(() => {
     const map = new Map<string, number>()
     for (const e of events) {
@@ -81,7 +86,7 @@ export function EventsPageClient({ events, badges }: EventsPageClientProps) {
       map.set(t, (map.get(t) ?? 0) + 1)
     }
     return map
-  }, [events])
+  }, [events, getType])
 
   const filteredEvents =
     selectedBadge === 'all' ? events : events.filter((e) => getType(e) === selectedBadge)

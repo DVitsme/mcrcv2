@@ -7,10 +7,7 @@ import { FaMapMarkerAlt } from 'react-icons/fa'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { cn } from '@/lib/utils'
-
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Event } from '@/payload-types'
@@ -25,20 +22,13 @@ const EventPageClient = ({ event }: EventPageClientProps) => {
     summary,
     featuredImage,
     modality,
-    createdAt,
     location,
     eventStartTime,
     eventEndTime,
-    content,
-    speakers,
-    isFree,
-    cost,
-    isRegistrationRequired,
     externalRegistrationLink,
-    registrationDeadline,
   } = event
   console.log('event', event)
-  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [, setActiveSection] = useState<string | null>(null)
   const sectionRefs = useRef<Record<string, HTMLElement>>({})
 
   useEffect(() => {
@@ -124,10 +114,12 @@ const EventPageClient = ({ event }: EventPageClientProps) => {
                   In a kingdom far away, where laughter once flowed freely, a peculiar tale unfolded
                   about a king who decided to tax the very essence of joy itself - jokes and jest.
                 </p>
-                <img
+                <Image
                   src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg"
                   alt="placeholder"
                   className="my-8 aspect-video w-full rounded-md object-cover"
+                  width={800}
+                  height={450}
                 />
               </div>
               <section

@@ -12,15 +12,12 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 export const runtime = 'nodejs'
 
-type Args = {
-  params: {
-    pageNumber: string
-  }
-}
+type Params = { pageNumber: string }
 
-export default async function Page({ params }: Args) {
-  const pageNumber = Number(params.pageNumber)
-  if (!Number.isInteger(pageNumber)) notFound()
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { pageNumber } = await params
+  const pageNum = Number(pageNumber)
+  if (!Number.isInteger(pageNum)) notFound()
 
   let posts
   try {
@@ -29,7 +26,7 @@ export default async function Page({ params }: Args) {
       collection: 'posts',
       depth: 1,
       limit: 12,
-      page: pageNumber,
+      page: pageNum,
       overrideAccess: false,
     })
   } catch (e) {
@@ -76,19 +73,7 @@ export default async function Page({ params }: Args) {
   )
 }
 
-export async function generateMetadata({ params }: Args): Promise<Metadata> {
-  return { title: `Payload Website Template Posts Page ${params.pageNumber || ''}` }
-}
-
-// Optional: delete this to avoid any DB access during build
-export async function generateStaticParams() {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const { totalDocs } = await payload.count({ collection: 'posts', overrideAccess: false })
-    const totalPages = Math.ceil(totalDocs / 12)
-    return Array.from({ length: totalPages }, (_, i) => ({ pageNumber: String(i + 1) }))
-  } catch (err) {
-    console.error('generateStaticParams failed, skipping SSG:', err)
-    return []
-  }
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const { pageNumber } = await params
+  return { title: `Payload Website Template Posts Page ${pageNumber || ''}` }
 }
