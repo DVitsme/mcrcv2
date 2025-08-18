@@ -6,6 +6,10 @@ import DeletePostButton from '@/components/Dashboard/posts/DeletePostButton'
 
 import { deletePost } from './actions'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
+
 const API = process.env.NEXT_PUBLIC_SERVER_URL!
 
 async function fetchPosts() {

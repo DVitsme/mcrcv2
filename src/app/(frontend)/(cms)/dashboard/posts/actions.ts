@@ -1,9 +1,7 @@
-// src/app/(frontend)/(cms)/dashboard/posts/actions.ts
 'use server'
 
 import { cookies } from 'next/headers'
 import { revalidatePath, revalidateTag } from 'next/cache'
-// ❌ removed: import { getPayloadHMR } from '@payloadcms/next/utilities'
 
 import { getPayload } from 'payload'
 const payload = await getPayload({ config: (await import('@/payload.config')).default })

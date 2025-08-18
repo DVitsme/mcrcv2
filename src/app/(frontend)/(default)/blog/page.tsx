@@ -1,7 +1,10 @@
-// src/app/(frontend)/(default)/blog/page.tsx
 import { fetchFeaturedPost, fetchPosts, fetchCategories } from '@/lib/payload-api-blog'
 import type { Post as PayloadPost, Category as PayloadCategory } from '@/payload-types'
 import { default as BlogPageClient } from '@/components/clients/BlogPageClient'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
 
 // Use the same shape your client UI expects
 export type CardPost = {
@@ -61,11 +64,18 @@ function toUICategories(docs: PayloadCategory[]): UIHelperCategory[] {
 
 export default async function BlogPage() {
   // Fetch everything on the server
-  const [featured, posts, categories] = await Promise.all([
-    fetchFeaturedPost(),
-    fetchPosts(), // all published posts
-    fetchCategories(),
-  ])
+  let featured = null,
+    posts: any[] = [],
+    categories: any[] = []
+  try {
+    ;[featured, posts, categories] = await Promise.all([
+      fetchFeaturedPost(),
+      fetchPosts(),
+      fetchCategories(),
+    ])
+  } catch (error) {
+    console.error('Error fetching blog data:', error)
+  }
 
   // Build the card lists
   const featuredCard = featured ? toCardPost(featured) : null

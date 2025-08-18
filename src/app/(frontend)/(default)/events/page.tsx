@@ -3,6 +3,10 @@ import type { Metadata } from 'next'
 import { fetchPublishedEvents, fetchEventTypeBadges } from '@/lib/payload-api-events'
 import { EventsPageClient } from '@/components/clients/EventsPageClient'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
+
 export const metadata: Metadata = {
   title: 'Events | Mediation and Conflict Resolution Center',
   description:
