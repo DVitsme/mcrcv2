@@ -40,6 +40,7 @@ export default function LoginPage() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(values),
       })
       console.log(`[CLIENT] Received response with status: ${response.status}`)

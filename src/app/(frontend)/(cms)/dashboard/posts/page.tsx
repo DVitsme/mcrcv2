@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import DeletePostButton from '@/components/Dashboard/posts/DeletePostButton'
+import type { Post } from '@/payload-types'
 
 import { deletePost } from './actions'
 
@@ -36,7 +37,7 @@ export default async function PostsPage() {
       </div>
 
       <div className="grid gap-3">
-        {docs.map((p: any) => (
+        {docs.map((p: Post) => (
           <div key={p.id} className="flex items-center justify-between rounded-lg border p-3">
             <div>
               <div className="font-medium">{p.title ?? '(untitled)'}</div>
@@ -53,7 +54,7 @@ export default async function PostsPage() {
 
               {/* Delete: bind the id so the server action receives it */}
               <DeletePostButton
-                action={deletePost.bind(null, p.id)}
+                action={deletePost.bind(null, String(p.id))}
                 title={p.title ?? p.slug ?? 'this post'}
               />
             </div>
@@ -65,6 +66,6 @@ export default async function PostsPage() {
   )
 }
 
-function _statusBadge(s?: string) {
+function _statusBadge(s?: string | null) {
   return <Badge variant={s === 'published' ? 'default' : 'secondary'}>{s ?? 'draft'}</Badge>
 }

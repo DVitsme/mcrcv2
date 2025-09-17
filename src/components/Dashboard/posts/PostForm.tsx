@@ -21,30 +21,41 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-
 import { FileInput } from '@/components/ui/file-inputs'
-
 import { Editor } from '@/components/editor/editor'
 
 type CategoryLike = { id: string | number; title?: string | null; slug?: string | null }
+type PostSectionLike = { title?: string | null; contentHtml?: string | null }
+type MediaLike = { url?: string | null } | string | number | null
+
+// 🔧 replace `any` with a narrow “post-like” shape you actually use in this form
+type PostLike = {
+  id?: string | number
+  title?: string | null
+  excerpt?: string | null
+  categories?: Array<string | number | CategoryLike>
+  sections?: PostSectionLike[]
+  contentHtml?: string | null
+  heroImage?: MediaLike
+}
 
 export type PostFormProps = {
   mode: 'new' | 'edit'
-  post?: any | null
+  post?: PostLike | null // ← no more `any`
   categories: CategoryLike[]
 }
 
 const SectionSchema = z.object({
   title: z.string().trim().optional(),
-  content: z.string().optional(), // HTML string from TipTap
-  imageFile: z.any().optional(), // File | undefined | null
+  content: z.string().optional(),
+  imageFile: z.custom<File>().optional(),
 })
 
 const FormSchema = z.object({
   title: z.string().min(2, 'Please enter a title'),
   excerpt: z.string().optional(),
   categoryIds: z.array(z.string()).optional(),
-  heroImageFile: z.any().optional(), // File | null
+  heroImageFile: z.custom<File>().optional(),
   section1: SectionSchema.optional(),
   section2: SectionSchema.optional(),
   section3: SectionSchema.optional(),
@@ -53,7 +64,6 @@ const FormSchema = z.object({
 
 type FormValues = z.infer<typeof FormSchema>
 
-// slug preview helper
 function slugify(input: string) {
   return input
     .toLowerCase()
@@ -63,7 +73,6 @@ function slugify(input: string) {
     .replace(/^-+|-+$/g, '')
 }
 
-// make sure the editor always gets a string
 function asString(v: unknown, fallback = ''): string {
   return typeof v === 'string' ? v : fallback
 }
@@ -72,38 +81,40 @@ export default function PostForm({ mode, post, categories }: PostFormProps) {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const totalSteps = 5
-  const [isPending, startTransition] = useTransition()
+  const [isPending] = useTransition() // 🔧 drop unused `startTransition`
 
-  // defaults for edit mode
+  // 🔧 remove `(c: any)` — type the relation union you actually support
+  type CategoryRel = string | number | CategoryLike
   const defaultCategoryIds: string[] = useMemo(() => {
-    const arr = Array.isArray(post?.categories) ? post.categories : []
-    return arr
-      .map((c: any) => (typeof c === 'object' && c ? String(c.id) : String(c)))
-      .filter(Boolean)
+    const arr: CategoryRel[] = (
+      Array.isArray(post?.categories) ? post?.categories : []
+    ) as CategoryRel[]
+
+    return arr.map((c) => (typeof c === 'object' && c ? String(c.id) : String(c))).filter(Boolean)
   }, [post])
 
-const defaultValues: FormValues = {
-  title: asString(post?.title),
-  excerpt: asString(post?.excerpt),
-  categoryIds: defaultCategoryIds,
-  heroImageFile: undefined,
-  section1: {
-    title: asString(post?.sections?.[0]?.title),
-    content: asString(post?.sections?.[0]?.contentHtml), 
-    imageFile: undefined,
-  },
-  section2: {
-    title: asString(post?.sections?.[1]?.title),
-    content: asString(post?.sections?.[1]?.contentHtml), 
-    imageFile: undefined,
-  },
-  section3: {
-    title: asString(post?.sections?.[2]?.title),
-    content: asString(post?.sections?.[2]?.contentHtml), 
-    imageFile: undefined,
-  },
-  conclusion: asString(post?.contentHtml), 
-}
+  const defaultValues: FormValues = {
+    title: asString(post?.title),
+    excerpt: asString(post?.excerpt),
+    categoryIds: defaultCategoryIds,
+    heroImageFile: undefined,
+    section1: {
+      title: asString(post?.sections?.[0]?.title),
+      content: asString(post?.sections?.[0]?.contentHtml),
+      imageFile: undefined,
+    },
+    section2: {
+      title: asString(post?.sections?.[1]?.title),
+      content: asString(post?.sections?.[1]?.contentHtml),
+      imageFile: undefined,
+    },
+    section3: {
+      title: asString(post?.sections?.[2]?.title),
+      content: asString(post?.sections?.[2]?.contentHtml),
+      imageFile: undefined,
+    },
+    conclusion: asString(post?.contentHtml),
+  }
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
@@ -114,7 +125,6 @@ const defaultValues: FormValues = {
   const title = form.watch('title')
   const slugPreview = title ? slugify(title) : ''
 
-  // in PostForm.tsx
   const [submitting, setSubmitting] = useState(false)
 
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
@@ -160,8 +170,10 @@ const defaultValues: FormValues = {
         toast.success('Post updated')
       }
       router.push('/dashboard/posts')
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Something went wrong creating the post')
+    } catch (e: unknown) {
+      // 🔧 no more `any`
+      const message = e instanceof Error ? e.message : 'Something went wrong creating the post'
+      toast.error(message)
     } finally {
       setSubmitting(false)
     }
@@ -498,7 +510,12 @@ const defaultValues: FormValues = {
                 >
                   Back
                 </Button>
-                <Button type="submit" size="sm" className="font-medium" disabled={submitting}>
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="font-medium"
+                  disabled={submitting || isPending}
+                >
                   {submitting
                     ? 'Loading...'
                     : step === totalSteps - 1
