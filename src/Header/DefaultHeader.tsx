@@ -106,7 +106,7 @@ const topicGroups: { title: string; topics: Topic[] }[] = [
   {
     title: 'Learning Resources',
     topics: [
-      { title: 'Getting Started Guide', url: '#', icon: Globe },
+      { title: 'Getting Started Guide', url: '/getting-started', icon: Globe },
       { title: 'Updates', url: '#', icon: Rocket },
       { title: 'Best Practices', url: '#', icon: Pyramid },
       { title: 'Apply to Become a Partner', url: '#', icon: ArrowRightLeft },
@@ -263,7 +263,7 @@ export function DefaultHeader({
   logo = { url: '/', src: '/images/logo/mcrc-logo.png', alt: 'MCRC Logo', title: 'MCRC Howard' },
   menu = defaultMenu,
   auth = {
-    login: { title: 'Get Started', url: '/get-started' },
+    login: { title: 'Get Started', url: '/getting-started' },
     signup: { title: 'Donate', url: '/donate' },
   },
 }: NavbarProps) {
@@ -396,7 +396,9 @@ export function DefaultHeader({
                             <AccordionContent className="pt-2">
                               <div className="flex flex-col gap-1">
                                 {(item.title === 'Resources' ? resources : item.items)?.map(
-                                  (subItem) => <SubMenuLink key={subItem.title} item={subItem} />,
+                                  (subItem) => (
+                                    <SubMenuLink key={subItem.title} item={subItem} />
+                                  ),
                                 )}
                               </div>
                             </AccordionContent>
