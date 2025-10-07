@@ -106,7 +106,7 @@ const topicGroups: { title: string; topics: Topic[] }[] = [
   {
     title: 'Learning Resources',
     topics: [
-      { title: 'Getting Started Guide', url: '/getting-started', icon: Globe },
+      { title: 'Getting Started Guide', url: '/get-started', icon: Globe },
       { title: 'Updates', url: '#', icon: Rocket },
       { title: 'Best Practices', url: '#', icon: Pyramid },
       { title: 'Apply to Become a Partner', url: '#', icon: ArrowRightLeft },
@@ -263,7 +263,7 @@ export function DefaultHeader({
   logo = { url: '/', src: '/images/logo/mcrc-logo.png', alt: 'MCRC Logo', title: 'MCRC Howard' },
   menu = defaultMenu,
   auth = {
-    login: { title: 'Get Started', url: '/getting-started' },
+    login: { title: 'Get Started', url: '/get-started' },
     signup: { title: 'Donate', url: '/donate' },
   },
 }: NavbarProps) {

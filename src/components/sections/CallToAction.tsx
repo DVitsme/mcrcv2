@@ -49,7 +49,9 @@ export function CallToAction({
         <div className="mx-auto max-w-2xl text-center text-white">
           <h2 className="mb-4 text-5xl font-bold tracking-tight sm:text-4xl">{title}</h2>
           <p className="mb-8 text-xl font-bold">{description}</p>
-          {buttonText && buttonLink && <ButtonAnimated text={buttonText} />}
+          <div className="flex justify-center">
+            {buttonText && buttonLink && <ButtonAnimated text={buttonText} link={buttonLink} />}
+          </div>
         </div>
       </div>
     </section>

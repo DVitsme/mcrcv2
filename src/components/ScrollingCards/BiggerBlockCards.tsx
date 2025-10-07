@@ -53,7 +53,7 @@ const BiggerBlockCards = ({
               <p className="mt-12 text-lg text-black">
                 {buttonTitle}
                 <span className="mt-4 font-bold block text-xl">
-                  <Link href={buttonLink} target="_blank">
+                  <Link href={buttonLink}>
                     <Button className="bg-primary text-white hover:bg-primary/80">
                       {buttonText}
                     </Button>

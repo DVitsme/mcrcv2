@@ -17,22 +17,22 @@ const services: GetStartedProps[] = [
   {
     title: 'Mediation',
     image: '/images/mediation/twoguys.jpg',
-    url: '/services/mediation',
+    url: '/services/mediation/request',
   },
   {
     title: 'Facilitation',
     image: '/images/facilitation/facilitation-meeting.jpg',
-    url: '/services/facilitation',
+    url: '/services/facilitation/request',
   },
   {
     title: 'Restorative Justice',
     image: '/images/restorative-justice/rp-with-mother-daughter.jpg',
-    url: '/services/restorative-justice',
+    url: '/services/restorative-justice/request',
   },
   {
     title: 'Training & Education',
     image: '/images/training/teaching-class.jpg',
-    url: '/services/training',
+    url: '/services/training/request',
   },
 ]
 
@@ -83,7 +83,7 @@ const GetStarted = () => {
         <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:flex lg:items-center lg:justify-between lg:px-8">
           <div>
             <h2 className="max-w-2xl text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl dark:text-white">
-              Would you like to Volunteer?
+              Would you like to Volunteer with us?
             </h2>
             <br />
             <p className="max-w-xl text-muted-foreground text-xl tracking-tight">
@@ -93,13 +93,7 @@ const GetStarted = () => {
           </div>
           <div className="mt-10 flex items-center gap-x-6 lg:mt-0 lg:shrink-0">
             <Link
-              href="#"
-              className="rounded-md text-lg bg-black px-6 py-4 font-semibold text-white shadow-sm hover:bg-purple focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 "
-            >
-              Start the Process
-            </Link>
-            <Link
-              href="#"
+              href="/volunteer"
               className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-purple transition-colors hover:border-b-2 hover:border-purple"
             >
               Learn more

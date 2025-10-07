@@ -192,11 +192,11 @@ export default function Mediation() {
         buttons={{
           primary: {
             text: 'How it works',
-            url: '/services/mediation',
+            url: '/services/mediation#expect',
           },
           secondary: {
-            text: 'Learn More',
-            url: '/services/mediation',
+            text: 'Get Started',
+            url: '/services/mediation/request',
           },
         }}
       />
@@ -210,21 +210,26 @@ export default function Mediation() {
       />
       <TwoColTitleCheckListImage data={WhyMediate} />
       <ThreeColTitleBoxes data={ThreeColData} />
-      <CtaTitleFullWidth heading="Community mediation is a powerful alternative to hiring a lawyer or going to court. It’s collaborative, confidential, and often more sustainable—because the people involved created the agreement themselves." />
+      <CtaTitleFullWidth heading="Community mediation is a powerful alternative to hiring a lawyer or going to court. It is collaborative, confidential, and often more sustainable—because the people involved created the agreement themselves." />
       <ThreeColImages data={ThreeColImagesData} />
-      <BiggerBlockCards
-        title="What to Expect: "
-        titleGray="The Mediation Process"
-        color="darkgreen"
-        description="Every mediation is different, but here’s what the journey typically looks like at MCRC. We move at the pace of trust, with respect for everyone’s story and voice."
-        cards={stickyCards}
-      />
-      <CallToAction
-        title="A Note from Us"
-        description="We believe conflict is a part of being in community and that navigating it with care, clarity, and connection is possible. Mediation isn’t about winners and losers. It’s about creating space for change, for dignity, and for forward movement."
-        imgSrc="/images/mediation/community.jpg"
-      />
-      <FAQ heading="Types of mediation supported at MCRC" items={faqItems} />
+      <div id="expect">
+        <BiggerBlockCards
+          title="What to Expect: "
+          titleGray="The Mediation Process"
+          color="darkgreen"
+          description="Every mediation is different, but here is what the journey typically looks like at MCRC. We move at the pace of trust, with respect for everyone’s story and voice."
+          cards={stickyCards}
+          buttonLink="/services/mediation/request"
+        />
+      </div>
+      <div id="faq">
+        <CallToAction
+          title="A Note from Us"
+          description="We believe conflict is a part of being in community and that navigating it with care, clarity, and connection is possible. Mediation isn’t about winners and losers. It’s about creating space for change, for dignity, and for forward movement."
+          imgSrc="/images/mediation/community.jpg"
+        />
+        <FAQ heading="Types of mediation supported at MCRC" items={faqItems} />
+      </div>
       <TitleGrid
         title="Family Mediation helps to resolve disputes in households"
         items={titleGridItems}
