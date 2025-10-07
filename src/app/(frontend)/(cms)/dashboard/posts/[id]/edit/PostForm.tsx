@@ -28,7 +28,6 @@ type CategoryLike = { id: string | number; title?: string | null; slug?: string 
 type PostSectionLike = { title?: string | null; contentHtml?: string | null }
 type MediaLike = { url?: string | null } | string | number | null
 
-// 🔧 replace `any` with a narrow "post-like" shape you actually use in this form
 type PostLike = {
   id?: string | number
   title?: string | null
@@ -331,7 +330,9 @@ export default function PostForm({ mode, post, categories }: PostFormProps) {
                         <FormControl>
                           <Input placeholder="First Section" autoComplete="off" {...field} />
                         </FormControl>
-                        <FormDescription>Shown in the left "Sections" nav</FormDescription>
+                        <FormDescription>
+                          Shown in the left &quot;Sections&quot; navigation
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
