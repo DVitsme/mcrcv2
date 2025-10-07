@@ -1,5 +1,6 @@
 import { ArrowDown } from 'lucide-react'
 import { Fragment } from 'react'
+import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 
@@ -39,7 +40,7 @@ const Hero = () => {
                   asChild
                   className="block h-fit w-fit rounded-sm px-6 py-3.5 text-sm font-semibold tracking-wider text-nowrap uppercase"
                 >
-                  <a href="#">Get Started</a>
+                  <Link href="/get-started">Get Started</Link>
                 </Button>
               </div>
             </div>

@@ -1,66 +1,32 @@
 'use client'
 
-import { Bolt, Cloud, MessagesSquare, Star } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
 import type { CarouselApi } from '@/components/ui/carousel'
+import { features } from '@/lib/services-data'
 import Image from 'next/image'
-
-const features = [
-  {
-    id: 'feature-1',
-    title: 'Mediation',
-    description:
-      'We offer a neutral space where families, neighbors, coworkers, and businesses can resolve conflict without going to court.',
-    icon: Cloud,
-    image: '/images/mediation/mediation-group.jpg',
-  },
-  {
-    id: 'feature-2',
-    title: 'Restorative Practices',
-    description:
-      'Restorative practices support youth, whether harmed or causing harm, to heal in community and take part in meaningful repair.',
-    icon: Star,
-    image: '/images/restorative-justice/restorative-justice-happy-kid.jpg',
-  },
-  {
-    id: 'feature-3',
-    title: 'Group Facilitation',
-    description:
-      'Our facilitators guide conversations with care and neutrality, supporting dialogue, navigating conflict, decision making, and community conversations.',
-    icon: Bolt,
-    image: '/images/facilitation/facilitation-v2.jpg',
-  },
-  {
-    id: 'feature-4',
-    title: 'Community Education',
-    description:
-      'Everyone should have access to tools for healthy communication and resolving conflict. We work to make these skills available to all.',
-    icon: MessagesSquare,
-    image: '/images/training/one-on-one-office-training.jpg',
-  },
-]
 
 const Services = () => {
   const [selection, setSelection] = useState(0)
   const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+  const mobileCarouselRef = useRef<HTMLDivElement>(null)
 
-  const handleSelection = (index: number) => {
+  const handleSelection = useCallback((index: number) => {
     setSelection(index)
-    const mobileCarousel = document.querySelector('.snap-x.snap-mandatory')
-    if (mobileCarousel) {
-      const slides = Array.from(mobileCarousel.children)
-      if (slides[index]) {
-        slides[index].scrollIntoView({
+    if (mobileCarouselRef.current) {
+      const slides = Array.from(mobileCarouselRef.current.children)
+      const slide = slides[index]
+      if (slide) {
+        slide.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
           inline: 'center',
         })
       }
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (!carouselApi) {
@@ -69,18 +35,22 @@ const Services = () => {
     carouselApi.scrollTo(selection)
   }, [carouselApi, selection])
 
+  const updateSelection = useCallback(() => {
+    if (carouselApi) {
+      const selectedIndex = carouselApi.selectedScrollSnap()
+      setSelection(selectedIndex)
+    }
+  }, [carouselApi])
+
   useEffect(() => {
     if (!carouselApi) {
       return
-    }
-    const updateSelection = () => {
-      setSelection(carouselApi.selectedScrollSnap())
     }
     carouselApi.on('select', updateSelection)
     return () => {
       carouselApi.off('select', updateSelection)
     }
-  }, [carouselApi])
+  }, [carouselApi, updateSelection])
 
   return (
     <section className="mt-[-10rem] md:py-24 lg:py-32 bg-darkgreen">
@@ -100,7 +70,10 @@ const Services = () => {
         <div className="overflow-visible">
           <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:gap-8 lg:gap-16">
             {/* Mobile Image Carousel - Moved to top for mobile */}
-            <div className="scrollbar-none flex snap-x snap-mandatory gap-3 overflow-x-auto [-ms-overflow-style:'none'] [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden">
+            <div
+              ref={mobileCarouselRef}
+              className="scrollbar-none flex snap-x snap-mandatory gap-3 overflow-x-auto [-ms-overflow-style:'none'] [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
+            >
               {features.map((feature, i) => (
                 <div
                   key={feature.id}
@@ -112,6 +85,8 @@ const Services = () => {
                     alt={feature.title}
                     className="w-full object-cover object-center"
                     fill
+                    sizes="(max-width: 768px) 100vw"
+                    priority={feature.id === 'feature-1'}
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-background/95 via-background/70 to-transparent px-4 py-5">
                     <div className="flex items-center gap-3">
@@ -139,25 +114,26 @@ const Services = () => {
                     selection === i ? 'w-6 bg-primary' : 'bg-muted hover:bg-muted-foreground/50'
                   }`}
                   onClick={() => handleSelection(i)}
-                  aria-label={`Go to slide ${i + 1}`}
+                  aria-label={`View the ${features[i]?.title ?? ''} service`}
                 />
               ))}
             </div>
 
             {/* Feature List */}
             <div className="md:w-1/2 lg:w-2/5">
-              <ul className="grid grid-cols-1 gap-3 md:flex md:flex-col md:gap-2">
+              <ul role="tablist" className="grid grid-cols-1 gap-3 md:flex md:flex-col md:gap-2">
                 {features.map((feature, i) => {
                   const isSelected = selection === i
                   return (
                     <li
                       key={feature.id}
+                      role="tab"
+                      aria-selected={isSelected}
                       className={`group relative flex cursor-pointer rounded-xl border px-4 py-3 transition-all duration-300 md:px-5 md:py-4 ${
                         isSelected
                           ? 'border-border bg-accent shadow-sm'
                           : 'border-transparent hover:border-border hover:bg-accent/30'
                       }`}
-                      data-open={isSelected ? 'true' : undefined}
                       onClick={() => handleSelection(i)}
                     >
                       <div className="flex w-full items-start gap-3 md:gap-4">
@@ -198,21 +174,23 @@ const Services = () => {
               <div className="overflow-hidden rounded-xl border border-border shadow-sm">
                 <Carousel
                   setApi={setCarouselApi}
-                  className="aspect-4/5 w-full md:aspect-3/4 lg:aspect-4/5 [&>div]:h-full"
+                  className="w-full"
                   opts={{
                     loop: true,
                   }}
                 >
-                  <CarouselContent className="mx-0 h-full w-full">
+                  <CarouselContent className="mx-0 w-full">
                     {features.map((feature) => (
-                      <CarouselItem key={feature.id} className="px-0">
-                        <div className="relative w-full overflow-hidden">
+                      <CarouselItem key={feature.id} className="px-0 h-full">
+                        <div className="relative w-full h-full aspect-4/5 md:aspect-3/4 lg:aspect-4/5 overflow-hidden">
                           <Image
                             src={feature.image}
                             alt={feature.title}
-                            className="h-full max-h-[500px] w-full object-cover object-center transition-transform duration-500"
-                            width={500}
-                            height={500}
+                            className="h-full w-full object-cover object-center transition-transform duration-500"
+                            width={1200}
+                            height={750}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                            priority={feature.id === 'feature-1'}
                           />
                           <div className="absolute right-0 bottom-0 left-0 bg-background bg-linear-to-t from-background/80 via-background/40 to-transparent p-6">
                             <div className="flex items-center gap-3">
@@ -240,7 +218,7 @@ const Services = () => {
                       selection === i ? 'w-6 bg-primary' : 'bg-muted hover:bg-muted-foreground/50'
                     }`}
                     onClick={() => handleSelection(i)}
-                    aria-label={`Go to slide ${i + 1}`}
+                    aria-label={`View the ${features[i]?.title ?? ''} service`}
                   />
                 ))}
               </div>
