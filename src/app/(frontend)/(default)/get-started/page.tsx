@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 
+import Image from 'next/image'
+
 type GetStartedProps = {
   title: string
   image: string
@@ -64,10 +66,12 @@ const GetStarted = () => {
               className="group block overflow-hidden rounded-lg"
             >
               <Card className="relative aspect-square overflow-hidden p-0">
-                <img
+                <Image
                   src={service.image}
                   alt={service.title}
                   className="absolute inset-0 h-full w-full object-cover"
+                  width={500}
+                  height={500}
                 />
                 <CardContent className="absolute inset-0 flex flex-col justify-end p-4">
                   <div className="font-semibold text-white text-2xl">{service.title}</div>
