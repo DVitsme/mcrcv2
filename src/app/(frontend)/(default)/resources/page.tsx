@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import Image from 'next/image'
 
 interface Blog {
   title: string
@@ -231,10 +232,12 @@ const Resources = () => {
             href="#"
             className="border-border group relative isolate overflow-hidden rounded-2xl border transition-transform duration-300 hover:-translate-y-0.5 lg:col-span-7 lg:row-span-2"
           >
-            <img
+            <Image
               src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/photos/simone-hutsch-ba454dc72896-unsplash.jpg"
               alt="placeholder"
               className="grayscale-100 group-hover:grayscale-50 size-full max-h-[550px] object-cover transition-all duration-300"
+              width={500}
+              height={500}
             />
             <div className="from-primary absolute inset-0 bg-gradient-to-t to-transparent" />
             <div className="absolute inset-0 z-10 flex flex-col justify-between p-8">
@@ -271,10 +274,12 @@ const Resources = () => {
               href="#"
               className="border-border group relative isolate overflow-hidden rounded-2xl border transition-transform duration-300 hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/photos/simone-hutsch-duxeKbu9FDE-unsplash.jpg"
                 alt="placeholder"
                 className="grayscale-100 group-hover:grayscale-50 size-full max-h-[267px] object-cover transition-all duration-300"
+                width={500}
+                height={500}
               />
               <div className="from-primary absolute inset-0 bg-gradient-to-t to-transparent" />
               <div className="absolute inset-0 z-10 flex flex-col justify-between p-8">
@@ -296,10 +301,12 @@ const Resources = () => {
               href="#"
               className="border-border group relative isolate overflow-hidden rounded-2xl border transition-transform duration-300 hover:-translate-y-0.5"
             >
-              <img
+              <Image
                 src="https://deifkwefumgah.cloudfront.net/shadcnblocks/block/photos/simone-hutsch-zr8IvMz0OWk-unsplash.jpg"
                 alt="placeholder"
                 className="grayscale-100 group-hover:grayscale-50 size-full max-h-[267px] object-cover transition-all duration-300"
+                width={500}
+                height={500}
               />
               <div className="from-primary absolute inset-0 bg-gradient-to-t to-transparent" />
               <div className="absolute inset-0 z-10 flex flex-col justify-between p-8">

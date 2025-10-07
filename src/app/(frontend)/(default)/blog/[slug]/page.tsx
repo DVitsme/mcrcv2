@@ -6,8 +6,34 @@ import { Linkedin, Twitter } from 'lucide-react'
 
 import { fetchPostBySlug } from '@/lib/payload-api-blog'
 import type { Category as CategoryType } from '@/payload-types'
+import { type DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
+// Type definitions for extended post data
+interface Author {
+  name: string
+  id?: string
+}
+
+interface SectionImage {
+  url: string
+  alt?: string
+}
+
+interface Section {
+  title?: string | null
+  anchor?: string | null
+  contentHtml?: string | null
+  image?: SectionImage | null
+}
+
+interface PopulatedPost {
+  populatedAuthors?: Author[]
+  contentHtml?: string
+  sections?: Section[]
+  content?: unknown
+}
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -82,27 +108,23 @@ export default async function BlogPostPage({ params }: { params: RouteParams }) 
     (Array.isArray(post.categories) ? (post.categories as CategoryType[]) : []) || []
 
   // Authors
-  const populated = Array.isArray((post as any).populatedAuthors)
-    ? (post as any).populatedAuthors
+  const populatedPost = post as PopulatedPost
+  const populated = Array.isArray(populatedPost.populatedAuthors)
+    ? populatedPost.populatedAuthors
     : []
   const authors =
     populated.length > 0
-      ? populated.map((a: any) => a.name).filter(Boolean)
+      ? populated.map((a: Author) => a.name).filter(Boolean)
       : Array.isArray(post.authors)
-        ? (post.authors as any[]).map((a) => a?.name).filter(Boolean)
+        ? (post.authors as unknown as Author[]).map((a) => a?.name).filter(Boolean)
         : []
 
   // --- New schema support ---
-  const contentHtml: string | undefined = (post as any).contentHtml || undefined
-  const sections: Array<{
-    title?: string | null
-    anchor?: string | null
-    contentHtml?: string | null
-    image?: any
-  }> = Array.isArray((post as any).sections) ? (post as any).sections : []
+  const contentHtml: string | undefined = populatedPost.contentHtml || undefined
+  const sections: Section[] = Array.isArray(populatedPost.sections) ? populatedPost.sections : []
 
   // If section has an upload image, get its URL
-  const getSectionImageUrl = (s: any) => {
+  const getSectionImageUrl = (s: Section) => {
     if (s && typeof s.image === 'object' && s.image?.url) {
       return getMediaUrl(s.image.url)
     }
@@ -257,7 +279,10 @@ export default async function BlogPostPage({ params }: { params: RouteParams }) 
               {(contentHtml?.trim()?.length ?? 0) > 0 ? (
                 <div dangerouslySetInnerHTML={{ __html: contentHtml! }} />
               ) : (
-                <RichText data={(post as any).content as any} className="prose dark:prose-invert" />
+                <RichText
+                  data={populatedPost.content as DefaultTypedEditorState | null}
+                  className="prose dark:prose-invert"
+                />
               )}
             </article>
           )}
@@ -331,7 +356,9 @@ export async function generateStaticParams() {
 
     const data = await res.json()
     const slugs: string[] = Array.isArray(data?.docs)
-      ? data.docs.map((p: any) => p?.slug).filter((s: any) => typeof s === 'string' && s.length > 0)
+      ? data.docs
+          .map((p: { slug?: string }) => p?.slug)
+          .filter((s: string | undefined): s is string => typeof s === 'string' && s.length > 0)
       : []
 
     return slugs.map((slug) => ({ slug }))
