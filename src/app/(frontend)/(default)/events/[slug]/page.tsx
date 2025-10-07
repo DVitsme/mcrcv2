@@ -5,22 +5,14 @@ import { fetchEventBySlug } from '@/lib/payload-api-events'
 import { EventPageClient } from '@/components/clients/EventPageClient'
 import { getServerSideURL } from '@/utilities/getURL'
 
-type Params = { slug: string }
-type RouteProps = { params: Params } | { params: Promise<Params> }
-
-// Helper to normalize sync/async params
-async function resolveParams(props: RouteProps): Promise<Params> {
-  const p: any = (props as any).params
-  return typeof p?.then === 'function' ? await p : p
-}
-
 // --- SEO ---
-export async function generateMetadata(props: RouteProps): Promise<Metadata> {
-  const { slug } = await resolveParams(props)
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  // Next 15: params can be a Promise
+  const p = typeof params?.then === 'function' ? await params : params
+  const slug: string = p.slug
+
   const event = await fetchEventBySlug(slug)
-  if (!event) {
-    return { title: 'Event Not Found', robots: { index: false } }
-  }
+  if (!event) return { title: 'Event Not Found', robots: { index: false } }
 
   const title = event.name || 'Event'
   const description = event.summary || 'Event details'
@@ -50,8 +42,10 @@ export async function generateMetadata(props: RouteProps): Promise<Metadata> {
   }
 }
 
-export default async function EventPage(props: RouteProps) {
-  const { slug } = await resolveParams(props)
+export default async function EventPage({ params }: any) {
+  const p = typeof params?.then === 'function' ? await params : params
+  const slug: string = p.slug
+
   const event = await fetchEventBySlug(slug)
   if (!event) return notFound()
   return <EventPageClient event={event} />
@@ -59,17 +53,18 @@ export default async function EventPage(props: RouteProps) {
 
 export const revalidate = 60
 
+// --- Static params generation stays typed explicitly (no conflict)
 type SlugDoc = { meta?: { slug?: string | null } }
 
-export async function generateStaticParams(): Promise<Params[]> {
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   const base = getServerSideURL()
   try {
     const res = await fetch(`${base}/api/events?limit=1000&select=meta.slug`, {
       next: { revalidate: 60 },
     })
     if (!res.ok) return []
-
     const data = await res.json()
+
     const slugs: string[] = Array.isArray(data?.docs)
       ? data.docs
           .map((d: SlugDoc) => d?.meta?.slug)
