@@ -5,32 +5,11 @@ import { fetchEventBySlug } from '@/lib/payload-api-events'
 import { EventPageClient } from '@/components/clients/EventPageClient'
 import { getServerSideURL } from '@/utilities/getURL'
 
-type Params = { slug: string }
-
-// Narrower, safe check for the params shape
-function isParams(x: unknown): x is Params {
-  return (
-    typeof x === 'object' &&
-    x !== null &&
-    'slug' in x &&
-    typeof (x as Record<string, unknown>).slug === 'string'
-  )
-}
-
-async function resolveParams(input: unknown): Promise<Params> {
-  const maybe = (input as { params?: unknown })?.params
-  // If it's a Promise, await it
-  if (maybe && typeof (maybe as Promise<unknown>).then === 'function') {
-    const awaited = await (maybe as Promise<unknown>)
-    if (isParams(awaited)) return awaited
-  }
-  if (isParams(maybe)) return maybe
-  throw new Error('Invalid route params')
-}
+type RouteParams = Promise<{ slug: string }>
 
 // --- SEO ---
-export async function generateMetadata(props: { params: unknown }): Promise<Metadata> {
-  const { slug } = await resolveParams(props)
+export async function generateMetadata({ params }: { params: RouteParams }): Promise<Metadata> {
+  const { slug } = await params
 
   const event = await fetchEventBySlug(slug)
   if (!event) return { title: 'Event Not Found', robots: { index: false } }
@@ -63,8 +42,8 @@ export async function generateMetadata(props: { params: unknown }): Promise<Meta
   }
 }
 
-export default async function EventPage(props: { params: unknown }) {
-  const { slug } = await resolveParams(props)
+export default async function EventPage({ params }: { params: RouteParams }) {
+  const { slug } = await params
 
   const event = await fetchEventBySlug(slug)
   if (!event) return notFound()
