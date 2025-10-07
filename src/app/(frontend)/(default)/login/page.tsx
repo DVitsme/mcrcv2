@@ -31,43 +31,49 @@ export default function LoginPage() {
     defaultValues: { email: '', password: '' },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log('--- [CLIENT] Login Page ---')
-    console.log('[CLIENT] onSubmit triggered with values:', values)
-    setError(null)
-    try {
-      console.log('[CLIENT] Sending POST request to /api/auth/login...')
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(values),
-      })
-      console.log(`[CLIENT] Received response with status: ${response.status}`)
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  setError(null)
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        console.error('[CLIENT] Login request failed:', errorData)
-        throw new Error(errorData.message || 'Invalid email or password.')
-      }
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(values),
+    })
 
-      const { user } = await response.json()
-      console.log('[CLIENT] Login request successful. User:', user)
-
-      if (user && (user.role === 'admin' || user.role === 'coordinator')) {
-        toast.success('Login Successful')
-        console.log('[CLIENT] User is authorized. Redirecting to /dashboard...')
-        router.push('/dashboard')
-        router.refresh()
-      } else {
-        throw new Error('You do not have permission to access this area.')
-      }
-    } catch (err: any) {
-      console.error('[CLIENT] Error in onSubmit:', err)
-      toast.error(err.message)
-      setError(err.message)
+    if (!response.ok) {
+      // read error payload once
+      const errorData: unknown = await response.json()
+      const message =
+        typeof errorData === 'object' &&
+        errorData !== null &&
+        'message' in errorData &&
+        typeof (errorData as any).message === 'string'
+          ? (errorData as any).message
+          : 'Invalid email or password.'
+      throw new Error(message)
     }
+
+    type UserRole = 'admin' | 'coordinator' | 'mediator' | 'volunteer' | 'participant'
+    type LoginSuccess = { user?: { role?: UserRole } }
+
+    const { user }: LoginSuccess = await response.json()
+
+    if (user && (user.role === 'admin' || user.role === 'coordinator')) {
+      toast.success('Login Successful')
+      router.push('/dashboard')
+      router.refresh()
+    } else {
+      throw new Error('You do not have permission to access this area.')
+    }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'An unexpected error occurred.'
+    toast.error(message)
+    setError(message)
   }
+}
+
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40">

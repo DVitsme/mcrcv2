@@ -5,11 +5,32 @@ import { fetchEventBySlug } from '@/lib/payload-api-events'
 import { EventPageClient } from '@/components/clients/EventPageClient'
 import { getServerSideURL } from '@/utilities/getURL'
 
+type Params = { slug: string }
+
+// Narrower, safe check for the params shape
+function isParams(x: unknown): x is Params {
+  return (
+    typeof x === 'object' &&
+    x !== null &&
+    'slug' in x &&
+    typeof (x as Record<string, unknown>).slug === 'string'
+  )
+}
+
+async function resolveParams(input: unknown): Promise<Params> {
+  const maybe = (input as { params?: unknown })?.params
+  // If it's a Promise, await it
+  if (maybe && typeof (maybe as Promise<unknown>).then === 'function') {
+    const awaited = await (maybe as Promise<unknown>)
+    if (isParams(awaited)) return awaited
+  }
+  if (isParams(maybe)) return maybe
+  throw new Error('Invalid route params')
+}
+
 // --- SEO ---
-export async function generateMetadata({ params }: any): Promise<Metadata> {
-  // Next 15: params can be a Promise
-  const p = typeof params?.then === 'function' ? await params : params
-  const slug: string = p.slug
+export async function generateMetadata(props: { params: unknown }): Promise<Metadata> {
+  const { slug } = await resolveParams(props)
 
   const event = await fetchEventBySlug(slug)
   if (!event) return { title: 'Event Not Found', robots: { index: false } }
@@ -42,18 +63,18 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   }
 }
 
-export default async function EventPage({ params }: any) {
-  const p = typeof params?.then === 'function' ? await params : params
-  const slug: string = p.slug
+export default async function EventPage(props: { params: unknown }) {
+  const { slug } = await resolveParams(props)
 
   const event = await fetchEventBySlug(slug)
   if (!event) return notFound()
+
   return <EventPageClient event={event} />
 }
 
 export const revalidate = 60
 
-// --- Static params generation stays typed explicitly (no conflict)
+// --- Static params generation stays typed explicitly ---
 type SlugDoc = { meta?: { slug?: string | null } }
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
@@ -63,8 +84,8 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
       next: { revalidate: 60 },
     })
     if (!res.ok) return []
-    const data = await res.json()
 
+    const data = await res.json()
     const slugs: string[] = Array.isArray(data?.docs)
       ? data.docs
           .map((d: SlugDoc) => d?.meta?.slug)
