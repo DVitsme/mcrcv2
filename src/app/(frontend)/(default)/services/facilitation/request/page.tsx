@@ -142,13 +142,13 @@ const FacilitationRequest = () => {
                   </Button>
                   <p className="text-muted-foreground text-xs sm:col-span-2">
                     You acknowledge that you&apos;ve reviewed and agreed to our{' '}
-                    <a href="#" className="text-primary hover:underline">
+                    <Link href="#" className="text-primary hover:underline">
                       Privacy Policy
-                    </a>{' '}
+                    </Link>{' '}
                     and{' '}
-                    <a href="#" className="text-primary hover:underline">
+                    <Link href="#" className="text-primary hover:underline">
                       Terms of Service
-                    </a>
+                    </Link>
                   </p>
                 </form>
               </Form>
