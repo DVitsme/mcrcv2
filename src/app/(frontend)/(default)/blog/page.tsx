@@ -1,6 +1,12 @@
 import { fetchFeaturedPost, fetchPosts, fetchCategories } from '@/lib/payload-api-blog'
-import type { Post as PayloadPost, Category as PayloadCategory } from '@/payload-types'
+import type { Post as PayloadPost, Category as PayloadCategory, Media } from '@/payload-types'
 import { default as BlogPageClient } from '@/components/clients/BlogPageClient'
+
+// Type definitions for extended data
+interface HeroImage extends Media {
+  url?: string
+  filename?: string
+}
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -26,7 +32,7 @@ function toCardPost(p: PayloadPost): CardPost | null {
   // Prefer the first related category's *title* for pretty display
   const firstCat = (
     Array.isArray(p.categories) && p.categories[0] && typeof p.categories[0] === 'object'
-      ? (p.categories[0] as any)
+      ? (p.categories[0] as PayloadCategory)
       : null
   ) as PayloadCategory | null
 
@@ -37,10 +43,10 @@ function toCardPost(p: PayloadPost): CardPost | null {
 
   // Try to read a usable image URL from heroImage (Media relationship)
   // If your Media has `url`, this will work. Otherwise we fall back.
-  const hero = p.heroImage as any
+  const hero = p.heroImage as HeroImage | null
   const thumbnail =
     hero && typeof hero === 'object' && (hero.url || hero.filename)
-      ? hero.url || hero.filename
+      ? hero.url || hero.filename || FALLBACK_THUMB
       : FALLBACK_THUMB
 
   return {
@@ -65,8 +71,8 @@ function toUICategories(docs: PayloadCategory[]): UIHelperCategory[] {
 export default async function BlogPage() {
   // Fetch everything on the server
   let featured = null,
-    posts: any[] = [],
-    categories: any[] = []
+    posts: PayloadPost[] = [],
+    categories: PayloadCategory[] = []
   try {
     ;[featured, posts, categories] = await Promise.all([
       fetchFeaturedPost(),

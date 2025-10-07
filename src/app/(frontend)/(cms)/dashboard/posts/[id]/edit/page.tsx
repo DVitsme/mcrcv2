@@ -1,28 +1,10 @@
-'use client'
+import { Suspense } from 'react'
+import { notFound } from 'next/navigation'
+import { fetchPostById, fetchCategories } from '@/lib/payload-api-blog'
+import type { Post as PayloadPost, Category as PayloadCategory } from '@/payload-types'
+import PostForm from './PostForm'
 
-import { useMemo, useState, useTransition } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
-
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
-import { FileInput } from '@/components/ui/file-inputs'
-import { Editor } from '@/components/editor/editor'
+type RouteParams = Promise<{ id: string }>
 
 type CategoryLike = { id: string | number; title?: string | null; slug?: string | null }
 type PostSectionLike = { title?: string | null; contentHtml?: string | null }
