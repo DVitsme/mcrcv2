@@ -17,7 +17,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import TwoColorTitle from '@/components/ui/two-color-title'
 
-const MediationRequest = () => {
+const TrainingRequest = () => {
   const form = useForm({
     defaultValues: {
       firstName: '',
@@ -214,4 +214,4 @@ const MediationRequest = () => {
   )
 }
 
-export default MediationRequest
+export default TrainingRequest

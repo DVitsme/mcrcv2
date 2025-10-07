@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -36,9 +35,13 @@ const stepOneSchema = z.object({
   lastName: z.string().min(1, 'Last name is required.'),
   phone: z.string().min(1, 'Phone number is required.'),
   email: z.string().email('Please enter a valid email address.'),
-  preferredContact: z.enum(['Email', 'Phone', 'Either is fine']),
-  canLeaveVoicemail: z.enum(['Yes', 'No']),
-  canText: z.enum(['Yes', 'No']),
+  preferredContact: z.enum(['Email', 'Phone', 'Either is fine'], {
+    required_error: 'Please select a preferred contact method.',
+  }),
+  canLeaveVoicemail: z.enum(['Yes', 'No'], {
+    required_error: 'This field is required.',
+  }),
+  canText: z.enum(['Yes', 'No'], { required_error: 'This field is required.' }),
   streetAddress: z.string().min(1, 'Street address is required.'),
   city: z.string().min(1, 'City is required.'),
   state: z.string().min(1, 'State is required.'),
@@ -48,14 +51,20 @@ const stepOneSchema = z.object({
 
 const stepTwoSchema = z.object({
   whatBringsYou: z.string().min(1, 'This field is required.'),
-  isCourtOrdered: z.enum(['Yes', 'No']),
+  isCourtOrdered: z.enum(['Yes', 'No'], {
+    required_error: 'This field is required.',
+  }),
 })
 
 const stepThreeSchema = z.object({
   otherPartyFirstName: z.string().optional(),
   otherPartyLastName: z.string().optional(),
   otherPartyPhone: z.string().optional(),
-  otherPartyEmail: z.string().email({ message: 'Please enter a valid email.' }).optional(),
+  otherPartyEmail: z
+    .string()
+    .email({ message: 'Please enter a valid email.' })
+    .optional()
+    .or(z.literal('')),
 })
 
 const stepFourSchema = z.object({
@@ -67,6 +76,14 @@ const stepFourSchema = z.object({
 // Combine schemas
 const formSchema = stepOneSchema.merge(stepTwoSchema).merge(stepThreeSchema).merge(stepFourSchema)
 
+// THE FIX: Define field names for each step to ensure type safety
+const stepOneFields = Object.keys(stepOneSchema.shape) as (keyof z.infer<typeof stepOneSchema>)[]
+const stepTwoFields = Object.keys(stepTwoSchema.shape) as (keyof z.infer<typeof stepTwoSchema>)[]
+const stepThreeFields = Object.keys(stepThreeSchema.shape) as (keyof z.infer<
+  typeof stepThreeSchema
+>)[]
+const stepFourFields = Object.keys(stepFourSchema.shape) as (keyof z.infer<typeof stepFourSchema>)[]
+
 export function MediationForm() {
   const [step, setStep] = useState(0)
   const totalSteps = 4
@@ -74,6 +91,7 @@ export function MediationForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {},
+    mode: 'onTouched',
   })
 
   const { handleSubmit, control, trigger, reset } = form
@@ -105,10 +123,11 @@ export function MediationForm() {
 
   const handleNext = async () => {
     let isValid = false
-    if (step === 0) isValid = await trigger(Object.keys(stepOneSchema.shape) as any)
-    if (step === 1) isValid = await trigger(Object.keys(stepTwoSchema.shape) as any)
-    if (step === 2) isValid = await trigger(Object.keys(stepThreeSchema.shape) as any)
-    if (step === 3) isValid = await trigger(Object.keys(stepFourSchema.shape) as any)
+    if (step === 0) isValid = await trigger(stepOneFields)
+    if (step === 1) isValid = await trigger(stepTwoFields)
+    if (step === 2) isValid = await trigger(stepThreeFields)
+    // Step 3 is the last step with fields to validate before submission
+    if (step === 3) isValid = await trigger(stepFourFields)
 
     if (isValid && step < totalSteps - 1) {
       setStep(step + 1)
@@ -470,7 +489,8 @@ export function MediationForm() {
                 <CardHeader>
                   <CardTitle>Section 3: Other Participants</CardTitle>
                   <CardDescription>
-                    Please share the names of others involved and you’re hoping will join the
+                    {/* THE FIX: Escaped apostrophe */}
+                    Please share the names of others involved and you&apos;re hoping will join the
                     mediation process.
                   </CardDescription>
                 </CardHeader>
@@ -537,7 +557,8 @@ export function MediationForm() {
                 <CardHeader>
                   <CardTitle>Section 4: Scheduling & Needs</CardTitle>
                   <CardDescription>
-                    After you submit, you'll get a link to schedule a follow-up call.
+                    {/* THE FIX: Escaped apostrophe */}
+                    After you submit, you&apos;ll get a link to schedule a follow-up call.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -579,7 +600,7 @@ export function MediationForm() {
                     name="anythingElse"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Is there anything else you'd like us to know?</FormLabel>
+                        <FormLabel>Is there anything else you&apos;d like us to know?</FormLabel>
                         <FormControl>
                           <Textarea {...field} />
                         </FormControl>

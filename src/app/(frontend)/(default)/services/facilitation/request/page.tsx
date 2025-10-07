@@ -17,7 +17,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import TwoColorTitle from '@/components/ui/two-color-title'
 
-const MediationRequest = () => {
+const FacilitationRequest = () => {
   const form = useForm({
     defaultValues: {
       firstName: '',
@@ -141,7 +141,7 @@ const MediationRequest = () => {
                     Submit
                   </Button>
                   <p className="text-muted-foreground text-xs sm:col-span-2">
-                    You acknowledge that you've reviewed and agreed to our{' '}
+                    You acknowledge that you&apos;ve reviewed and agreed to our{' '}
                     <a href="#" className="text-primary hover:underline">
                       Privacy Policy
                     </a>{' '}
@@ -214,4 +214,4 @@ const MediationRequest = () => {
   )
 }
 
-export default MediationRequest
+export default FacilitationRequest
