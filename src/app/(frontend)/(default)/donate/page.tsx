@@ -16,9 +16,11 @@ const DonatePage = () => {
     script.src = 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js'
     script.charset = 'UTF-8'
     script.onload = () => {
-      // @ts-ignore
+      // THE FIX: Changed @ts-ignore to @ts-expect-error
+      // @ts-expect-error - PayPal SDK is loaded externally and not available on the window type
       if (window.PayPal && window.PayPal.Donation) {
-        // @ts-ignore
+        // THE FIX: Changed @ts-ignore to @ts-expect-error
+        // @ts-expect-error - PayPal SDK is loaded externally and not available on the window type
         window.PayPal.Donation.Button({
           env: 'production',
           hosted_button_id: PAYPAL_BUTTON_ID,
@@ -32,6 +34,11 @@ const DonatePage = () => {
     }
     document.body.appendChild(script)
     return () => {
+      // Clean up the script when the component unmounts
+      const buttonContainer = document.getElementById('donate-button')
+      if (buttonContainer) {
+        buttonContainer.innerHTML = ''
+      }
       document.body.removeChild(script)
     }
   }, [])

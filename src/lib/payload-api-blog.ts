@@ -80,6 +80,20 @@ export async function fetchPostBySlug(slug: string): Promise<Post | null> {
   }
 }
 
+export async function fetchPostById(id: string | number): Promise<Post | null> {
+  try {
+    const response = await fetch(`${BASE}/api/posts?where[id][equals]=${id}&depth=2`, {
+      next: { revalidate: 60 },
+    })
+    if (!response.ok) throw new Error(`Failed to fetch post with id ${id}`)
+    const data = await response.json()
+    return data.docs?.[0] || null
+  } catch (error) {
+    console.error('Error fetching post by id:', error)
+    return null
+  }
+}
+
 export async function fetchRelatedPosts(
   currentPostId: number | string,
   categoryIds: (number | string)[],
