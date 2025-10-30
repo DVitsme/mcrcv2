@@ -4,7 +4,6 @@ import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import { cn } from '@/utilities/ui'
 import { InitTheme } from '../../providers/Theme/InitTheme/index'
-import { AdminBar } from '@/components/AdminBar'
 import { draftMode } from 'next/headers'
 
 import './globals.css'
@@ -14,8 +13,6 @@ import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
 import { Toaster } from 'sonner'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { isEnabled } = await draftMode()
-
   return (
     <html className={cn(GeistSans.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
@@ -25,11 +22,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <Providers>
-          <AdminBar
-            adminBarProps={{
-              preview: isEnabled,
-            }}
-          />
           {children}
           <Toaster position="top-right" richColors />
         </Providers>
@@ -43,6 +35,6 @@ export const metadata: Metadata = {
   openGraph: mergeOpenGraph(),
   twitter: {
     card: 'summary_large_image',
-    creator: '@payloadcms',
+    creator: '@mcrc',
   },
 }

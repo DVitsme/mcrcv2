@@ -23,7 +23,7 @@ const AboutPage = () => {
           },
           secondary: {
             text: 'Get Started',
-            url: '/',
+            url: '/get-started',
           },
         }}
       />
@@ -73,7 +73,13 @@ const AboutPage = () => {
           heading="MCRC Commitment to the The Nine Hallmarks of Community Mediation"
           items={faqItems}
         />
-        <GridImageCards CardData={CardData} />
+        <GridImageCards
+          CardData={CardData}
+          Title="Meet our team"
+          Description="We are proud to be guided by a team whose compassion, wisdom, and commitment bring our mission to life every day."
+          ButtonText="Become a Volunteer"
+          ButtonLink="/volunteer"
+        />
       </section>
     </>
   )

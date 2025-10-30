@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
-import type { Media as MediaType } from '@/payload-types'
+import type { Media as MediaType } from '@/types'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { cn } from '@/utilities/ui'
 

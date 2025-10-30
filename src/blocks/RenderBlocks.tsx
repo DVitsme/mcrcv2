@@ -4,7 +4,7 @@ import React, { ComponentType, Fragment } from 'react'
 import type {
   Page,
   Event, // Add the Event type
-} from '@/payload-types'
+} from '@/types'
 
 // Import all block components
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'

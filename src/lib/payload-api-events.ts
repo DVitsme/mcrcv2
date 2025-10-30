@@ -1,4 +1,4 @@
-import type { Event } from '@/payload-types'
+import type { Event } from '@/types'
 import { getServerSideURL } from '@/utilities/getURL'
 
 const BASE = getServerSideURL()

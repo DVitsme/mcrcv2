@@ -31,17 +31,8 @@
       }
     ],
     "paths": {
-      "@payload-config": [
-        "./src/payload.config.ts"
-      ],
       "@/*": [
         "./src/*"
-      ],
-      "@collections/*": [
-        "./src/collections/*"
-      ],
-      "payload/types": [
-        "./src/payload-types.ts"
       ]
     }
   },

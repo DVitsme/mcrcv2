@@ -1,10 +1,10 @@
 /**
- * This file serves as the central library for all Payload API calls.
+ * This file serves as the central library for all Firebase API calls.
  * It contains functions for fetching data related to various collections
  * like Posts, Categories, and Events.
  */
 
-import type { Post, Category, Event } from '@/payload-types'
+import type { Post, Category, Event } from '@/types'
 
 // --- General Setup ---
 const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL

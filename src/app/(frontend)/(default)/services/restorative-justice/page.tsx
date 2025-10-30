@@ -46,11 +46,11 @@ export default function RestorativeJustice() {
         buttons={{
           primary: {
             text: 'Get Started',
-            url: '/services/restorative-justice',
+            url: '/services/restorative-justice/request',
           },
           secondary: {
             text: 'Learn More',
-            url: '/services/restorative-justice',
+            url: '/services/restorative-justice#our-process',
           },
         }}
       />
@@ -69,15 +69,16 @@ export default function RestorativeJustice() {
           url: '/services/restorative-justice',
         }}
       />
-      <BiggerBlockCards
-        title="Our Process for: "
-        titleGray="Restorative Reflection"
-        description="Restorative Reflections offer young people a space to pause, think deeply, and be heard. Here’s how the process works, step by step:"
-        cards={stickyCards}
-        color="darkgreen"
-      />
+      <div id="our-process">
+        <BiggerBlockCards
+          title="Our Process for: "
+          titleGray="Restorative Reflection"
+          description="Restorative Reflections offer young people a space to pause, think deeply, and be heard. Here’s how the process works, step by step:"
+          cards={stickyCards}
+          color="darkgreen"
+        />
+      </div>
       <ThreeColImages data={ThreeColImagesData} />
-
       <ServicePageFooter SectionTitle="Discover our other services" cards={footerCards} />
     </main>
   )

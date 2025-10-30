@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import DeletePostButton from '@/components/Dashboard/posts/DeletePostButton'
-import type { Post } from '@/payload-types'
+import type { Post } from '@/types'
 
 import { deletePost } from './actions'
 

@@ -1,4 +1,4 @@
-import type { Post, Category } from '@/payload-types'
+import type { Post, Category } from '@/types'
 // I am not sure if I want to this server side so for right now I am using the public server url
 // import { getServerSideURL } from '@/utilities/getURL'
 

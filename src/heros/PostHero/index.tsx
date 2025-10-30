@@ -1,7 +1,7 @@
 import { formatDateTime } from 'src/utilities/formatDateTime'
 import React from 'react'
 
-import type { Post } from '@/payload-types'
+import type { Post } from '@/types'
 
 import { Media } from '@/components/Media'
 import { formatAuthors } from '@/utilities/formatAuthors'

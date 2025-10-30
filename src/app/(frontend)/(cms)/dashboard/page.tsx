@@ -3,27 +3,22 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { payloadFetch } from '@/lib/auth'
-import type { Event, Post } from '@/payload-types'
+import { firebaseFetch } from '@/lib/auth'
+import type { Event, Post } from '@/types'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 async function getRecentPosts(): Promise<Post[]> {
-  const res = await payloadFetch('/api/posts?sort=-updatedAt&limit=3&depth=0')
-  if (!res.ok) return []
-  const data = await res.json()
-  return data.docs || []
+  // TODO: Implement Firebase query for recent posts
+  // For now, return empty array
+  return []
 }
 
 async function getUpcomingEvents(): Promise<Event[]> {
-  const now = new Date().toISOString()
-  const res = await payloadFetch(
-    `/api/events?where[eventStartTime][greater_than]=${now}&sort=eventStartTime&limit=3&depth=0`,
-  )
-  if (!res.ok) return []
-  const data = await res.json()
-  return data.docs || []
+  // TODO: Implement Firebase query for upcoming events
+  // For now, return empty array
+  return []
 }
 
 function formatDate(dateString?: string) {

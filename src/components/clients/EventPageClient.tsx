@@ -10,7 +10,7 @@ import Link from 'next/link'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Event } from '@/payload-types'
+import { Event } from '@/types'
 
 interface EventPageClientProps {
   event: Event

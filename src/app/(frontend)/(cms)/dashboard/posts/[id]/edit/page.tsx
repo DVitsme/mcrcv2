@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { fetchPostById, fetchCategories } from '@/lib/payload-api-blog'
-import type { Post as PayloadPost, Category as PayloadCategory } from '@/payload-types'
+import type { Post as PayloadPost, Category as PayloadCategory } from '@/types'
 import PostForm from './PostForm'
 
 type RouteParams = Promise<{ id: string }>

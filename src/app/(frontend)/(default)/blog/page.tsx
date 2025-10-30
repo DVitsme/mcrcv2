@@ -1,5 +1,5 @@
 import { fetchFeaturedPost, fetchPosts, fetchCategories } from '@/lib/payload-api-blog'
-import type { Post as PayloadPost, Category as PayloadCategory, Media } from '@/payload-types'
+import type { Post as PayloadPost, Category as PayloadCategory, Media } from '@/types'
 import { default as BlogPageClient } from '@/components/clients/BlogPageClient'
 
 // Type definitions for extended data

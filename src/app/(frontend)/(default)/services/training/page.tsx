@@ -25,11 +25,11 @@ export default function Training() {
         buttons={{
           primary: {
             text: 'Get Started',
-            url: '/services/facilitation',
+            url: '/services/training/request',
           },
           secondary: {
             text: 'Learn More',
-            url: '/services/facilitation',
+            url: '/services/training#offerings',
           },
         }}
       />
@@ -53,16 +53,18 @@ export default function Training() {
         imagePosition="right"
         imageSize={{ maxHeight: '300px', height: 300, width: 500 }}
       />
-      <BiggerBlockCards
-        title="Workshops & Trainings: "
-        titleGray="We Offer"
-        color="darkyellow"
-        description="Here are a few of the training we regularly offer. We can deliver these sessions virtually or in person, and most can be adapted for different group sizes or settings. We’ll work with you to design a session that meets your group’s specific needs—whether that’s navigating internal conflict, supporting your staff, or building skills for collaborative leadership."
-        cards={stickyCards}
-        buttonTitle="Let’s figure out your needs together."
-        buttonText="Click here to get started"
-        buttonLink="https://forms.gle/MkdSqa6UFrcCgQKq9"
-      />
+      <div id="offerings">
+        <BiggerBlockCards
+          title="Workshops & Trainings: "
+          titleGray="We Offer"
+          color="darkyellow"
+          description="Here are a few of the training we regularly offer. We can deliver these sessions virtually or in person, and most can be adapted for different group sizes or settings. We’ll work with you to design a session that meets your group’s specific needs—whether that’s navigating internal conflict, supporting your staff, or building skills for collaborative leadership."
+          cards={stickyCards}
+          buttonTitle="Let’s figure out your needs together."
+          buttonText="Click here to get started"
+          buttonLink="https://forms.gle/MkdSqa6UFrcCgQKq9"
+        />
+      </div>
       <TwoColTitleCheckListImage
         data={ourApproachToLearning}
         imagePosition="right"

@@ -2,7 +2,7 @@ import type { Block } from 'payload'
 
 import React from 'react'
 import Image from 'next/image'
-import type { Media } from '@/payload-types'
+import type { Media } from '@/types'
 
 interface ImageBlockType {
   image: Media

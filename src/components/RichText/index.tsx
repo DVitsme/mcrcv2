@@ -20,7 +20,7 @@ import { cn } from '@/utilities/ui'
 import type { HTMLAttributes } from 'react'
 
 // Keep CodeBlockProps strongly typed; loosen other block field types to `any`
-// to avoid depending on names from `@/payload-types`.
+// to avoid depending on names from `@/types`.
 type NodeTypes = DefaultNodeTypes | SerializedBlockNode<CodeBlockProps | any>
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {

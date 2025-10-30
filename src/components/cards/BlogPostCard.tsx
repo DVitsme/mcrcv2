@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { CalendarDays, Clock, User as UserIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import type { Post, Category } from '@/payload-types'
+import type { Post, Category } from '@/types'
 
 // Helper functions
 function formatDate(dateString?: string): string {

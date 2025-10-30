@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 import { Linkedin, Twitter } from 'lucide-react'
 
 import { fetchPostBySlug } from '@/lib/payload-api-blog'
-import type { Category as CategoryType } from '@/payload-types'
+import type { Category as CategoryType } from '@/types'
 import { type DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

@@ -1,46 +1,12 @@
 'use client'
 
 import { Check } from 'lucide-react'
-import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { MediationSelfReferralForm } from '@/Forms/formDisplay/selfReferralForm'
 import TwoColorTitle from '@/components/ui/two-color-title'
 
 const MediationRequest = () => {
-  const form = useForm({
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      companySize: '',
-      message: '',
-      referrer: '',
-    },
-  })
-
-  const onSubmit = (data: {
-    firstName: string
-    lastName: string
-    email: string
-    companySize: string
-    message: string
-    referrer: string
-  }) => {
-    console.log(data)
-    // Add your form submission logic here
-  }
-
   return (
     <section className="bg-muted/50 py-32">
       <div className="container">
@@ -49,109 +15,7 @@ const MediationRequest = () => {
           <TwoColorTitle title="Seeking Mediation?" titleGray="Start Here" />
           <div className="order-2 md:order-none md:row-span-2">
             <div className="bg-background border-border rounded-lg border p-6">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Alex" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Smith" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="alex.smith@example.com" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="companySize"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Preferred Contact Method</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Email or Phone" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="5k-15k">Email</SelectItem>
-                              <SelectItem value="15k-30k">Phone</SelectItem>
-                              <SelectItem value="30k-50k">Either is fine</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem className="sm:col-span-2">
-                        <FormLabel>Brief Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            placeholder="What brings you to seek mediation right now?"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="referrer"
-                    render={({ field }) => (
-                      <FormItem className="sm:col-span-2">
-                        <FormLabel>How did you find us?</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Google / Referral" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="sm:col-span-2">
-                    Submit
-                  </Button>
-                  <p className="text-muted-foreground text-xs sm:col-span-2">
-                    You acknowledge that you&apos;ve reviewed and agreed to our{' '}
-                    <Link href="#" className="text-primary hover:underline">
-                      Privacy Policy
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="#" className="text-primary hover:underline">
-                      Terms of Service
-                    </Link>
-                  </p>
-                </form>
-              </Form>
+              <MediationSelfReferralForm />
             </div>
           </div>
           <div className="order-3 my-6 md:order-none">
@@ -201,11 +65,11 @@ const MediationRequest = () => {
           <div>
             <h3 className="mb-1.5 font-bold">Resources</h3>
             <p className="text-muted-foreground text-sm">
-              Access our library and connect with designers in our{' '}
               <Link href="/resources" className="text-primary underline hover:underline">
-                resource center
+                Access our library of helpful guides and resources.
               </Link>{' '}
-              filled with whitepapers and tutorials.
+              It is filled with blogs, guides, and tips to help improve communication and conflict
+              resolution.
             </p>
           </div>
         </div>

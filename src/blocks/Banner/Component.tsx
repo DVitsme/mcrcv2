@@ -3,7 +3,7 @@ import React from 'react'
 import { cn } from '@/utilities/ui'
 import RichText from '@/components/RichText'
 
-// Keep this local so we don't depend on `@/payload-types`
+// Keep this local so we don't depend on `@/types`
 type BannerStyle = 'info' | 'error' | 'success' | 'warning' | null | undefined
 
 export type BannerBlockProps = {

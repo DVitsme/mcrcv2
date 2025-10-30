@@ -20,8 +20,7 @@ export default function Facilitation() {
         badge="Facilitation"
         color="darkbrown"
         buttons={{
-          primary: { text: 'Get Started', url: '/services/facilitation' },
-          secondary: { text: 'Learn More', url: '/services/facilitation' },
+          primary: { text: 'Get Started', url: '/services/facilitation/request' },
         }}
       />
 

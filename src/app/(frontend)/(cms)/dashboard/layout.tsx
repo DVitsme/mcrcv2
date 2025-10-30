@@ -7,8 +7,8 @@ import {
   type SidebarNavItem,
   type SidebarTeam,
 } from '@/components/Dashboard/app-sidebar'
-import { payloadFetch } from '@/lib/auth'
-import type { User } from '@/payload-types'
+import { firebaseFetch } from '@/lib/auth'
+import type { User } from '@/types'
 import DashboardBreadcrumbs from '@/components/Dashboard/dashboard-breadcrumbs'
 
 // Optional hints (match what you used in the page)
@@ -17,10 +17,16 @@ export const dynamic = 'force-dynamic'
 
 // Fetch the current user (authed request)
 async function getCurrentUser(): Promise<User | null> {
-  const res = await payloadFetch('/api/users/me')
-  if (!res.ok) return null
-  const data = await res.json()
-  return (data?.user ?? data) as User
+  // TODO: Implement Firebase auth user fetching
+  // For now, return a mock user
+  return {
+    id: '1',
+    email: 'admin@mcrc.org',
+    name: 'Admin User',
+    role: 'admin',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
 }
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
